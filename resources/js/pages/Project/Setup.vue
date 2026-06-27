@@ -70,7 +70,7 @@ async function copy(value: string, label: string) {
                 <CardContent class="space-y-4">
                     <div class="relative">
                         <pre class="overflow-x-auto rounded-xl bg-slate-950 p-6 text-sm leading-6 text-slate-100"><code>{{ installationCode }}</code></pre>
-                        <Button class="absolute right-4 top-4" @click="copy(installationCode, 'code')"><Clipboard class="mr-2 h-4 w-4" />{{ copied === 'code' ? 'Copied' : 'Copy code' }}</Button>
+                        <Button class="absolute top-4 right-4" @click="copy(installationCode, 'code')"><Clipboard class="mr-2 h-4 w-4" />{{ copied === 'code' ? 'Copied' : 'Copy code' }}</Button>
                     </div>
                     <Alert class="border-blue-200 bg-blue-50">
                         <Lightbulb class="h-5 w-5 text-blue-600" />
@@ -91,12 +91,16 @@ async function copy(value: string, label: string) {
                 </CardHeader>
                 <CardContent>
                     <ol class="space-y-4">
-                        <li v-for="(step, index) in [
-                            'Ask an administrator to add your website origin to the project.',
-                            'Add at least one target language.',
-                            'Open your website and navigate through a translated page.',
-                            'Return here to confirm that the integration is active.',
-                        ]" :key="step" class="flex items-start gap-3">
+                        <li
+                            v-for="(step, index) in [
+                                'Ask an administrator to add your website origin to the project.',
+                                'Add at least one target language.',
+                                'Open your website and navigate through a translated page.',
+                                'Return here to confirm that the integration is active.',
+                            ]"
+                            :key="step"
+                            class="flex items-start gap-3"
+                        >
                             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-sm font-semibold text-emerald-700">{{ index + 1 }}</span>
                             <span class="pt-0.5 text-sm text-slate-700">{{ step }}</span>
                         </li>

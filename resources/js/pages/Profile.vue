@@ -11,11 +11,9 @@ import type { User } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { AlertTriangle, Mail, Shield, User as UserIcon } from 'lucide-vue-next';
 
-
 defineProps<{
     user: User;
 }>();
-
 </script>
 
 <template>
@@ -25,9 +23,7 @@ defineProps<{
             <Alert v-if="user.force_password_change" class="border-amber-300 bg-amber-50 text-amber-950">
                 <AlertTriangle class="h-5 w-5 text-amber-600" />
                 <AlertTitle>Password change required</AlertTitle>
-                <AlertDescription>
-                    You are using a temporary password. Change it before accessing your projects.
-                </AlertDescription>
+                <AlertDescription> You are using a temporary password. Change it before accessing your projects. </AlertDescription>
             </Alert>
 
             <Card>
