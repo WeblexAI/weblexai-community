@@ -24,6 +24,12 @@ Release maintainers sign metadata with:
 php scripts/generate-release-keypair.php
 ```
 
+If local PHP does not have the sodium extension, run the generator in Docker:
+
+```bash
+docker run --rm -v "${PWD}:/app" -w /app composer:2.8.9 php scripts/generate-release-keypair.php
+```
+
 Store `RELEASE_PRIVATE_KEY` as a GitHub Actions secret in the repository or organization that publishes releases. Store `RELEASE_PUBLIC_KEY` in the application environment used by installations. The public key is safe to distribute; the private key must never be committed.
 
 Each release signs metadata with:
