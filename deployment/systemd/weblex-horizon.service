@@ -1,0 +1,17 @@
+[Unit]
+Description=WeblexAI Horizon
+After=network-online.target redis-server.service
+
+[Service]
+User=weblex
+Group=weblex
+WorkingDirectory=/srv/weblex/current
+ExecStart=/usr/bin/php artisan horizon
+ExecReload=/usr/bin/php artisan horizon:terminate
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

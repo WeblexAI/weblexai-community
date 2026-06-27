@@ -1,0 +1,10 @@
+{
+	frankenphp
+	order php_server before file_server
+}
+
+:8080 {
+	root * /srv/weblex/current/public
+	encode zstd br gzip
+	php_server
+}

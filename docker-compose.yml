@@ -1,0 +1,125 @@
+name: weblex-community
+
+x-app: &app
+  image: ${WEBLEX_IMAGE:-ghcr.io/weblexai/weblexai-community}:${APP_VERSION:-stable}
+  restart: unless-stopped
+  environment:
+    WEBLEX_DEPLOYMENT_MODE: docker
+  volumes:
+    - ${WEBLEX_ENV_FILE:-./.env}:/bootstrap/.env:ro
+    - weblex_config:/config
+    - weblex_storage:/app/storage
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  networks:
+    - weblex
+
+services:
+  app:
+    <<: *app
+    ports:
+      - "${APP_PORT:-8787}:8080"
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1:8080/up') === false);"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  worker:
+    <<: *app
+    environment:
+      CONTAINER_ROLE: worker
+    depends_on:
+      app:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "artisan", "horizon:status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  scheduler:
+    <<: *app
+    environment:
+      CONTAINER_ROLE: scheduler
+    depends_on:
+      app:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "artisan", "schedule:list"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:17.5-alpine3.22
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-weblex}
+      POSTGRES_USER: ${DB_USERNAME:-weblex}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    volumes:
+      - weblex_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-weblex} -d ${DB_DATABASE:-weblex}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - weblex
+
+  redis:
+    image: redis:8.0.2-alpine3.21
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - weblex_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - weblex
+
+  migrate:
+    <<: *app
+    restart: "no"
+    profiles: ["tools"]
+    environment:
+      CONTAINER_ROLE: migrate
+
+  update-agent:
+    image: ${WEBLEX_UPDATE_IMAGE:-ghcr.io/weblexai/weblexai-community-update-agent}:${APP_VERSION:-stable}
+    restart: unless-stopped
+    profiles: ["updates"]
+    environment:
+      UPDATE_AGENT_SECRET: ${UPDATE_AGENT_SECRET:-}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/workspace
+      - weblex_backups:/backups
+    networks:
+      - weblex
+
+volumes:
+  weblex_postgres:
+  weblex_redis:
+  weblex_config:
+  weblex_storage:
+  weblex_backups:
+
+networks:
+  weblex:

@@ -1,0 +1,16 @@
+[Unit]
+Description=WeblexAI Scheduler
+After=network-online.target redis-server.service
+
+[Service]
+User=weblex
+Group=weblex
+WorkingDirectory=/srv/weblex/current
+ExecStart=/usr/bin/php artisan schedule:work
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

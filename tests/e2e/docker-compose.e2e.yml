@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: .
+    volumes:
+      - ./tests/e2e:/app/tests/e2e:ro
+
+  worker:
+    pull_policy: never
+
+  scheduler:
+    pull_policy: never
+
+  mock-provider:
+    image: python:3.13.5-alpine3.22
+    restart: unless-stopped
+    command: ["python", "/app/server.py"]
+    volumes:
+      - ./tests/e2e/mock-provider.py:/app/server.py:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8081/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - weblex

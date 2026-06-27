@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weblexai.com/schemas/api-contract-v1.json",
+  "title": "WeblexAI Browser API Contract v1",
+  "$defs": {
+    "language": {
+      "type": "object",
+      "required": ["id", "name", "iso_2", "flag"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" },
+        "iso_2": { "type": "string", "minLength": 2, "maxLength": 2 },
+        "flag": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "translation": {
+      "type": "object",
+      "required": ["id", "text", "translated"],
+      "properties": {
+        "id": { "type": ["string", "integer"] },
+        "text": { "type": "string" },
+        "translated": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "batchEvent": {
+      "type": "object",
+      "required": ["type", "translations", "source_lang", "target_lang", "count"],
+      "properties": {
+        "type": { "const": "batch" },
+        "translations": { "type": "array", "items": { "$ref": "#/$defs/translation" } },
+        "source_lang": { "type": "string" },
+        "target_lang": { "type": "string" },
+        "count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "completeEvent": {
+      "type": "object",
+      "required": ["type", "total"],
+      "properties": {
+        "type": { "const": "complete" },
+        "total": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "errorEvent": {
+      "type": "object",
+      "required": ["type", "message"],
+      "properties": {
+        "type": { "const": "error" },
+        "message": { "type": "string" }
+      }
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/batchEvent" },
+    { "$ref": "#/$defs/completeEvent" },
+    { "$ref": "#/$defs/errorEvent" }
+  ]
+}

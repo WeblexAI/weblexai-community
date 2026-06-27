@@ -1,0 +1,16 @@
+[Unit]
+Description=WeblexAI Community Edition
+After=network-online.target postgresql.service redis-server.service
+
+[Service]
+User=weblex
+Group=weblex
+WorkingDirectory=/srv/weblex/current
+ExecStart=/usr/local/bin/frankenphp run --config /srv/weblex/current/deployment/Caddyfile
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
