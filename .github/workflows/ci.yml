@@ -119,8 +119,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          ls -l tests/e2e || true
-          file tests/e2e/run.sh || true
-          sed -n '1,200p' tests/e2e/run.sh || true
+          # Check if script exists and show its status
+          if [ -f tests/e2e/run.sh ]; then
+            echo "Script found"
+            cat tests/e2e/run.sh | head -20
+          else
+            echo "Script not found!"
+            ls -la tests/e2e/ || echo "tests/e2e directory not found"
+            exit 1
+          fi
+      - run: |
           chmod +x tests/e2e/run.sh
-          bash -x tests/e2e/run.sh
+          bash tests/e2e/run.sh
