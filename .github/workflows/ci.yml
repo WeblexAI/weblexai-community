@@ -128,6 +128,5 @@ jobs:
             ls -la tests/e2e/ || echo "tests/e2e directory not found"
             exit 1
           fi
-      - run: |
-          chmod +x tests/e2e/run.sh
-          bash tests/e2e/run.sh
+      - run: bash tests/e2e/run.sh
+        shell: bash
