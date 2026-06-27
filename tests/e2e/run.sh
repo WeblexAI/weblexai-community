@@ -7,6 +7,7 @@ cd "$root"
 project="${WEBLEX_E2E_PROJECT:-weblex-e2e}"
 port="${WEBLEX_E2E_PORT:-18080}"
 env_file="tests/e2e/docker.env.runtime"
+env_file_absolute="$root/$env_file"
 cookie_file="tests/e2e/cookies.runtime.txt"
 install_html="tests/e2e/install.runtime.html"
 install_response="tests/e2e/install-response.runtime.txt"
@@ -20,9 +21,10 @@ cp tests/e2e/docker.env.example "$env_file"
 chmod 600 "$env_file"
 sed -i "s|APP_PORT=.*|APP_PORT=$port|" "$env_file"
 sed -i "s|APP_URL=.*|APP_URL=http://localhost:$port|" "$env_file"
+sed -i "s|WEBLEX_ENV_FILE=.*|WEBLEX_ENV_FILE=$env_file_absolute|" "$env_file"
 
 compose() {
-    docker compose --env-file "$env_file" -p "$project" -f docker-compose.yml -f tests/e2e/docker-compose.e2e.yml "$@"
+    docker compose --env-file "$env_file_absolute" -p "$project" -f docker-compose.yml -f tests/e2e/docker-compose.e2e.yml "$@"
 }
 
 cleanup() {
@@ -144,9 +146,9 @@ provider_requests="$(compose exec -T mock-provider wget -qO- http://127.0.0.1:80
 echo "$provider_requests" | grep -E '"requests": [1-9][0-9]*' >/dev/null
 
 mkdir -p "$backup_dir"
-backup_archive="$(COMPOSE_PROJECT_NAME="$project" COMPOSE_FILE="docker-compose.yml:tests/e2e/docker-compose.e2e.yml" WEBLEX_ENV_FILE="$env_file" sh scripts/backup-docker.sh "$backup_dir")"
+backup_archive="$(COMPOSE_PROJECT_NAME="$project" COMPOSE_FILE="docker-compose.yml:tests/e2e/docker-compose.e2e.yml" WEBLEX_ENV_FILE="$env_file_absolute" sh scripts/backup-docker.sh "$backup_dir")"
 compose exec -T app rm -f /app/storage/app/private/e2e-sentinel.txt
-COMPOSE_PROJECT_NAME="$project" COMPOSE_FILE="docker-compose.yml:tests/e2e/docker-compose.e2e.yml" WEBLEX_ENV_FILE="$env_file" sh scripts/restore-docker.sh "$backup_archive"
+COMPOSE_PROJECT_NAME="$project" COMPOSE_FILE="docker-compose.yml:tests/e2e/docker-compose.e2e.yml" WEBLEX_ENV_FILE="$env_file_absolute" sh scripts/restore-docker.sh "$backup_archive"
 wait_for_url "http://localhost:$port/login" 120
 compose exec -T app test -f /app/storage/app/private/e2e-sentinel.txt
 compose exec -T worker php artisan horizon:status
