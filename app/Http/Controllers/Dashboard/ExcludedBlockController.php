@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\Dashboard\ExcludedBlock\BulkDeleteExcludedBlockRequest;
 use App\Http\Requests\Dashboard\ExcludedBlock\CreateExcludedBlockRequest;
 use App\Http\Requests\Dashboard\ExcludedBlock\UpdateExcludedBlockRequest;
@@ -112,4 +111,3 @@ class ExcludedBlockController extends Controller
         }
     }
 }
-

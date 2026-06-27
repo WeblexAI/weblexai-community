@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\Dashboard\UpdateLanguageSwitcherRequest;
 use App\Models\LanguageSwitcherConfig;
 use App\Models\Project;
@@ -40,4 +39,3 @@ class LanguageSwitcherController extends Controller
         }
     }
 }
-

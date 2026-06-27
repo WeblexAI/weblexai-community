@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-
 use App\Enums\TranslationQuality;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\Page\ToggleBulkBlacklistRequest;
 use App\Models\Language;
 use App\Models\Page;
@@ -93,4 +92,3 @@ class PageController extends Controller
         }
     }
 }
-

@@ -15,9 +15,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Spatie\Activitylog\Traits\CausesActivity;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -57,7 +57,6 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     protected $appends = ['formatted_created_at'];
 
-    
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);

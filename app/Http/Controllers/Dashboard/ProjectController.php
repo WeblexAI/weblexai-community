@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-
 use App\Enums\TranslationQuality;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\UpdateProjectRequest;
 use App\Models\Project;
 use App\Services\ProjectService;
@@ -58,4 +57,3 @@ class ProjectController extends Controller
         return Inertia::render('Project/Settings');
     }
 }
-

@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-
 use App\Enums\TranslationQuality;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\Language\AttachLanguageToProjectRequest;
 use App\Http\Requests\Dashboard\Language\ToggleLanguageTranslationsAutomaticsRequest;
 use App\Http\Requests\Dashboard\Language\ToggleLanguageTranslationsPublicityRequest;
@@ -169,4 +168,3 @@ class ProjectLanguageController extends Controller
         ));
     }
 }
-

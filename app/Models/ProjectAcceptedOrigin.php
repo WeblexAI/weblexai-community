@@ -18,14 +18,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon|null $updated_at
  */
-
 #[ObservedBy(ProjectAcceptedOriginObserver::class)]
 class ProjectAcceptedOrigin extends Model
 {
     use BaseModelTrait;
 
     protected $guarded = ['id', 'uuid', 'created_at', 'updated_at'];
-
 
     public function project(): BelongsTo
     {

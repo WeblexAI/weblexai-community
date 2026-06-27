@@ -17,12 +17,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -42,7 +42,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read bool $is_integrated
  */
-
 #[ObservedBy(ProjectObserver::class)]
 class Project extends Model
 {

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\RedirectResponse;
 
 class OverviewController extends Controller
@@ -13,4 +12,3 @@ class OverviewController extends Controller
         return to_route('projects.index');
     }
 }
-

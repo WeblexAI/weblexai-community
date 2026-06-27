@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\Project;
 use App\Models\Translation;
 use Illuminate\Database\Eloquent\Builder;
@@ -132,4 +131,3 @@ class TranslationUsageController extends Controller
         ]);
     }
 }
-

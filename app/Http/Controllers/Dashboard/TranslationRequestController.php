@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\Project;
 use App\Services\TranslationRequestService;
 use Inertia\Inertia;
@@ -32,4 +31,3 @@ class TranslationRequestController extends Controller
         ]);
     }
 }
-

@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Observers\ActivityLogObserver;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Activity;
-use Illuminate\Support\Collection;
 
 /**
  * @property int $project_id
@@ -34,8 +34,6 @@ class ActivityLog extends Activity
         'target_label',
         'target_type_label',
     ];
-
-
 
     protected function formatedCreatedAt(): Attribute
     {

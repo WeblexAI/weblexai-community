@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-
 use App\Enums\TranslationQuality;
+use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
@@ -56,4 +55,3 @@ class ProjectOverviewController extends Controller
         ]);
     }
 }
-

@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\View;
 use App\Models\Language;
+use App\Models\View;
 
 class ViewObserver
 {

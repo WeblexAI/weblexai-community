@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\ActivityLog;
 use App\Models\Project;
 use Inertia\Inertia;
@@ -26,4 +25,3 @@ class ActivityLogController extends Controller
         ]);
     }
 }
-

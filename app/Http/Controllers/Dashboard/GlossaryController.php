@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\Dashboard\Glossary\StoreGlossaryRequest;
 use App\Http\Requests\Dashboard\Glossary\UpdateGlossaryRequest;
 use App\Models\Glossary;
@@ -124,4 +123,3 @@ class GlossaryController extends Controller
         }
     }
 }
-

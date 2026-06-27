@@ -24,7 +24,6 @@ use Illuminate\Support\Carbon;
  * @property-read string $provider_label
  * @property-read string $provider_type
  */
-
 #[ObservedBy(ProviderCredentialObserver::class)]
 class ProviderCredential extends Model
 {
@@ -43,8 +42,6 @@ class ProviderCredential extends Model
     ];
 
     protected $appends = ['provider_label', 'provider_type'];
-
-
 
     public function user(): BelongsTo
     {

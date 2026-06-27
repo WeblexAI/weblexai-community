@@ -34,7 +34,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property SwitcherDeviceType $preferred_device
  * @property int $device_pixel_breakpoint
  */
-
 #[ObservedBy(LanguageSwitcherConfigObserver::class)]
 class LanguageSwitcherConfig extends Model
 {

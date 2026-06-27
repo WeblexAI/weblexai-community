@@ -3,7 +3,6 @@
 use App\Http\Controllers\Dashboard\ActivityLogController;
 use App\Http\Controllers\Dashboard\ExcludedBlockController;
 use App\Http\Controllers\Dashboard\GlossaryController;
-use App\Http\Controllers\Installation\InstallController;
 use App\Http\Controllers\Dashboard\LanguageSwitcherController;
 use App\Http\Controllers\Dashboard\OverviewController;
 use App\Http\Controllers\Dashboard\PageController;
@@ -18,6 +17,7 @@ use App\Http\Controllers\Dashboard\TranslationImportExportController;
 use App\Http\Controllers\Dashboard\TranslationModelController;
 use App\Http\Controllers\Dashboard\TranslationRequestController;
 use App\Http\Controllers\Dashboard\TranslationUsageController;
+use App\Http\Controllers\Installation\InstallController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/install', [InstallController::class, 'show'])->name('install.show');

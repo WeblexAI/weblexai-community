@@ -57,7 +57,7 @@ class LanguageSeeder extends Seeder
         foreach ($languages as $language) {
             $uuid = $language['uuid'];
             $flag = $language['flag'];
-            
+
             unset($language['uuid']);
             unset($language['flag']);
 
@@ -65,10 +65,10 @@ class LanguageSeeder extends Seeder
                 ['iso_2' => $language['iso_2']],
                 [...$language, 'uuid' => $uuid],
             );
-            
+
             $flagPath = public_path("flags/{$flag}.svg");
-            
-            if (file_exists($flagPath) && !$lang->hasMedia('flag')) {
+
+            if (file_exists($flagPath) && ! $lang->hasMedia('flag')) {
                 $lang->addMedia($flagPath)
                     ->preservingOriginal()
                     ->toMediaCollection('flag');

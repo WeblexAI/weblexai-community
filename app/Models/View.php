@@ -16,11 +16,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $project_id
  * @property int|null $browser_lang_id
  */
-
 #[ObservedBy(ViewObserver::class)]
 class View extends \CyrildeWit\EloquentViewable\View
 {
-
     public function browserLanguage(): BelongsTo
     {
         return $this->belongsTo(Language::class, 'browser_lang_id');

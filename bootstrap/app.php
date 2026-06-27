@@ -49,9 +49,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectTo('/login', '/projects');
         $middleware->alias([
             'project-access' => ProjectAccessibilityMiddleware::class,
-            'project-auth'   => AuthProjectMiddleware::class,
-            'api-security'   => AddSecurityHeaders::class,
-            'log-api'        => LogApiRequests::class,
+            'project-auth' => AuthProjectMiddleware::class,
+            'api-security' => AddSecurityHeaders::class,
+            'log-api' => LogApiRequests::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

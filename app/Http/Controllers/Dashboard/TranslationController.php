@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\Dashboard\Translation\UpdateReviewRequest;
 use App\Http\Requests\Dashboard\Translation\UpdateTranslatedRequest;
 use App\Http\Requests\Dashboard\Translation\UpdateVisibilityRequest;
@@ -26,6 +25,7 @@ class TranslationController extends Controller
             return response()->success('Translation saved');
         } catch (\Exception $exception) {
             Log::error($exception);
+
             return response()->error();
         }
     }
@@ -44,6 +44,7 @@ class TranslationController extends Controller
             return response()->success($message);
         } catch (\Exception $exception) {
             Log::error($exception);
+
             return response()->error();
         }
     }
@@ -57,12 +58,12 @@ class TranslationController extends Controller
             $translation->update([
                 'is_on' => $validated['is_on'],
             ]);
-            
+
             $message = $validated['is_on'] ? 'Translation turned on' : 'Translation turned off';
+
             return response()->success($message);
         } catch (\Exception $exception) {
             return response()->error();
         }
     }
 }
-

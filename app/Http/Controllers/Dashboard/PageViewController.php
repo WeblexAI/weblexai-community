@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use App\Models\Page;
 use App\Models\Project;
 use App\Models\View;
@@ -51,4 +50,3 @@ class PageViewController extends Controller
         ]);
     }
 }
-

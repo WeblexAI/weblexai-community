@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Requests\Dashboard\Profile\ChangePasswordRequest;
-
 use App\Http\Requests\Dashboard\Profile\UpdateProfileRequest;
 use App\Services\ProfileService;
 use Illuminate\Http\RedirectResponse;
@@ -46,6 +44,4 @@ class ProfileController extends Controller
             return response()->error('Unable to change password.');
         }
     }
-
 }
-

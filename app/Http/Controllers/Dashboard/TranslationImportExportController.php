@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-
 use App\Exports\TranslationExport;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\Translation\ExportRequest;
 use App\Http\Requests\Dashboard\Translation\ImportRequest;
 use App\Imports\TranslationImport;
@@ -56,4 +55,3 @@ class TranslationImportExportController extends Controller
         return response()->download(storage_path('app/private/imports/translation-import-sample.xlsx'));
     }
 }
-

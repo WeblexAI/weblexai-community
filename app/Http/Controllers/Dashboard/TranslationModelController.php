@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
-
 use App\Enums\TranslationModelType;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\UpdateTranslationModelRequest;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
@@ -38,4 +37,3 @@ class TranslationModelController extends Controller
         return response()->success('Translation model updated.');
     }
 }
-

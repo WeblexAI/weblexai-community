@@ -10,6 +10,7 @@ class ActivityLogObserver
     {
         if ($activity->log_name === 'admin') {
             $activity->project_id = null;
+
             return;
         }
         $activity->project_id = $activity->project_id ?? request()->project->id ?? null;
