@@ -1,11 +1,11 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 
 use App\Enums\TranslationQuality;
-use App\Http\Requests\Page\ToggleBulkBlacklistRequest;
+use App\Http\Requests\Dashboard\Page\ToggleBulkBlacklistRequest;
 use App\Models\Language;
 use App\Models\Page;
 use App\Models\Project;

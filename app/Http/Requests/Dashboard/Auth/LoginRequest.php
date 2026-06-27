@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Dashboard\Auth;
 
 use App\Enums\ModelStatus;
 use Illuminate\Auth\Events\Lockout;

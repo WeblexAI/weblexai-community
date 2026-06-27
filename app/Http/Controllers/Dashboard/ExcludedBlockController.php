@@ -1,12 +1,12 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 
-use App\Http\Requests\ExcludedBlock\BulkDeleteExcludedBlockRequest;
-use App\Http\Requests\ExcludedBlock\CreateExcludedBlockRequest;
-use App\Http\Requests\ExcludedBlock\UpdateExcludedBlockRequest;
+use App\Http\Requests\Dashboard\ExcludedBlock\BulkDeleteExcludedBlockRequest;
+use App\Http\Requests\Dashboard\ExcludedBlock\CreateExcludedBlockRequest;
+use App\Http\Requests\Dashboard\ExcludedBlock\UpdateExcludedBlockRequest;
 use App\Models\ExcludedBlock;
 use App\Models\Project;
 use App\Services\Cache\ProjectCacheInvalidationService;

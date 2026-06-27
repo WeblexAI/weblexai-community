@@ -1,12 +1,12 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 
-use App\Http\Requests\Translation\UpdateReviewRequest;
-use App\Http\Requests\Translation\UpdateTranslatedRequest;
-use App\Http\Requests\Translation\UpdateVisibilityRequest;
+use App\Http\Requests\Dashboard\Translation\UpdateReviewRequest;
+use App\Http\Requests\Dashboard\Translation\UpdateTranslatedRequest;
+use App\Http\Requests\Dashboard\Translation\UpdateVisibilityRequest;
 use App\Models\Project;
 use App\Models\Translation;
 use Illuminate\Support\Facades\Log;

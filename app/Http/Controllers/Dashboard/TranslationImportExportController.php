@@ -1,12 +1,12 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 
 use App\Exports\TranslationExport;
-use App\Http\Requests\Translation\ExportRequest;
-use App\Http\Requests\Translation\ImportRequest;
+use App\Http\Requests\Dashboard\Translation\ExportRequest;
+use App\Http\Requests\Dashboard\Translation\ImportRequest;
 use App\Imports\TranslationImport;
 use App\Models\Project;
 use App\Models\Translation;

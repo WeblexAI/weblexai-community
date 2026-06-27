@@ -1,11 +1,11 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 
-use App\Http\Requests\Glossary\StoreGlossaryRequest;
-use App\Http\Requests\Glossary\UpdateGlossaryRequest;
+use App\Http\Requests\Dashboard\Glossary\StoreGlossaryRequest;
+use App\Http\Requests\Dashboard\Glossary\UpdateGlossaryRequest;
 use App\Models\Glossary;
 use App\Models\Project;
 use App\Services\GlossaryService;

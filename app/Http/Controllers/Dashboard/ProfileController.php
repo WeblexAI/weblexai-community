@@ -1,12 +1,12 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 
-use App\Http\Requests\Profile\ChangePasswordRequest;
+use App\Http\Requests\Dashboard\Profile\ChangePasswordRequest;
 
-use App\Http\Requests\Profile\UpdateProfileRequest;
+use App\Http\Requests\Dashboard\Profile\UpdateProfileRequest;
 use App\Services\ProfileService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Glossary;
+namespace App\Http\Requests\Dashboard\Glossary;
 
 use App\Enums\GlossaryRule;
 use App\Models\Glossary;

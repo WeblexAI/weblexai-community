@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\ExcludedBlock;
+namespace App\Http\Requests\Dashboard\ExcludedBlock;
 
 use App\Models\ExcludedBlock;
 use Illuminate\Foundation\Http\FormRequest;

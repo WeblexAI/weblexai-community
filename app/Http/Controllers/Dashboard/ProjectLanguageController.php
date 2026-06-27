@@ -1,13 +1,13 @@
-﻿<?php
+<?php
 
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 
 use App\Enums\TranslationQuality;
-use App\Http\Requests\Language\AttachLanguageToProjectRequest;
-use App\Http\Requests\Language\ToggleLanguageTranslationsAutomaticsRequest;
-use App\Http\Requests\Language\ToggleLanguageTranslationsPublicityRequest;
+use App\Http\Requests\Dashboard\Language\AttachLanguageToProjectRequest;
+use App\Http\Requests\Dashboard\Language\ToggleLanguageTranslationsAutomaticsRequest;
+use App\Http\Requests\Dashboard\Language\ToggleLanguageTranslationsPublicityRequest;
 use App\Models\Language;
 use App\Models\Project;
 use App\Services\ProjectService;

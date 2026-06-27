@@ -8,9 +8,10 @@
 /public/wlai
 /storage/*.key
 /storage/pail
-/storage/logs
-/storage/framework
-/storage/debugbar
+/storage/logs/*
+!/storage/logs/.gitignore
+/storage/debugbar/*
+!/storage/debugbar/.gitignore
 /vendor
 .env
 .env.*
