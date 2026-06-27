@@ -144,9 +144,9 @@ provider_requests="$(compose exec -T mock-provider wget -qO- http://127.0.0.1:80
 echo "$provider_requests" | grep -E '"requests": [1-9][0-9]*' >/dev/null
 
 mkdir -p "$backup_dir"
-backup_archive="$(COMPOSE_PROJECT_NAME="$project" COMPOSE_FILE="docker-compose.yml:tests/e2e/docker-compose.e2e.yml" WEBLEX_ENV_FILE="$env_file" scripts/backup-docker.sh "$backup_dir")"
+backup_archive="$(COMPOSE_PROJECT_NAME="$project" COMPOSE_FILE="docker-compose.yml:tests/e2e/docker-compose.e2e.yml" WEBLEX_ENV_FILE="$env_file" sh scripts/backup-docker.sh "$backup_dir")"
 compose exec -T app rm -f /app/storage/app/private/e2e-sentinel.txt
-COMPOSE_PROJECT_NAME="$project" COMPOSE_FILE="docker-compose.yml:tests/e2e/docker-compose.e2e.yml" WEBLEX_ENV_FILE="$env_file" scripts/restore-docker.sh "$backup_archive"
+COMPOSE_PROJECT_NAME="$project" COMPOSE_FILE="docker-compose.yml:tests/e2e/docker-compose.e2e.yml" WEBLEX_ENV_FILE="$env_file" sh scripts/restore-docker.sh "$backup_archive"
 wait_for_url "http://localhost:$port/login" 120
 compose exec -T app test -f /app/storage/app/private/e2e-sentinel.txt
 compose exec -T worker php artisan horizon:status

@@ -173,8 +173,13 @@
                             <aside class="install-visual">
                                 <img src="{{ asset('images/install/cloud-hosting-amico.svg') }}" alt="Cloud hosting illustration">
                                 <div class="visual-note">
-                                    <p class="font-semibold text-slate-950">Production URL</p>
-                                    <p>Point DNS and HTTPS at WeblexAI before using the project snippet on a public website.</p>
+                                    @if ($isDocker)
+                                        <p class="font-semibold text-slate-950">Managed Docker services</p>
+                                        <p>PostgreSQL and Redis are provided by the Compose stack.</p>
+                                    @else
+                                        <p class="font-semibold text-slate-950">Production URL</p>
+                                        <p>Point DNS and HTTPS at WeblexAI before using the project snippet on a public website.</p>
+                                    @endif
                                 </div>
                             </aside>
                         </div>

@@ -179,6 +179,10 @@ class InstallController extends Controller
     {
         $configuredUrl = rtrim((string) config('app.url'), '/');
 
+        if (config('community.deployment_mode') === 'docker') {
+            return $configuredUrl;
+        }
+
         if (! $this->isLocalOrPrivateUrl($configuredUrl)) {
             return $configuredUrl;
         }
