@@ -58,10 +58,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - id: image
+        shell: bash
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/weblexai-community" >> "$GITHUB_OUTPUT"
       - id: metadata
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/weblexai-community
+          images: ${{ steps.image.outputs.name }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern=v{{version}}
@@ -85,10 +88,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - id: image
+        shell: bash
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/weblexai-community-update-agent" >> "$GITHUB_OUTPUT"
       - id: metadata
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/weblexai-community-update-agent
+          images: ${{ steps.image.outputs.name }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern=v{{version}}
@@ -107,5 +113,8 @@ jobs:
     needs: [image, update-agent-image]
     runs-on: ubuntu-latest
     steps:
-      - run: docker pull ghcr.io/${{ github.repository_owner }}/weblexai-community:stable
-      - run: docker pull ghcr.io/${{ github.repository_owner }}/weblexai-community-update-agent:stable
+      - shell: bash
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          docker pull "ghcr.io/${owner}/weblexai-community:stable"
+          docker pull "ghcr.io/${owner}/weblexai-community-update-agent:stable"

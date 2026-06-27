@@ -7,7 +7,7 @@ Update checks send no installation identifier or telemetry.
 ## Configuration
 
 ```dotenv
-RELEASE_FEED_URL=https://releases.example.com/community/stable.json
+RELEASE_FEED_URL=https://github.com/weblexai/weblexai-community/releases/latest/download/stable.json
 RELEASE_PUBLIC_KEY=base64-ed25519-public-key
 UPDATE_CHECK_HOURS=24
 ```
@@ -21,6 +21,14 @@ php artisan weblex:update --check
 Release maintainers sign metadata with:
 
 ```bash
+php scripts/generate-release-keypair.php
+```
+
+Store `RELEASE_PRIVATE_KEY` as a GitHub Actions secret in the repository or organization that publishes releases. Store `RELEASE_PUBLIC_KEY` in the application environment used by installations. The public key is safe to distribute; the private key must never be committed.
+
+Each release signs metadata with:
+
+```bash
 RELEASE_PRIVATE_KEY=base64-ed25519-secret-key php scripts/sign-release-manifest.php \
   --version=1.0.1 \
   --artifact-url=https://github.com/weblexai/weblexai-community/releases/download/v1.0.1/weblexai-community-1.0.1.tar.gz \
@@ -28,6 +36,8 @@ RELEASE_PRIVATE_KEY=base64-ed25519-secret-key php scripts/sign-release-manifest.
   --notes-url=https://github.com/weblexai/weblexai-community/releases/tag/v1.0.1 \
   --output=stable.json
 ```
+
+The release workflow uploads `stable.json` to each GitHub Release. The update feed uses GitHub's latest-release download URL, so publishing a new stable tag automatically points update checks at the newest signed manifest after the workflow completes.
 
 ## Traditional Driver
 
@@ -77,7 +87,7 @@ The agent has Docker socket access and must remain isolated on the internal netw
     "redis": "6.0"
   },
   "artifact": {
-    "url": "https://example.com/weblexai-community-1.0.1.tar.gz",
+    "url": "https://github.com/weblexai/weblexai-community/releases/download/v1.0.1/weblexai-community-1.0.1.tar.gz",
     "sha256": "64-lowercase-hex-characters"
   },
   "signature": "base64-ed25519-signature"
