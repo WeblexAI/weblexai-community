@@ -29,7 +29,7 @@ The web user needs write access only to `/srv/weblex/shared`, `storage`, and `bo
 
 ## FrankenPHP
 
-Use the provided [Caddyfile](deployment/Caddyfile). Terminate TLS in FrankenPHP or in a trusted reverse proxy. When proxying, preserve `Host`, `Origin`, `X-Forwarded-Proto`, and the client address.
+Use the provided [Caddyfile](../deployment/Caddyfile). Terminate TLS in FrankenPHP or in a trusted reverse proxy. When proxying, preserve `Host`, `Origin`, `X-Forwarded-Proto`, and the client address.
 
 ## systemd
 
