@@ -118,4 +118,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: sh tests/e2e/run.sh
+      - run: |
+          ls -l tests/e2e || true
+          file tests/e2e/run.sh || true
+          sed -n '1,200p' tests/e2e/run.sh || true
+          chmod +x tests/e2e/run.sh
+          bash -x tests/e2e/run.sh
