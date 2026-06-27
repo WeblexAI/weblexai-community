@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middleware\SecureHeaders;
+use App\Http\Middleware\Dashboard\SecureHeaders;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
