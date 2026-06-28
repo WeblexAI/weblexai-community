@@ -82,7 +82,7 @@ onMounted(function () {
             <div class="mb-5 flex justify-end">
                 <Select v-model="dateFilter" @update:model-value="(val) => filterByDate(val as string)">
                     <SelectTrigger class="w-[180px]">
-                        <SelectValue placeholder="Select a fruit" />
+                        <SelectValue placeholder="Select date range" />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="l30"> Last 30 days </SelectItem>

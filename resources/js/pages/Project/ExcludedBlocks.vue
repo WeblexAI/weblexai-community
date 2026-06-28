@@ -89,7 +89,6 @@ function bulkDelete() {
     <Head title="Excluded Blocks" />
     <ProjectLayout page-title="Excluded Blocks">
         <div class="animate__animated animate__fadeIn mx-auto max-w-5xl space-y-6">
-            <!-- Header Section -->
             <div class="flex flex-col items-start justify-between gap-6 md:flex-row">
                 <div class="space-y-2">
                     <h2 class="text-2xl font-bold tracking-tight text-gray-900">Excluded Blocks</h2>
@@ -105,7 +104,6 @@ function bulkDelete() {
                 </AddExcludedBlockDialog>
             </div>
 
-            <!-- Main Card -->
             <Card class="overflow-hidden border-none bg-white/80 shadow-sm backdrop-blur-sm">
                 <CardHeader class="border-b border-gray-100 bg-gray-50/50 pb-4">
                     <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
@@ -115,7 +113,6 @@ function bulkDelete() {
                             <span class="rounded-full bg-gray-200 px-2 py-0.5 text-xs text-gray-700">{{ excludedBlocks.total }}</span>
                         </div>
 
-                        <!-- Search -->
                         <div class="flex w-full items-center gap-2 sm:w-72">
                             <SearchInput v-model="filterForm.q" placeholder="Search selectors..." autocomplete="off" class="flex-1" @keyup="clearFilter" @keyup.enter="runFilter" />
                             <Button v-show="filterForm.q.length" class="h-10 shrink-0 px-3" size="sm" variant="ghost" @click="runFilter"> Search </Button>
@@ -124,7 +121,6 @@ function bulkDelete() {
                 </CardHeader>
 
                 <CardContent class="p-0">
-                    <!-- Bulk Actions -->
                     <div v-if="selectedItems.length && canManageContent" class="flex animate-in items-center justify-between border-b border-red-100 bg-red-50/50 p-2 px-4 slide-in-from-top-2">
                         <span class="text-sm font-medium text-red-700">{{ selectedItems.length }} item(s) selected</span>
                         <ConfirmAction variant="destructive" description="Delete selected blocks?" :action="bulkDelete" :loading="isDeletingBlock">
@@ -185,7 +181,6 @@ function bulkDelete() {
                                 </TableCell>
                             </TableRow>
 
-                            <!-- Empty State -->
                             <TableRow v-if="!excludedBlocks.data?.length">
                                 <TableCell colspan="4" class="h-64 text-center">
                                     <div class="flex flex-col items-center justify-center text-gray-400">
@@ -204,7 +199,6 @@ function bulkDelete() {
                     </Table>
                 </CardContent>
 
-                <!-- Pagination -->
                 <div v-if="excludedBlocks.next_page_url || excludedBlocks.prev_page_url" class="border-t border-gray-100 bg-gray-50/30 p-4">
                     <Pagination :links="excludedBlocks.links" />
                 </div>

@@ -112,7 +112,6 @@ onMounted(() => {
     <ProjectLayout page-title="Pages Translations">
         <TooltipProvider>
             <div class="animate__animated animate__fadeIn mx-auto max-w-6xl space-y-6">
-                <!-- Header Section -->
                 <div class="flex flex-col items-start justify-between gap-6 md:flex-row">
                     <div class="space-y-2">
                         <h2 class="text-2xl font-bold tracking-tight text-gray-900">Pages & Translations</h2>
@@ -122,7 +121,6 @@ onMounted(() => {
                         </p>
                     </div>
 
-                    <!-- Language Switcher -->
                     <Popover>
                         <PopoverTrigger as-child>
                             <Button variant="outline" class="h-10 gap-2 border-gray-200 bg-white px-4 shadow-sm hover:bg-gray-50 hover:text-gray-900">
@@ -149,16 +147,13 @@ onMounted(() => {
                     </Popover>
                 </div>
 
-                <!-- Main Card -->
                 <Card class="overflow-hidden border-none bg-white/80 shadow-sm backdrop-blur-sm">
                     <CardHeader class="border-b border-gray-100 bg-gray-50/50 pb-4">
                         <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
-                            <!-- Search -->
                             <div class="w-full sm:w-72">
                                 <SearchInput v-model="filterForm.q" placeholder="Search pages..." @input="onSearchInput" />
                             </div>
 
-                            <!-- Filters -->
                             <div class="flex w-full items-center gap-2 sm:w-auto">
                                 <div class="flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-muted-foreground">
                                     <Filter class="h-4 w-4" />
@@ -179,7 +174,6 @@ onMounted(() => {
                     </CardHeader>
 
                     <CardContent class="p-0">
-                        <!-- Bulk Actions Bar -->
                         <div v-if="selectedItems.length" class="flex animate-in items-center justify-between border-b border-primary/10 bg-primary/5 p-2 px-4 slide-in-from-top-2">
                             <span class="text-sm font-medium text-primary">{{ selectedItems.length }} page(s) selected</span>
                             <div class="flex gap-2">
@@ -309,7 +303,6 @@ onMounted(() => {
                                     </TableCell>
                                 </TableRow>
 
-                                <!-- Empty State -->
                                 <TableRow v-if="!pages.data.length">
                                     <TableCell colspan="5" class="h-64 text-center">
                                         <div class="flex flex-col items-center justify-center text-muted-foreground">
@@ -325,7 +318,6 @@ onMounted(() => {
                         </Table>
                     </CardContent>
 
-                    <!-- Pagination -->
                     <div v-if="pages.next_page_url || pages.prev_page_url" class="border-t border-gray-100 bg-gray-50/50 p-4">
                         <Pagination :links="pages.links" />
                     </div>

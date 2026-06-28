@@ -47,7 +47,7 @@ function visitLanguageTranslations(language: LanguageI) {
                 props.indexPage.domain,
         );
     } else {
-        toastInfo('Looks like your project setup isn’t finished. Head over to the Project Setup page to complete the WeblexAI integration.');
+        toastInfo("Looks like your project setup isn't finished. Head over to the Project Setup page to complete the WeblexAI integration.");
     }
 }
 
@@ -76,7 +76,6 @@ function enableLanguage(language: LanguageI) {
     <ProjectLayout page-title="Languages">
         <TooltipProvider>
             <div class="animate__animated animate__fadeIn mx-auto max-w-6xl space-y-6">
-                <!-- Header Section -->
                 <div class="flex flex-col items-start justify-between gap-6 md:flex-row">
                     <div class="space-y-2">
                         <h2 class="text-2xl font-bold tracking-tight text-gray-900">Project Languages</h2>
@@ -90,11 +89,9 @@ function enableLanguage(language: LanguageI) {
                     </AttachLanguageDialog>
                 </div>
 
-                <!-- Main Card -->
                 <Card class="overflow-hidden border-none bg-white/80 shadow-sm backdrop-blur-sm">
                     <CardHeader class="border-b border-gray-100 bg-gray-50/50 pb-4">
                         <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
-                            <!-- Search -->
                             <div class="w-full sm:w-72">
                                 <SearchInput v-model="searchQuery" placeholder="Search languages..." />
                             </div>
@@ -169,7 +166,6 @@ function enableLanguage(language: LanguageI) {
                                     </TableCell>
                                 </TableRow>
 
-                                <!-- Empty State -->
                                 <TableRow v-if="!filteredLanguages.length">
                                     <TableCell colspan="5" class="h-64 text-center">
                                         <div class="flex flex-col items-center justify-center text-muted-foreground">

@@ -74,7 +74,12 @@ const filteredProjects = computed(() => {
                                 </TableCell>
                             </TableRow>
                             <TableRow v-if="filteredProjects.length === 0">
-                                <TableCell colspan="4" class="h-48 text-center text-muted-foreground"> No assigned projects found. </TableCell>
+                                <TableCell colspan="4" class="h-48 text-center">
+                                    <div class="mx-auto max-w-sm space-y-2">
+                                        <div class="font-semibold text-slate-900">No project is assigned to this account</div>
+                                        <p class="text-sm leading-6 text-muted-foreground">Ask an administrator to create a project and add you as an owner or member.</p>
+                                    </div>
+                                </TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>

@@ -105,11 +105,11 @@ onMounted(function () {
 
 <template>
     <Head title="Page Views" />
-    <ProjectLayout page-title="Translation Requests">
+    <ProjectLayout page-title="Page Views">
         <div class="mb-5 flex justify-end">
             <Select v-model="dateFilter" @update:model-value="(val) => filterByDate(val as string)">
                 <SelectTrigger class="w-[180px]">
-                    <SelectValue placeholder="Select a fruit" />
+                    <SelectValue placeholder="Select date range" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="l30"> Last 30 days </SelectItem>
@@ -123,7 +123,7 @@ onMounted(function () {
             <Card class="col-span-3 rounded-sm lg:col-span-2">
                 <CardContent>
                     <div class="text-xl font-bold text-primary">By Countries</div>
-                    <p class="text-faded text-sm">Whenever someone visits your site, Weblex automatically captures their country of origin—no matter which language the page shows.</p>
+                    <p class="text-faded text-sm">WeblexAI captures the visitor country for each page view, regardless of the language shown.</p>
                     <div class="mt-10 h-[600px]">
                         <VChart class="min-h-[600px] w-full" :option="chartOptions" autoresize />
                     </div>
@@ -132,7 +132,7 @@ onMounted(function () {
             <Card class="col-span-3 rounded-sm lg:col-span-1">
                 <CardContent class="h-[600px]">
                     <div class="text-xl font-bold text-primary">Top 10 Browser languages</div>
-                    <p class="text-faded text-sm">Whenever someone visits a page on your site, Weblex automatically captures their browser language, no matter which language the page shows.</p>
+                    <p class="text-faded text-sm">WeblexAI records browser language to help identify languages worth adding to the project.</p>
                     <div class="mt-3">
                         <ScrollArea class="h-[600px] w-full">
                             <Table>

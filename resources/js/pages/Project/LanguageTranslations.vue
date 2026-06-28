@@ -115,7 +115,6 @@ function handleExport() {
     <ProjectLayout :page-title="`${originalLanguage.name} To ${language.name} Translations`">
         <TooltipProvider>
             <div class="animate__animated animate__fadeIn mx-auto max-w-7xl space-y-6">
-                <!-- Header Section -->
                 <div class="flex flex-col items-start justify-between gap-6 md:flex-row">
                     <div class="space-y-2">
                         <div class="flex items-center gap-3">
@@ -131,7 +130,6 @@ function handleExport() {
                         </p>
                     </div>
 
-                    <!-- Language Switcher -->
                     <Popover>
                         <PopoverTrigger as-child>
                             <Button variant="outline" class="gap-2 border-gray-200 bg-white shadow-sm hover:bg-gray-50">
@@ -160,7 +158,6 @@ function handleExport() {
                     </Popover>
                 </div>
 
-                <!-- Filters Section -->
                 <div class="flex items-center gap-3">
                     <TranslationsFilter :form="filterForm" />
                 </div>
@@ -231,7 +228,6 @@ function handleExport() {
                                         <TranslationCard v-for="translation in translations.data" :translation="translation" :key="`translation-${translation.id}`" />
                                     </div>
 
-                                    <!-- Empty State -->
                                     <div v-if="!translations.data?.length" class="flex flex-col items-center justify-center py-16 text-center">
                                         <div class="mb-4 rounded-full bg-gray-50 p-4">
                                             <FileText class="h-8 w-8 text-gray-400" />
@@ -239,13 +235,12 @@ function handleExport() {
                                         <h3 class="mb-2 text-lg font-medium text-gray-900">No translations found</h3>
                                         <p class="max-w-md text-sm text-muted-foreground">
                                             To preview and sync translations, open your website, navigate to
-                                            <strong class="text-gray-900">{{ page.path }}</strong> and switch the language selector to <strong class="text-gray-900">{{ language.name }}</strong> — your
-                                            translatable content will appear here in real time.
+                                            <strong class="text-gray-900">{{ page.path }}</strong> and switch the language selector to <strong class="text-gray-900">{{ language.name }}</strong
+                                            >. Translatable content will appear here in real time.
                                         </p>
                                     </div>
                                 </ScrollArea>
 
-                                <!-- Pagination -->
                                 <div v-if="translations.next_page_url || translations.prev_page_url" class="mt-6 border-t border-gray-100 pt-4">
                                     <Pagination :links="translations.links" />
                                 </div>
@@ -254,7 +249,6 @@ function handleExport() {
                     </div>
                 </div>
 
-                <!-- Floating Active Filters Bar -->
                 <Transition
                     enter-active-class="transition-all duration-300 ease-out"
                     enter-from-class="translate-y-full opacity-0"

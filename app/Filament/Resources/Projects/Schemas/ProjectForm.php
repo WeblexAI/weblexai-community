@@ -36,7 +36,7 @@ class ProjectForm
                 ->searchable()
                 ->preload()
                 ->nullable()
-                ->helperText('Translations remain disabled until a provider credential is assigned.'),
+                ->helperText('Translations remain disabled until a credential is assigned. The credential type controls whether project context is used: LLM providers use context; NMT providers translate directly.'),
             Select::make('is_active')
                 ->options(ModelStatus::class)
                 ->required()

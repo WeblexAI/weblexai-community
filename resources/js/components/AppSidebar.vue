@@ -32,6 +32,7 @@ const { canManageSettings } = useAuthorization();
                     <SidebarMenuItem>
                         <SideBarLink title="Projects" :href="route('projects.index')" :icon="List" />
                         <SideBarLink title="Overview" :href="route('projects.overview', page.props.project.slug)" :icon="LayoutDashboard" />
+                        <SideBarLink v-if="canManageSettings" title="Project Setup" :href="route('projects.setup', page.props.project.slug)" :icon="Cable" />
                     </SidebarMenuItem>
 
                     <SidebarGroupLabel class="text-primary">TRANSLATIONS</SidebarGroupLabel>
@@ -59,7 +60,6 @@ const { canManageSettings } = useAuthorization();
                         <SideBarLink title="Translation Provider" :href="routeWithProject('projects.translation-model.index')" :icon="KeyRound" />
                         <SideBarLink title="Language Switcher" :href="routeWithProject('projects.language-switcher.index')" :icon="ArrowRightLeft" />
                         <SideBarLink title="Project Configuration" :href="routeWithProject('projects.settings')" :icon="Cog" />
-                        <SideBarLink title="Project Setup" :href="route('projects.setup', page.props.project.slug)" :icon="Cable" />
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarGroup>

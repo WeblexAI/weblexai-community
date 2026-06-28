@@ -7,7 +7,7 @@ import useProject from '@/composables/useProject';
 import { overviewGetProjectDetails } from '@/lib/api';
 import { routeWithProject } from '@/lib/helpers';
 import { Link } from '@inertiajs/vue3';
-import { ArrowRight, Ban, Book, CheckCircle2, FileText, FileX, Languages } from 'lucide-vue-next';
+import { ArrowRight, Ban, Book, CheckCircle2, FileText, FileX, Languages, Rocket } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 
 const { canManageSettings, canManageContent } = useAuthorization();
@@ -47,6 +47,25 @@ onMounted(async () => {
         <OverviewProjectDetailsSkeleton v-if="loading" />
 
         <div v-else class="space-y-6">
+            <Card v-if="canManageSettings && (!project.is_integrated || !project.provider_credential || !project.first_language)" class="border-emerald-200 bg-emerald-50/60">
+                <CardContent class="flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
+                    <div class="flex gap-3">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white">
+                            <Rocket class="h-5 w-5" />
+                        </div>
+                        <div>
+                            <div class="font-semibold text-slate-950">Finish project setup</div>
+                            <p class="mt-1 text-sm leading-6 text-slate-700">
+                                Confirm provider, API key, accepted origin, target language, and browser SDK verification before handing this project to a website team.
+                            </p>
+                        </div>
+                    </div>
+                    <Button as-child>
+                        <Link :href="route('projects.setup', project.slug)">Open setup checklist</Link>
+                    </Button>
+                </CardContent>
+            </Card>
+
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">

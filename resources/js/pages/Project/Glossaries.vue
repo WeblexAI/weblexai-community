@@ -92,7 +92,6 @@ onMounted(() => {
     <ProjectLayout page-title="Glossaries">
         <TooltipProvider>
             <div class="animate__animated animate__fadeIn mx-auto max-w-6xl space-y-6">
-                <!-- Header Section -->
                 <div class="flex flex-col items-start justify-between gap-6 md:flex-row">
                     <div class="space-y-2">
                         <h2 class="text-2xl font-bold tracking-tight text-gray-900">Glossary Rules</h2>
@@ -108,16 +107,13 @@ onMounted(() => {
                     </AddGlossaryDialog>
                 </div>
 
-                <!-- Main Card -->
                 <Card class="overflow-hidden border-none bg-white/80 shadow-sm backdrop-blur-sm">
                     <CardHeader class="border-b border-gray-100 bg-gray-50/50 pb-4">
                         <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
-                            <!-- Search -->
                             <div class="w-full sm:w-72">
                                 <SearchInput v-model="filterForm.q" placeholder="Search glossaries..." @input="onSearchInput" />
                             </div>
 
-                            <!-- Filters -->
                             <div class="flex w-full items-center gap-2 sm:w-auto">
                                 <div class="flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-muted-foreground">
                                     <Filter class="h-4 w-4" />
@@ -139,7 +135,6 @@ onMounted(() => {
                     </CardHeader>
 
                     <CardContent class="p-0">
-                        <!-- Bulk Actions Bar -->
                         <div v-if="selectedItems.length && canManageContent" class="flex animate-in items-center justify-between border-b border-red-100 bg-red-50/50 p-2 px-4 slide-in-from-top-2">
                             <span class="text-sm font-medium text-red-700">{{ selectedItems.length }} item(s) selected</span>
                             <ConfirmAction variant="destructive" description="Are you sure you want to delete the selected glossary rules?" :action="bulkDelete" :loading="isDeletingGlossary">
@@ -227,7 +222,6 @@ onMounted(() => {
                                     </TableCell>
                                 </TableRow>
 
-                                <!-- Empty State -->
                                 <TableRow v-if="!glossaries.data.length">
                                     <TableCell colspan="5" class="h-64 text-center">
                                         <div class="flex flex-col items-center justify-center text-muted-foreground">
@@ -249,7 +243,6 @@ onMounted(() => {
                         </Table>
                     </CardContent>
 
-                    <!-- Pagination -->
                     <div v-if="glossaries.next_page_url || glossaries.prev_page_url" class="border-t border-gray-100 bg-gray-50/50 p-4">
                         <Pagination :links="glossaries.links" />
                     </div>

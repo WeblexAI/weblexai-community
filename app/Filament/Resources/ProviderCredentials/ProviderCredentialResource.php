@@ -36,21 +36,26 @@ class ProviderCredentialResource extends Resource
     {
         return $schema->components([
             Section::make('Provider')
-                ->description('Add credentials supplied by your translation provider.')
+                ->description('Store the provider keys WeblexAI uses for automatic translations. Secrets are encrypted and are never exposed through the browser SDK.')
                 ->schema([
-                    TextInput::make('name')->required()->maxLength(255),
+                    TextInput::make('name')
+                        ->helperText('Use a name administrators can recognize when assigning this credential to projects.')
+                        ->required()
+                        ->maxLength(255),
                     Select::make('provider')
                         ->options(TranslationProvider::class)
+                        ->helperText('Google Cloud Translation is NMT. OpenAI, OpenRouter, Gemini, and Qwen are LLM providers and can use project context.')
                         ->required()
                         ->live(),
                     TextInput::make('api_key')
                         ->password()
                         ->revealable()
+                        ->helperText('Leave this blank when editing to keep the existing key.')
                         ->afterStateHydrated(fn (TextInput $component) => $component->state(null))
                         ->dehydrated(fn (?string $state): bool => filled($state))
                         ->required(fn (Get $get, ?ProviderCredential $record): bool => $get('provider') !== TranslationProvider::GOOGLE->value && blank($record?->api_key)),
                     TextInput::make('model')
-                        ->helperText('Leave blank to use the recommended model.')
+                        ->helperText('Leave blank to use WeblexAI recommended model for this provider.')
                         ->visible(fn (Get $get): bool => $get('provider') !== TranslationProvider::GOOGLE->value),
                     TextInput::make('base_url')
                         ->url()
@@ -61,10 +66,12 @@ class ProviderCredentialResource extends Resource
                             TranslationProvider::QWEN->value,
                         ], true)),
                     TextInput::make('google_project_id')
+                        ->helperText('The Google Cloud project that owns the Translation API credential.')
                         ->required(fn (Get $get): bool => $get('provider') === TranslationProvider::GOOGLE->value)
                         ->visible(fn (Get $get): bool => $get('provider') === TranslationProvider::GOOGLE->value),
                     Textarea::make('service_account')
                         ->label('Service account JSON')
+                        ->helperText('Paste the full JSON credential. Leave blank when editing to keep the existing service account.')
                         ->rows(10)
                         ->afterStateHydrated(fn (Textarea $component) => $component->state(null))
                         ->dehydrated(fn (?string $state): bool => filled($state))

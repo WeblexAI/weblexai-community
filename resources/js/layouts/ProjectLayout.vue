@@ -22,7 +22,7 @@ defineProps<{
                 <div class="flex items-center gap-2">
                     <SidebarTrigger class="-ml-1" />
                 </div>
-                <div class="text-xl font-black">{{ pageTitle }}</div>
+                <div class="text-lg font-semibold tracking-tight text-slate-950">{{ pageTitle }}</div>
             </header>
             <div class="p-5 pt-10">
                 <slot />
