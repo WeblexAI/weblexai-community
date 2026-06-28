@@ -9,7 +9,6 @@
         "self-hosted"
     ],
     "require": {
-
         "cyrildewit/eloquent-viewable": "^7.0",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.0",
@@ -56,7 +55,6 @@
         "phpstan/phpstan": "^2.2",
         "rector/rector": "^2.4"
     },
-
     "minimum-stability": "stable",
     "prefer-stable": true,
     "autoload": {
@@ -84,7 +82,6 @@
         "preferred-install": "dist",
         "sort-packages": true
     },
-
     "scripts": {
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
