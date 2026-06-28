@@ -2,9 +2,11 @@ includes:
     - vendor/larastan/larastan/extension.neon
 
 parameters:
-    level: 1
+    level: 3
     paths:
         - app
+    scanFiles:
+        - stubs/phpstan/laravel-scout-builder.stub
     excludePaths:
         analyse:
             - app/Filament/*
@@ -12,5 +14,3 @@ parameters:
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - identifier: property.notFound
-        - identifier: staticMethod.notFound
-        - identifier: function.notFound

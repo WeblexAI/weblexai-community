@@ -42,10 +42,27 @@ jobs:
       - uses: ramsey/composer-install@v3
         with:
           composer-options: --prefer-dist
+      - run: composer validate --no-check-publish --check-lock
+      - run: composer composer:normalize:check
       - run: cp .env.example .env
       - run: php artisan key:generate
       - run: vendor/bin/pint --test
       - run: composer analyse
+      - run: composer rector:check
+      - run: composer arch
+      - run: composer type-coverage
+        env:
+          APP_INSTALLED: "true"
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: weblex_test
+          DB_USERNAME: weblex
+          DB_PASSWORD: test-password
+          CACHE_STORE: redis
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+          REDIS_HOST: 127.0.0.1
       - run: php artisan test
         env:
           APP_INSTALLED: "true"

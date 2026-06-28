@@ -116,8 +116,143 @@
     @apply border-t border-slate-100 bg-slate-50 p-6 lg:border-t-0 lg:border-l;
 }
 
-.install-visual img {
-    @apply mx-auto h-56 w-full max-w-xs object-contain;
+.install-visual-graphic {
+    @apply relative mx-auto h-56 w-full max-w-xs overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xs;
+}
+
+.install-visual-graphic::before {
+    @apply bg-brand-100/70 absolute -top-10 -right-10 size-36 rounded-full;
+    content: '';
+}
+
+.install-visual-graphic::after {
+    @apply absolute bottom-8 left-8 h-1 w-28 rounded-full bg-slate-200;
+    content: '';
+}
+
+.visual-orbit {
+    @apply border-brand-200 absolute top-10 left-10 size-28 rounded-full border;
+}
+
+.visual-card {
+    @apply absolute rounded-2xl shadow-sm;
+}
+
+.visual-card-primary {
+    @apply bg-brand-700 top-16 left-16 h-16 w-24;
+}
+
+.visual-card-light {
+    @apply right-12 bottom-12 h-14 w-28 border border-slate-200 bg-slate-50;
+}
+
+.visual-pulse {
+    @apply border-brand-300 absolute top-20 left-24 size-16 rounded-full border-8 bg-white;
+}
+
+.visual-browser {
+    @apply absolute top-12 right-10 h-24 w-36 rounded-2xl border border-slate-300 bg-slate-900;
+}
+
+.visual-browser::before {
+    @apply absolute top-3 left-3 h-2 w-16 rounded-full bg-slate-600;
+    content: '';
+}
+
+.visual-browser::after {
+    @apply bg-brand-300 absolute right-4 bottom-4 h-10 w-16 rounded-lg;
+    content: '';
+}
+
+.visual-server {
+    @apply bg-brand-700 absolute bottom-12 left-10 h-24 w-20 rounded-2xl;
+}
+
+.visual-server::before,
+.visual-server::after {
+    @apply absolute left-4 h-2 w-12 rounded-full bg-white/80;
+    content: '';
+}
+
+.visual-server::before {
+    @apply top-7;
+}
+
+.visual-server::after {
+    @apply top-14;
+}
+
+.visual-link {
+    @apply bg-brand-300 absolute top-28 left-28 h-1 w-20 rotate-[-16deg] rounded-full;
+}
+
+.visual-dot {
+    @apply bg-brand-500 absolute size-4 rounded-full;
+}
+
+.visual-dot.one {
+    @apply top-10 left-12;
+}
+
+.visual-dot.two {
+    @apply right-12 bottom-10;
+}
+
+.visual-cylinder {
+    @apply bg-brand-700 absolute top-12 left-16 h-14 w-28 rounded-[50%];
+}
+
+.visual-cylinder::after {
+    @apply bg-brand-700 absolute top-7 left-0 h-16 w-28 rounded-b-3xl;
+    content: '';
+}
+
+.visual-stack {
+    @apply absolute right-14 h-10 w-24 rounded-xl border border-slate-200 bg-white shadow-sm;
+}
+
+.visual-stack.one {
+    @apply top-14;
+}
+
+.visual-stack.two {
+    @apply top-28;
+}
+
+.visual-stack.three {
+    @apply top-40;
+}
+
+.visual-connector {
+    @apply bg-brand-300 absolute top-28 left-36 h-1 w-20 rounded-full;
+}
+
+.visual-user {
+    @apply border-brand-400 absolute top-12 left-16 size-24 rounded-full border-8;
+}
+
+.visual-user::after {
+    @apply border-brand-400 absolute top-20 -left-6 h-16 w-36 rounded-t-full border-8 border-b-0;
+    content: '';
+}
+
+.visual-shield {
+    @apply bg-brand-700 absolute top-16 right-16 size-16 rounded-2xl;
+    clip-path: polygon(50% 0, 88% 16%, 82% 76%, 50% 100%, 18% 76%, 12% 16%);
+}
+
+.visual-panel {
+    @apply absolute right-10 bottom-10 h-16 w-36 rounded-2xl border border-slate-200 bg-white shadow-sm;
+}
+
+.visual-panel::before {
+    @apply bg-brand-300 absolute top-5 left-5 h-3 w-24 rounded-full;
+    content: '';
+}
+
+.visual-panel::after {
+    @apply absolute bottom-5 left-5 h-3 w-16 rounded-full bg-slate-200;
+    content: '';
 }
 
 .visual-note {

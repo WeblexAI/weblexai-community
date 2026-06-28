@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Activity;
 
 /**
- * @property int $project_id
+ * @property int|null $project_id
  * @property string $log_name
  * @property string $description
  * @property string|null $subject_type

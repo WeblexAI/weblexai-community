@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -31,8 +32,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property string $target_lang_id
  * @property string $target_language
  * @property ModelStatus $is_active
- * @property string $created_at
- * @property string $updated_at
+ * @property Carbon $created_at
+ * @property Carbon|null $updated_at
  * @property int $created_by_id
  * @property User $creator
  * @property TranslationType $type
@@ -42,7 +43,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property bool $is_reviewed
  * @property bool $is_on
  * @property int $total_words
- * @property string|null $last_used_at
+ * @property Carbon|null $last_used_at
  */
 #[ObservedBy(TranslationObserver::class)]
 class Translation extends Model

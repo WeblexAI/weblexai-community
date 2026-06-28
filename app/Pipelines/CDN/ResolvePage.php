@@ -3,6 +3,7 @@
 namespace App\Pipelines\CDN;
 
 use App\DTOs\CDN\TranslationContext;
+use App\Models\Page;
 use App\Support\UrlHelper;
 use Closure;
 
@@ -16,8 +17,8 @@ class ResolvePage
 
         [$pageOrigin, $domain] = app(UrlHelper::class)->getDomainAndOrigin($pageUrl);
 
-        $page = $project->pages()->firstOrCreate(
-            ['domain' => $domain],
+        $page = Page::query()->firstOrCreate(
+            ['project_id' => $project->id, 'domain' => $domain],
             ['title' => $pageTitle, 'origin' => $pageOrigin],
         );
 

@@ -8,7 +8,7 @@ Update checks send no installation identifier or telemetry.
 
 ```dotenv
 RELEASE_FEED_URL=https://github.com/weblexai/weblexai-community/releases/latest/download/stable.json
-RELEASE_PUBLIC_KEY=base64-ed25519-public-key
+RELEASE_PUBLIC_KEY=zmQC1sHMkYYb01WwmEzFpbIYK/hCSra2hQBw+eVWr9M=
 UPDATE_CHECK_HOURS=24
 ```
 
@@ -72,7 +72,7 @@ openssl rand -hex 32
 Set the same value in `UPDATE_AGENT_SECRET`, configure `UPDATE_AGENT_URL=http://update-agent:8080`, set `UPDATE_DRIVER=docker`, and start:
 
 ```bash
-docker compose --profile updates up -d update-agent
+docker compose --profile updates up -d
 ```
 
 The agent has Docker socket access and must remain isolated on the internal network. It backs up state, pulls versioned images, runs the migration job once, replaces only the WeblexAI services, checks that the application is running, and restores the previous image version on failure where migrations remain compatible.

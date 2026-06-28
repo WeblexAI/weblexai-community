@@ -47,8 +47,6 @@ npm run typecheck
 
 Contributors retain copyright. Before a pull request can be merged, contributors must accept the applicable CLA in `docs/cla`. The CLA grants WeblexAI rights needed to distribute contributions in Community Edition and commercial offerings while preserving the contributor's ownership.
 
-The CLA text is a project template and should be reviewed by WeblexAI's legal counsel before accepting public contributions.
-
 ## Security
 
 Do not submit vulnerabilities through a public pull request. Follow [SECURITY.md](SECURITY.md).

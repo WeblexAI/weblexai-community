@@ -17,8 +17,8 @@ Remote error reporting is disabled by default. Enable one or both destinations i
 
 ```dotenv
 ERROR_REPORTING_ENABLED=true
-ERROR_REPORTING_WEBHOOK_URL=https://errors.example.com/weblexai
-ERROR_REPORTING_WEBHOOK_SECRET=replace-with-a-random-secret
+ERROR_REPORTING_WEBHOOK_URL=
+ERROR_REPORTING_WEBHOOK_SECRET=
 ERROR_REPORTING_TELEGRAM_BOT_TOKEN=
 ERROR_REPORTING_TELEGRAM_CHAT_ID=
 ```

@@ -13,14 +13,14 @@
     $errorFields = array_keys($errors->toArray());
     $steps = $isDocker
         ? [
-            ['id' => 'public', 'title' => 'Public access', 'description' => 'Set the browser-facing URL', 'image' => 'cloud-hosting-amico.svg'],
-            ['id' => 'admin', 'title' => 'Administrator', 'description' => 'Create the owner account', 'image' => 'control-panel-pana.svg'],
+            ['id' => 'public', 'title' => 'Public access', 'description' => 'Set the browser-facing URL'],
+            ['id' => 'admin', 'title' => 'Administrator', 'description' => 'Create the owner account'],
         ]
         : [
-            ['id' => 'readiness', 'title' => 'Readiness', 'description' => 'Verify server requirements', 'image' => 'app-installation-bro.svg'],
-            ['id' => 'public', 'title' => 'Public access', 'description' => 'Set the browser-facing URL', 'image' => 'cloud-hosting-amico.svg'],
-            ['id' => 'services', 'title' => 'Services', 'description' => 'Connect PostgreSQL and Redis', 'image' => 'cloud-hosting-amico.svg'],
-            ['id' => 'admin', 'title' => 'Administrator', 'description' => 'Create the owner account', 'image' => 'control-panel-pana.svg'],
+            ['id' => 'readiness', 'title' => 'Readiness', 'description' => 'Verify server requirements'],
+            ['id' => 'public', 'title' => 'Public access', 'description' => 'Set the browser-facing URL'],
+            ['id' => 'services', 'title' => 'Services', 'description' => 'Connect PostgreSQL and Redis'],
+            ['id' => 'admin', 'title' => 'Administrator', 'description' => 'Create the owner account'],
         ];
     $stepIds = array_column($steps, 'id');
     $stepIndexes = array_flip($stepIds);
@@ -123,7 +123,12 @@
                                 </section>
 
                                 <aside class="install-visual">
-                                    <img src="{{ asset('images/install/app-installation-bro.svg') }}" alt="Application installation illustration">
+                                    <div class="install-visual-graphic is-readiness" aria-hidden="true">
+                                        <span class="visual-orbit"></span>
+                                        <span class="visual-card visual-card-primary"></span>
+                                        <span class="visual-card visual-card-light"></span>
+                                        <span class="visual-pulse"></span>
+                                    </div>
                                     <div class="visual-note">
                                         <p class="font-semibold text-slate-950">Traditional install</p>
                                         <p>Resolve failed checks on the host before continuing.</p>
@@ -171,7 +176,13 @@
                             </section>
 
                             <aside class="install-visual">
-                                <img src="{{ asset('images/install/cloud-hosting-amico.svg') }}" alt="Cloud hosting illustration">
+                                <div class="install-visual-graphic is-public" aria-hidden="true">
+                                    <span class="visual-browser"></span>
+                                    <span class="visual-server"></span>
+                                    <span class="visual-link"></span>
+                                    <span class="visual-dot one"></span>
+                                    <span class="visual-dot two"></span>
+                                </div>
                                 <div class="visual-note">
                                     @if ($isDocker)
                                         <p class="font-semibold text-slate-950">Managed Docker services</p>
@@ -220,7 +231,13 @@
                                 </section>
 
                                 <aside class="install-visual">
-                                    <img src="{{ asset('images/install/cloud-hosting-amico.svg') }}" alt="Cloud services illustration">
+                                    <div class="install-visual-graphic is-services" aria-hidden="true">
+                                        <span class="visual-cylinder"></span>
+                                        <span class="visual-stack one"></span>
+                                        <span class="visual-stack two"></span>
+                                        <span class="visual-stack three"></span>
+                                        <span class="visual-connector"></span>
+                                    </div>
                                     <div class="visual-note">
                                         <p class="font-semibold text-slate-950">Private services</p>
                                         <p>Keep database and cache ports closed to the public internet.</p>
@@ -257,7 +274,11 @@
                             </section>
 
                             <aside class="install-visual">
-                                <img src="{{ asset('images/install/control-panel-pana.svg') }}" alt="Control panel illustration">
+                                <div class="install-visual-graphic is-admin" aria-hidden="true">
+                                    <span class="visual-user"></span>
+                                    <span class="visual-shield"></span>
+                                    <span class="visual-panel"></span>
+                                </div>
                                 <div class="visual-note">
                                     <p class="font-semibold text-slate-950">Ready to finish</p>
                                     <p>WeblexAI will write the environment file, run migrations, seed defaults, and sign you in.</p>
@@ -293,8 +314,6 @@
                     @else
                         <span class="is-disabled">Docs</span>
                     @endif
-                    <span aria-hidden="true">/</span>
-                    <span>Illustrations by <a href="https://storyset.com" target="_blank" rel="noopener noreferrer">Storyset</a></span>
                 </footer>
             </div>
         </section>

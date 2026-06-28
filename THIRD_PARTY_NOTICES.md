@@ -22,16 +22,6 @@ npm ls --all --json > npm-dependencies.json
 
 The browser SDK and frontend assets are built from `resources/` and emitted into `public/wlai` and `public/build`.
 
-## Storyset Illustrations
-
-The installer includes SVG illustrations from Storyset by Freepik:
-
-- `public/images/install/app-installation-bro.svg`
-- `public/images/install/cloud-hosting-amico.svg`
-- `public/images/install/control-panel-pana.svg`
-
-They are used with visible attribution in the installer under the Storyset/Freepik terms.
-
 ## Simple Icons
 
 The installer footer includes the GitHub icon from Simple Icons:

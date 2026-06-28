@@ -28,6 +28,10 @@ function signedRelease(array $overrides = []): array
 }
 
 it('accepts authentic release metadata and rejects tampering', function () {
+    if (! function_exists('sodium_crypto_sign_keypair')) {
+        $this->markTestSkipped('The sodium extension is required for release signature verification.');
+    }
+
     $keypair = sodium_crypto_sign_keypair();
     config(['community.release_public_key' => base64_encode(sodium_crypto_sign_publickey($keypair))]);
     $release = signedRelease();

@@ -179,6 +179,9 @@ class Project extends Model
 
     public function indexPage(): ?Page
     {
-        return $this->pages()->latest()->first(['id', 'domain']);
+        return Page::query()
+            ->where('project_id', $this->id)
+            ->latest()
+            ->first(['id', 'domain']);
     }
 }

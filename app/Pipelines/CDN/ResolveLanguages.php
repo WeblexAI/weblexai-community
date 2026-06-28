@@ -3,6 +3,7 @@
 namespace App\Pipelines\CDN;
 
 use App\DTOs\CDN\TranslationContext;
+use App\Pivots\ProjectLanguagePivot;
 use Closure;
 
 class ResolveLanguages
@@ -26,16 +27,19 @@ class ResolveLanguages
             ->where('languages.id', '!=', $project->original_language_id)
             ->first();
 
+        $pivot = $context->targetLanguage?->pivot;
+
         if (! $context->targetLanguage
-            || ! $context->targetLanguage->pivot->is_public
-            || $context->targetLanguage->pivot->is_disabled) {
+            || ! $pivot instanceof ProjectLanguagePivot
+            || ! $pivot->is_public
+            || $pivot->is_disabled) {
             $context->reset();
             $context->stoppageClass = self::class;
 
             return $context;
         }
 
-        $context->targetLanguagePivot = $context->targetLanguage->pivot;
+        $context->targetLanguagePivot = $pivot;
 
         return $next($context);
     }

@@ -3,6 +3,10 @@ set -eu
 
 install_dir="${WEBLEX_INSTALL_DIR:-/opt/weblexai}"
 download_base="${WEBLEX_DOWNLOAD_BASE:-https://github.com/weblexai/weblexai-community/releases/latest/download}"
+github_url="${WEBLEX_GITHUB_URL:-https://github.com/weblexai/weblexai-community}"
+docs_url="${WEBLEX_DOCS_URL:-https://github.com/weblexai/weblexai-community/tree/main/docs}"
+release_feed_url="${WEBLEX_RELEASE_FEED_URL:-https://github.com/weblexai/weblexai-community/releases/latest/download/stable.json}"
+release_public_key="${WEBLEX_RELEASE_PUBLIC_KEY:-zmQC1sHMkYYb01WwmEzFpbIYK/hCSra2hQBw+eVWr9M=}"
 port="${WEBLEX_PORT:-8787}"
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -33,6 +37,46 @@ random_hex() {
     fi
 
     od -An -N "$bytes" -tx1 /dev/urandom | tr -d ' \n'
+}
+
+ensure_env_value() {
+    key="$1"
+    value="$2"
+
+    if ! grep -q "^${key}=" "$install_dir/.env"; then
+        printf '%s=%s\n' "$key" "$value" >> "$install_dir/.env"
+    fi
+}
+
+set_env_value() {
+    key="$1"
+    value="$2"
+    tmp_file="${install_dir}/.env.tmp"
+
+    awk -v key="$key" -v value="$value" '
+        BEGIN { replaced = 0 }
+        $0 ~ "^" key "=" {
+            print key "=" value
+            replaced = 1
+            next
+        }
+        { print }
+        END {
+            if (! replaced) {
+                print key "=" value
+            }
+        }
+    ' "$install_dir/.env" > "$tmp_file"
+    mv "$tmp_file" "$install_dir/.env"
+}
+
+ensure_env_required() {
+    key="$1"
+    value="$2"
+
+    if ! grep -Eq "^${key}=.+" "$install_dir/.env"; then
+        set_env_value "$key" "$value"
+    fi
 }
 
 umask 077
@@ -66,6 +110,8 @@ APP_URL=http://localhost:${port}
 APP_INSTALLED=false
 APP_VERSION=stable
 APP_PORT=${port}
+WEBLEX_GITHUB_URL=${github_url}
+WEBLEX_DOCS_URL=${docs_url}
 APP_LOCALE=en
 APP_TIMEZONE=UTC
 
@@ -94,15 +140,28 @@ ERROR_REPORTING_WEBHOOK_SECRET=
 ERROR_REPORTING_TELEGRAM_BOT_TOKEN=
 ERROR_REPORTING_TELEGRAM_CHAT_ID=
 
+RELEASE_FEED_URL=${release_feed_url}
+RELEASE_PUBLIC_KEY=${release_public_key}
+UPDATE_CHECK_HOURS=24
 UPDATE_DRIVER=docker
 UPDATE_AGENT_URL=http://update-agent:8080
 UPDATE_AGENT_SECRET=$(random_hex 32)
 EOF
 fi
 
+ensure_env_required WEBLEX_GITHUB_URL "$github_url"
+ensure_env_required WEBLEX_DOCS_URL "$docs_url"
+ensure_env_required RELEASE_FEED_URL "$release_feed_url"
+ensure_env_required RELEASE_PUBLIC_KEY "$release_public_key"
+ensure_env_value UPDATE_CHECK_HOURS "24"
+ensure_env_value UPDATE_DRIVER "docker"
+ensure_env_required UPDATE_AGENT_URL "http://update-agent:8080"
+ensure_env_required UPDATE_AGENT_SECRET "$(random_hex 32)"
+chmod 0600 "$install_dir/.env"
+
 cd "$install_dir"
-docker compose pull app worker scheduler postgres redis
-docker compose up -d
+docker compose --profile updates pull app worker scheduler postgres redis update-agent
+docker compose --profile updates up -d
 
 attempt=0
 until curl -fsS "http://127.0.0.1:${port}/up" >/dev/null 2>&1; do

@@ -23,10 +23,8 @@ class ExcludedBlockController extends Controller
     public function index(Project $project): Response
     {
         $excludedBlock = QueryBuilder::for(ExcludedBlock::class)
-            ->where('project_id', $project->id)
             ->allowedFilters([
                 AllowedFilter::callback('q', function (Builder $query, $input) {
-                    // in case q contains "," , spatie query builder treats it as array
                     if (is_array($input)) {
                         $input = implode(',', $input);
                     }
@@ -34,6 +32,7 @@ class ExcludedBlockController extends Controller
                         ->orWhere('description', 'LIKE', "%$input%");
                 }),
             ])
+            ->where('project_id', $project->id)
             ->paginate(10)->appends(request()->query());
 
         return Inertia::render('Project/ExcludedBlocks', [

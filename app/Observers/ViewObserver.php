@@ -31,8 +31,8 @@ class ViewObserver
         $view->ip_address = $ip;
         $view->country = $location->iso_code;
         $view->city = $location->city;
-        $view->lat = $location->lat;
-        $view->lon = $location->lon;
+        $view->lat = $location->lat === null ? null : (string) $location->lat;
+        $view->lon = $location->lon === null ? null : (string) $location->lon;
 
         $view->target_lang_id = $targetLanguage?->id;
         $view->browser_lang_id = $browserLanguage?->id;

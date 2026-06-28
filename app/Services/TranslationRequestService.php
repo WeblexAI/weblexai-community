@@ -156,7 +156,7 @@ class TranslationRequestService
                         'color' => $req->targetLanguage->color,
                         'percentage' => $percentage,
                     ];
-                })->sortBy('language_name')->values(),
+                })->sortBy('language_name')->values()->all(),
             ];
         });
 
