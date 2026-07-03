@@ -32,13 +32,13 @@ export const badgeVariants = cva(
                 default:
                     'text-green-600 bg-green-50 border-green-200',
                 secondary:
-                    'text-secondary bg-blue-50 border-blue-200',
+                    'text-secondary bg-slate-50 border-slate-200',
                 muted:
                     'text-gray-600 bg-gray-50 border-gray-200',
                 destructive:
                     'text-red-600 bg-red-50 border-red-200',
                 primary:
-                    'text-primary bg-blue-50 border-blue-200',
+                    'text-primary bg-primary/5 border-primary/20',
                 outline:
                     'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
             },

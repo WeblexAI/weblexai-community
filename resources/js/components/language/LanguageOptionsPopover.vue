@@ -105,7 +105,7 @@ function toggleAutomatics(newValue: boolean) {
                 <div class="px-4 py-3 transition-colors hover:bg-gray-50">
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex min-w-0 flex-1 items-center gap-3">
-                            <div class="rounded-md bg-blue-50 p-1.5 text-blue-600">
+                            <div class="rounded-md bg-slate-100 p-1.5 text-slate-600">
                                 <component :is="is_public ? Unlock : Lock" class="h-4 w-4" />
                             </div>
                             <div class="min-w-0 flex-1">

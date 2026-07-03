@@ -125,7 +125,7 @@ function selectRule(rule: GlossaryRuleE) {
                             "
                         >
                             <div class="flex items-center justify-between">
-                                <div class="rounded-full bg-blue-100 p-2 text-blue-600">
+                                <div class="rounded-full bg-slate-100 p-2 text-slate-600">
                                     <ArrowRightLeft class="h-5 w-5" />
                                 </div>
                                 <div v-if="form.rule === GlossaryRuleE.ALWAYS_TRANSLATED" class="text-primary">
@@ -189,8 +189,8 @@ function selectRule(rule: GlossaryRuleE) {
                     <InputError :message="form.errors.languages" />
                 </div>
 
-                <div class="flex items-start gap-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-xs text-blue-800">
-                    <Info class="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                <div class="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
+                    <Info class="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
                     <span class="mt-0.5"
                         >Existing translations matching this rule will be removed and automatically regenerated during the next live page translation, triggered by a visit to the page.</span
                     >

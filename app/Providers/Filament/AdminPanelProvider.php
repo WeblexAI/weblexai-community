@@ -55,7 +55,7 @@ class AdminPanelProvider extends PanelProvider
             ->profile()
             ->globalSearch(false)
             ->colors([
-                'primary' => Color::hex('#2f5d7c'),
+                'primary' => Color::hex('#5b2c62'),
                 'success' => Color::hex('#287056'),
                 'warning' => Color::hex('#7a6a28'),
                 'danger' => Color::hex('#b42318'),

@@ -152,8 +152,8 @@ async function copy(value: string, label: string) {
                         <pre class="overflow-x-auto rounded-xl bg-slate-950 p-6 text-sm leading-6 text-slate-100"><code>{{ installationCode }}</code></pre>
                         <Button class="absolute top-4 right-4" @click="copy(installationCode, 'code')"><Clipboard class="mr-2 h-4 w-4" />{{ copied === 'code' ? 'Copied' : 'Copy code' }}</Button>
                     </div>
-                    <Alert class="border-blue-200 bg-blue-50">
-                        <Lightbulb class="h-5 w-5 text-blue-600" />
+                    <Alert class="border-slate-200 bg-slate-50">
+                        <Lightbulb class="h-5 w-5 text-slate-600" />
                         <AlertDescription>Add the snippet to your main layout so it loads consistently across the website. The request origin must exactly match one accepted origin.</AlertDescription>
                     </Alert>
                 </CardContent>

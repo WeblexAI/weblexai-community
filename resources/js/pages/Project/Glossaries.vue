@@ -173,7 +173,7 @@ onMounted(() => {
                                     <TableCell>
                                         <div class="flex flex-col gap-1.5">
                                             <div v-if="glossary.rule === GlossaryRuleE.ALWAYS_TRANSLATED" class="flex items-center gap-2 text-sm">
-                                                <Badge variant="outline" class="border-blue-200 bg-blue-50 font-normal text-blue-700"> Always Translate </Badge>
+                                                <Badge variant="outline" class="border-slate-200 bg-slate-50 font-normal text-slate-700"> Always Translate </Badge>
                                                 <span class="font-medium text-gray-900">{{ glossary.text }}</span>
                                                 <ArrowRight class="h-3.5 w-3.5 text-gray-400" />
                                                 <span class="font-medium text-gray-900">{{ glossary.translated }}</span>

@@ -140,8 +140,8 @@ function submitForm() {
                 </CardContent>
             </Card>
 
-            <Alert v-else-if="credential" class="border-blue-200 bg-blue-50">
-                <Zap class="h-5 w-5 text-blue-600" />
+            <Alert v-else-if="credential" class="border-primary/20 bg-primary/5">
+                <Zap class="h-5 w-5 text-primary" />
                 <AlertTitle>Neural machine translation</AlertTitle>
                 <AlertDescription
                     >This provider translates directly and does not use tone, audience, or website context. Use glossary rules for brand terms and phrases that must stay consistent.</AlertDescription

@@ -6,15 +6,15 @@
 
 :root {
     --weblex-admin-ink: #07111f;
-    --weblex-admin-panel: #08111f;
-    --weblex-admin-panel-soft: #0e1b2c;
-    --weblex-admin-panel-hover: #17263b;
-    --weblex-admin-line: #23364f;
+    --weblex-admin-panel: #0d0b14;
+    --weblex-admin-panel-soft: #151020;
+    --weblex-admin-panel-hover: #241a31;
+    --weblex-admin-line: #332747;
     --weblex-admin-page: #f5f7fa;
     --weblex-admin-card: #ffffff;
-    --weblex-admin-accent: #2f5d7c;
-    --weblex-admin-accent-light: #4f7fa1;
-    --weblex-admin-accent-dark: #1d4058;
+    --weblex-admin-accent: #5b2c62;
+    --weblex-admin-accent-light: #7a4a80;
+    --weblex-admin-accent-dark: #3e1d46;
     --weblex-admin-success: #287056;
     --weblex-admin-warning: #7a6a28;
     --weblex-admin-danger: #b42318;
@@ -63,6 +63,10 @@
     backdrop-filter: blur(12px);
 }
 
+.fi-topbar {
+    position: relative;
+}
+
 .dark .fi-topbar,
 .dark .fi-sidebar-header {
     background: rgb(255 255 255 / 0.96);
@@ -105,35 +109,50 @@
 
 .fi-sidebar-group-label,
 .fi-sidebar-item-label {
-    color: rgb(226 232 240 / 0.72);
+    color: rgb(226 232 240 / 0.76);
 }
 
 .fi-sidebar-item-icon {
-    color: rgb(226 232 240 / 0.44);
+    color: rgb(226 232 240 / 0.5);
 }
 
-.fi-sidebar-item.fi-active > .fi-sidebar-item-button {
-    border: 1px solid rgb(79 127 161 / 0.42);
-    background: linear-gradient(135deg, rgb(47 93 124 / 0.42), rgb(23 38 59 / 0.92));
-    color: white;
+.fi-sidebar .fi-sidebar-item-button {
+    color: rgb(226 232 240 / 0.78) !important;
+}
+
+.fi-sidebar .fi-sidebar-item-button:hover,
+.fi-sidebar .fi-sidebar-item-button:focus-visible {
+    background: var(--weblex-admin-panel-hover) !important;
+    color: white !important;
+}
+
+.fi-sidebar .fi-sidebar-item-button:hover .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-button:hover .fi-sidebar-item-icon,
+.fi-sidebar .fi-sidebar-item-button:focus-visible .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-button:focus-visible .fi-sidebar-item-icon {
+    color: white !important;
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-button,
+.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-button,
+.fi-sidebar .fi-sidebar-item-button.fi-active,
+.fi-sidebar .fi-sidebar-item-button[aria-current='page'] {
+    border: 1px solid rgb(122 74 128 / 0.42);
+    background: linear-gradient(135deg, rgb(91 44 98 / 0.56), rgb(25 16 36 / 0.96)) !important;
+    color: white !important;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
 }
 
-.fi-sidebar-item.fi-active .fi-sidebar-item-label {
-    color: white;
+.fi-sidebar-item.fi-active .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-button.fi-active .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-button[aria-current='page'] .fi-sidebar-item-label {
+    color: white !important;
 }
 
-.fi-sidebar-item.fi-active .fi-sidebar-item-icon {
-    color: rgb(147 197 253);
-}
-
-.fi-sidebar-item-button:hover {
-    background: var(--weblex-admin-panel-hover);
-}
-
-.fi-sidebar-item-button:hover .fi-sidebar-item-label,
-.fi-sidebar-item-button:hover .fi-sidebar-item-icon {
-    color: white;
+.fi-sidebar-item.fi-active .fi-sidebar-item-icon,
+.fi-sidebar .fi-sidebar-item-button.fi-active .fi-sidebar-item-icon,
+.fi-sidebar .fi-sidebar-item-button[aria-current='page'] .fi-sidebar-item-icon {
+    color: rgb(221 214 254) !important;
 }
 
 .fi-sidebar-group-button:hover {
@@ -143,7 +162,7 @@
 .fi-btn-color-primary:not(.fi-outlined) {
     background: linear-gradient(135deg, var(--weblex-admin-accent-light), var(--weblex-admin-accent-dark));
     color: white;
-    box-shadow: 0 10px 24px rgb(29 64 88 / 0.2);
+    box-shadow: 0 10px 24px rgb(62 29 70 / 0.2);
 }
 
 .fi-btn-color-primary:not(.fi-outlined):hover {
@@ -191,8 +210,11 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    margin-inline-start: auto;
-    margin-inline-end: 0.75rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    transform: translate(-50%, -50%);
 }
 
 .weblex-admin-resource-links a,
@@ -220,8 +242,8 @@
 
 .weblex-admin-resource-links a:hover,
 .weblex-admin-login-footer a:hover {
-    border-color: rgb(47 93 124 / 0.2);
-    background: rgb(47 93 124 / 0.08);
+    border-color: rgb(91 44 98 / 0.2);
+    background: rgb(91 44 98 / 0.08);
     color: var(--weblex-admin-accent-dark);
 }
 
@@ -299,9 +321,9 @@
 }
 
 .fi-simple-main .fi-btn-color-primary {
-    --c-400: 79 127 161;
-    --c-500: 47 93 124;
-    --c-600: 29 64 88;
+    --c-400: 122 74 128;
+    --c-500: 91 44 98;
+    --c-600: 62 29 70;
 }
 
 .fi-simple-main .fi-btn-color-primary:not(.fi-outlined) {

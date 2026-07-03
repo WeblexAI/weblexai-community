@@ -50,7 +50,7 @@ async function handleAction() {
                 <Trash class="text-destructive" :size="27" />
             </div>
 
-            <div v-else class="mx-auto rounded-full bg-blue-100 p-3">
+            <div v-else class="mx-auto rounded-full bg-slate-100 p-3">
                 <Info class="text-secondary" :size="27" />
             </div>
 

@@ -73,7 +73,7 @@ const goBack = () => {
         <!-- Background decoration -->
         <div class="pointer-events-none fixed inset-0 overflow-hidden">
             <div class="absolute -top-96 -left-96 flex h-[800px] w-[800px] rounded-full bg-primary/5 opacity-50 blur-3xl"></div>
-            <div class="absolute -right-96 -bottom-96 flex h-[800px] w-[800px] rounded-full bg-blue-500/5 opacity-50 blur-3xl"></div>
+            <div class="absolute -right-96 -bottom-96 flex h-[800px] w-[800px] rounded-full bg-slate-500/5 opacity-50 blur-3xl"></div>
         </div>
 
         <div class="relative w-full max-w-lg">

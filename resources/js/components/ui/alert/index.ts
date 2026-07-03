@@ -15,7 +15,7 @@ export const alertVariants = cva(
                 success:
                     'bg-green-100 text-green-700 border-green-300 [&>svg]:text-green-700 *:data-[slot=alert-description]:text-green-700/90',
                 info:
-                    'bg-blue-100 text-blue-700 border-blue-300 [&>svg]:text-blue-700 *:data-[slot=alert-description]:text-blue-700/90',
+                    'bg-slate-100 text-slate-700 border-slate-300 [&>svg]:text-slate-700 *:data-[slot=alert-description]:text-slate-700/90',
             },
         },
         defaultVariants: {

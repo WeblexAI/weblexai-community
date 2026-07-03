@@ -167,7 +167,7 @@ function bulkDelete() {
                                 <TableCell v-if="canManageContent" class="text-right">
                                     <div class="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                                         <EditExcludedBlockDialog :block="block">
-                                            <Button variant="ghost" size="icon" class="h-8 w-8 text-gray-500 hover:bg-blue-50 hover:text-blue-600">
+                                            <Button variant="ghost" size="icon" class="h-8 w-8 text-gray-500 hover:bg-slate-100 hover:text-slate-700">
                                                 <Pencil class="h-4 w-4" />
                                             </Button>
                                         </EditExcludedBlockDialog>
