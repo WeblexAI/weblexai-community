@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Languages\Schemas;
 
+use App\Enums\ModelStatus;
 use App\Filament\Resources\Languages\LanguageResource;
 use App\Filament\Resources\Projects\ProjectResource;
 use App\Filament\Resources\Users\UserResource;
@@ -46,7 +47,9 @@ class LanguageInfolist
                         ColorEntry::make('color'),
                         TextEntry::make('is_active')
                             ->label('Status')
-                            ->badge(),
+                            ->formatStateUsing(fn (ModelStatus $state): string => $state->getLabel())
+                            ->icon(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'heroicon-m-check-circle' : 'heroicon-m-pause-circle')
+                            ->color(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'success' : 'gray'),
                         TextEntry::make('created_at')
                             ->dateTime(),
                     ])->columns(2),
@@ -56,23 +59,27 @@ class LanguageInfolist
                         TextEntry::make('default_projects_count')
                             ->label('Default Language For')
                             ->state(fn (Language $record): int => Project::query()->where('original_language_id', $record->id)->count())
-                            ->badge(),
+                            ->formatStateUsing(fn (int $state): string => number_format($state))
+                            ->weight('semibold'),
                         TextEntry::make('attached_projects_count')
                             ->label('Attached To Projects')
                             ->state(fn (Language $record): int => Project::query()
                                 ->whereHas('languages', fn ($query) => $query->whereKey($record->id))
                                 ->count())
-                            ->badge(),
+                            ->formatStateUsing(fn (int $state): string => number_format($state))
+                            ->weight('semibold'),
                         TextEntry::make('target_translations_count')
                             ->label('Target Translations')
                             ->state(fn (Language $record): int => $record->translations()->count())
-                            ->badge(),
+                            ->formatStateUsing(fn (int $state): string => number_format($state))
+                            ->weight('semibold'),
                         TextEntry::make('glossary_count')
                             ->label('Glossaries')
                             ->state(fn (Language $record): int => Glossary::query()
                                 ->whereHas('languages', fn ($query) => $query->whereKey($record->id))
                                 ->count())
-                            ->badge(),
+                            ->formatStateUsing(fn (int $state): string => number_format($state))
+                            ->weight('semibold'),
                     ])->columns(4),
 
                 Section::make('Projects Using This As Default Language')
@@ -100,11 +107,15 @@ class LanguageInfolist
                                 TextEntry::make('user.name')
                                     ->url(fn ($record): ?string => $record->user ? UserResource::getUrl('view', ['record' => $record->user]) : null),
                                 TextEntry::make('languages_count')
-                                    ->badge(),
+                                    ->formatStateUsing(fn (int $state): string => number_format($state))
+                                    ->weight('semibold'),
                                 TextEntry::make('translations_count')
-                                    ->badge(),
+                                    ->formatStateUsing(fn (int $state): string => number_format($state))
+                                    ->weight('semibold'),
                                 TextEntry::make('is_active')
-                                    ->badge(),
+                                    ->formatStateUsing(fn (ModelStatus $state): string => $state->getLabel())
+                                    ->icon(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'heroicon-m-check-circle' : 'heroicon-m-pause-circle')
+                                    ->color(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'success' : 'gray'),
                             ]),
                     ])
                     ->columnSpanFull(),
@@ -136,9 +147,12 @@ class LanguageInfolist
                                 TextEntry::make('originalLanguage.name')
                                     ->url(fn ($record): ?string => $record->originalLanguage ? LanguageResource::getUrl('view', ['record' => $record->originalLanguage]) : null),
                                 TextEntry::make('translations_count')
-                                    ->badge(),
+                                    ->formatStateUsing(fn (int $state): string => number_format($state))
+                                    ->weight('semibold'),
                                 TextEntry::make('is_active')
-                                    ->badge(),
+                                    ->formatStateUsing(fn (ModelStatus $state): string => $state->getLabel())
+                                    ->icon(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'heroicon-m-check-circle' : 'heroicon-m-pause-circle')
+                                    ->color(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'success' : 'gray'),
                             ]),
                     ])
                     ->columnSpanFull(),

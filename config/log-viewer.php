@@ -1,7 +1,6 @@
 <?php
 
 use Opcodes\LogViewer\Http\Middleware\AuthorizeLogViewer;
-use Opcodes\LogViewer\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 return [
     'enabled' => env('LOG_VIEWER_ENABLED', true),
@@ -14,12 +13,12 @@ return [
         AuthorizeLogViewer::class,
     ],
     'api_middleware' => [
-        EnsureFrontendRequestsAreStateful::class,
+        'web',
         AuthorizeLogViewer::class,
     ],
     'include_files' => [
-        '*.log',
-        '**/*.log',
+        'laravel-*.log',
+        '**/laravel-*.log',
     ],
     'hide_unknown_files' => true,
     'cache_driver' => env('LOG_VIEWER_CACHE_DRIVER', env('CACHE_STORE', 'file')),

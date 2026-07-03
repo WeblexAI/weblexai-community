@@ -115,6 +115,12 @@ WEBLEX_DOCS_URL=${docs_url}
 APP_LOCALE=en
 APP_TIMEZONE=UTC
 
+LOG_CHANNEL=stack
+LOG_STACK=daily
+LOG_LEVEL=info
+LOG_DAILY_DAYS=30
+LOG_VIEWER_ENABLED=true
+
 DB_CONNECTION=pgsql
 DB_HOST=postgres
 DB_PORT=5432
@@ -133,6 +139,15 @@ QUEUE_CONNECTION=sync
 SESSION_DRIVER=file
 FILESYSTEM_DISK=public
 MEDIA_DISK=public
+
+BACKUP_NAME="\${APP_NAME}"
+BACKUP_DISK=backups
+BACKUP_PATH=/backups
+BACKUP_ARCHIVE_PASSWORD=
+BACKUP_MAX_AGE_DAYS=7
+BACKUP_MAX_STORAGE_MB=5120
+BACKUP_NOTIFICATIONS_ENABLED=false
+BACKUP_NOTIFICATION_EMAIL=noreply@example.com
 
 ERROR_REPORTING_ENABLED=false
 ERROR_REPORTING_WEBHOOK_URL=
@@ -153,6 +168,21 @@ ensure_env_required WEBLEX_GITHUB_URL "$github_url"
 ensure_env_required WEBLEX_DOCS_URL "$docs_url"
 ensure_env_required RELEASE_FEED_URL "$release_feed_url"
 ensure_env_required RELEASE_PUBLIC_KEY "$release_public_key"
+ensure_env_value LOG_CHANNEL "stack"
+ensure_env_value LOG_STACK "daily"
+ensure_env_value LOG_LEVEL "info"
+ensure_env_value LOG_DAILY_DAYS "30"
+ensure_env_value LOG_VIEWER_ENABLED "true"
+ensure_env_value BACKUP_NAME "\"\${APP_NAME}\""
+if ! grep -q "^BACKUP_DISK=" "$install_dir/.env" || grep -q "^BACKUP_DISK=local$" "$install_dir/.env"; then
+    set_env_value BACKUP_DISK "backups"
+fi
+ensure_env_value BACKUP_PATH "/backups"
+ensure_env_value BACKUP_ARCHIVE_PASSWORD ""
+ensure_env_value BACKUP_MAX_AGE_DAYS "7"
+ensure_env_value BACKUP_MAX_STORAGE_MB "5120"
+ensure_env_value BACKUP_NOTIFICATIONS_ENABLED "false"
+ensure_env_value BACKUP_NOTIFICATION_EMAIL "noreply@example.com"
 ensure_env_value UPDATE_CHECK_HOURS "24"
 ensure_env_value UPDATE_DRIVER "docker"
 ensure_env_required UPDATE_AGENT_URL "http://update-agent:8080"

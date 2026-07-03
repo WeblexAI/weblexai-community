@@ -179,7 +179,7 @@ onMounted(() => {
                                                 <span class="font-medium text-gray-900">{{ glossary.translated }}</span>
                                             </div>
                                             <div v-else class="flex items-center gap-2 text-sm">
-                                                <Badge variant="outline" class="border-orange-200 bg-orange-50 font-normal text-orange-700"> Never Translate </Badge>
+                                                <Badge variant="outline" class="border-slate-200 bg-slate-50 font-normal text-slate-700"> Never Translate </Badge>
                                                 <span class="font-medium text-gray-900">{{ glossary.text }}</span>
                                             </div>
                                         </div>

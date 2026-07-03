@@ -14,8 +14,8 @@ const page = usePage();
 const props = defineProps<{ apiKey: string | null }>();
 const copied = ref<string | null>(null);
 
-const installationCode = `<link rel="stylesheet" href="${page.props.cdn_url}/wlai/weblexai.css">
-<script src="${page.props.cdn_url}/wlai/weblexai.min.js"><\/script>
+const installationCode = `<link rel="stylesheet" href="${page.props.asset_url}/wlai/weblexai.css">
+<script src="${page.props.asset_url}/wlai/weblexai.min.js"><\/script>
 <script>
   WeblexAI.init('${props.apiKey ?? 'YOUR_PROJECT_API_KEY'}');
 <\/script>`;

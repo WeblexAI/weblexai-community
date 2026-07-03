@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -26,11 +25,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if ($request->user()->hasRole(UserRole::ADMIN->value)) {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return back()->with('error', 'Administrators sign in through /admin.');
+            return redirect()->intended('/admin');
         }
 
         return redirect()->intended(route('overview', absolute: false));
@@ -38,7 +33,7 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        auth()->guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

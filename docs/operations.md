@@ -5,11 +5,31 @@
 - `/up` is the process liveness endpoint.
 - Application logs are in `storage/logs`.
 - Administrators can open **System > Application logs** in a new tab from `/admin`.
+- Administrators can open **System > Health** to review database, cache, Redis, disk, environment, debug mode, and backup checks.
 - Docker logs: `docker compose logs -f app worker scheduler`.
 - Queue status: `php artisan horizon:status`.
 - Scheduler: `php artisan schedule:list`.
 
 The application log viewer is read-only; log deletion is disabled.
+
+The backup health check reports a failure until the first backup exists.
+
+## Dashboard Backups
+
+Administrators can open **System > Backups** in `/admin` to create, download, and delete backup archives. Backups include PostgreSQL, local storage, and the live `.env` file.
+
+Useful environment values:
+
+```dotenv
+BACKUP_NAME="${APP_NAME}"
+BACKUP_DISK=backups
+BACKUP_PATH=/backups
+BACKUP_ARCHIVE_PASSWORD=
+BACKUP_MAX_AGE_DAYS=7
+BACKUP_MAX_STORAGE_MB=5120
+```
+
+Set `BACKUP_ARCHIVE_PASSWORD` when backup archives may leave the server. For Docker installs, the application image includes the PostgreSQL client required by `pg_dump`.
 
 ## Optional error reporting
 

@@ -2,3 +2,398 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+@source '../../../../vendor/awcodes/filament-quick-create/resources/**/*.blade.php';
+
+:root {
+    --weblex-admin-ink: #07111f;
+    --weblex-admin-panel: #08111f;
+    --weblex-admin-panel-soft: #0e1b2c;
+    --weblex-admin-panel-hover: #17263b;
+    --weblex-admin-line: #23364f;
+    --weblex-admin-page: #f5f7fa;
+    --weblex-admin-card: #ffffff;
+    --weblex-admin-accent: #2f5d7c;
+    --weblex-admin-accent-light: #4f7fa1;
+    --weblex-admin-accent-dark: #1d4058;
+    --weblex-admin-success: #287056;
+    --weblex-admin-warning: #7a6a28;
+    --weblex-admin-danger: #b42318;
+    --weblex-admin-muted: #64748b;
+}
+
+.weblex-admin-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: rgb(15 23 42);
+    font-size: 0.96rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.weblex-admin-brand img {
+    width: 2.1rem;
+    height: 2.1rem;
+    object-fit: contain;
+}
+
+.dark .weblex-admin-brand {
+    color: white;
+}
+
+.fi-body {
+    background: var(--weblex-admin-page);
+    color: var(--weblex-admin-ink);
+}
+
+.dark .fi-body,
+.dark .fi-main,
+.dark .fi-page,
+.dark .fi-section,
+.dark .fi-ta,
+.dark .fi-fo-section {
+    background: var(--weblex-admin-page);
+    color: var(--weblex-admin-ink);
+}
+
+.fi-topbar,
+.fi-sidebar-header {
+    border-bottom: 1px solid rgb(33 48 71 / 0.1);
+    background: rgb(255 255 255 / 0.96);
+    backdrop-filter: blur(12px);
+}
+
+.dark .fi-topbar,
+.dark .fi-sidebar-header {
+    background: rgb(255 255 255 / 0.96);
+}
+
+.fi-sidebar {
+    border-inline-end-color: rgb(33 48 71 / 0.85);
+    background: linear-gradient(180deg, var(--weblex-admin-panel), var(--weblex-admin-panel-soft));
+    scrollbar-color: rgb(148 163 184 / 0.5) transparent;
+    scrollbar-width: thin;
+}
+
+.fi-sidebar::-webkit-scrollbar,
+.fi-sidebar-nav::-webkit-scrollbar,
+.fi-sidebar-nav-groups::-webkit-scrollbar {
+    width: 0.35rem;
+}
+
+.fi-sidebar::-webkit-scrollbar-track,
+.fi-sidebar-nav::-webkit-scrollbar-track,
+.fi-sidebar-nav-groups::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.fi-sidebar::-webkit-scrollbar-thumb,
+.fi-sidebar-nav::-webkit-scrollbar-thumb,
+.fi-sidebar-nav-groups::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgb(148 163 184 / 0.46);
+}
+
+.fi-sidebar .fi-sidebar-header {
+    border-bottom-color: rgb(255 255 255 / 0.08);
+    background: transparent;
+}
+
+.fi-sidebar .weblex-admin-brand {
+    color: white;
+}
+
+.fi-sidebar-group-label,
+.fi-sidebar-item-label {
+    color: rgb(226 232 240 / 0.72);
+}
+
+.fi-sidebar-item-icon {
+    color: rgb(226 232 240 / 0.44);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-button {
+    border: 1px solid rgb(79 127 161 / 0.42);
+    background: linear-gradient(135deg, rgb(47 93 124 / 0.42), rgb(23 38 59 / 0.92));
+    color: white;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: white;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: rgb(147 197 253);
+}
+
+.fi-sidebar-item-button:hover {
+    background: var(--weblex-admin-panel-hover);
+}
+
+.fi-sidebar-item-button:hover .fi-sidebar-item-label,
+.fi-sidebar-item-button:hover .fi-sidebar-item-icon {
+    color: white;
+}
+
+.fi-sidebar-group-button:hover {
+    color: white;
+}
+
+.fi-btn-color-primary:not(.fi-outlined) {
+    background: linear-gradient(135deg, var(--weblex-admin-accent-light), var(--weblex-admin-accent-dark));
+    color: white;
+    box-shadow: 0 10px 24px rgb(29 64 88 / 0.2);
+}
+
+.fi-btn-color-primary:not(.fi-outlined):hover {
+    filter: saturate(1.05) brightness(0.96);
+    color: white;
+}
+
+.fi-tabs-item.fi-active,
+.fi-breadcrumbs-item-label {
+    color: var(--weblex-admin-accent-dark);
+}
+
+.fi-section,
+.fi-ta,
+.fi-fo-section {
+    border-color: rgb(33 48 71 / 0.1);
+    background: var(--weblex-admin-card);
+    box-shadow: 0 1px 2px rgb(11 19 32 / 0.04);
+}
+
+.fi-main {
+    background: var(--weblex-admin-page);
+}
+
+.fi-badge {
+    width: max-content;
+    border-radius: 999px;
+    padding-inline: 0.55rem;
+    font-weight: 650;
+}
+
+.fi-in-entry .fi-badge {
+    min-width: 0;
+}
+
+.fi-ta-text-item {
+    max-width: max-content;
+}
+
+.fi-ta .fi-badge {
+    white-space: nowrap;
+}
+
+.weblex-admin-resource-links {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-inline-start: auto;
+    margin-inline-end: 0.75rem;
+}
+
+.weblex-admin-resource-links a,
+.weblex-admin-login-footer a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2rem;
+    border-radius: 999px;
+    color: rgb(51 65 85);
+    font-size: 0.8125rem;
+    font-weight: 650;
+    text-decoration: none;
+    transition:
+        background-color 160ms ease,
+        color 160ms ease,
+        border-color 160ms ease;
+}
+
+.weblex-admin-resource-links a {
+    padding-inline: 0.75rem;
+    border: 1px solid rgb(148 163 184 / 0.22);
+    background: rgb(255 255 255 / 0.72);
+}
+
+.weblex-admin-resource-links a:hover,
+.weblex-admin-login-footer a:hover {
+    border-color: rgb(47 93 124 / 0.2);
+    background: rgb(47 93 124 / 0.08);
+    color: var(--weblex-admin-accent-dark);
+}
+
+.weblex-admin-resource-links img,
+.weblex-admin-login-footer img {
+    width: 1.05rem;
+    height: 1.05rem;
+    object-fit: contain;
+}
+
+.fi-simple-layout {
+    background-position: center;
+}
+
+.fi-simple-layout::before {
+    background: radial-gradient(circle at 50% 42%, rgb(255 255 255 / 0.06), transparent 24rem), linear-gradient(180deg, rgb(2 6 23 / 0.12), rgb(2 6 23 / 0.52));
+    content: var(--filament-backgrounds-attribution-backdrop);
+}
+
+.fi-simple-main {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.45);
+    background: rgb(255 255 255 / 0.9);
+    box-shadow: 0 24px 80px rgb(2 6 23 / 0.28);
+    backdrop-filter: blur(10px);
+    color: rgb(15 23 42);
+}
+
+.fi-simple-main::before {
+    display: none;
+}
+
+.fi-simple-main::after {
+    position: absolute;
+    inset: 0 0 0 auto;
+    z-index: 0;
+    width: 32%;
+    background: linear-gradient(135deg, rgb(15 23 42 / 0.92), rgb(15 23 42 / 0.72));
+    clip-path: polygon(34% 0, 100% 0, 100% 100%, 0 100%);
+    content: '';
+    pointer-events: none;
+}
+
+.fi-simple-main > * {
+    position: relative;
+    z-index: 1;
+}
+
+.fi-simple-main .fi-logo,
+.fi-simple-main .fi-simple-header-heading,
+.fi-simple-main .fi-fo-field-wrp-label,
+.fi-simple-main .fi-fo-field-wrp-label span,
+.fi-simple-main .fi-fo-field-wrp-helper-text,
+.fi-simple-main .fi-checkbox-input + label,
+.fi-simple-main .fi-link {
+    color: rgb(15 23 42);
+}
+
+.fi-simple-main .fi-input-wrp {
+    background: rgb(248 250 252 / 0.92);
+}
+
+.fi-simple-main .fi-input {
+    color: rgb(15 23 42);
+}
+
+.fi-simple-main .fi-input::placeholder {
+    color: rgb(100 116 139);
+}
+
+.fi-simple-main .fi-fo-field-wrp-label .fi-color-danger,
+.fi-simple-main .fi-fo-field-wrp-label sup {
+    color: rgb(220 38 38);
+}
+
+.fi-simple-main .fi-btn-color-primary {
+    --c-400: 79 127 161;
+    --c-500: 47 93 124;
+    --c-600: 29 64 88;
+}
+
+.fi-simple-main .fi-btn-color-primary:not(.fi-outlined) {
+    background: linear-gradient(135deg, var(--weblex-admin-accent-light), var(--weblex-admin-accent-dark));
+    color: white;
+}
+
+.fi-simple-main .fi-btn-color-primary:not(.fi-outlined):hover {
+    filter: saturate(1.05) brightness(0.96);
+    color: white;
+}
+
+.driver-popover {
+    max-width: 24rem;
+    border: 1px solid rgb(15 23 42 / 0.08);
+    background: white;
+    color: rgb(15 23 42);
+    box-shadow: 0 18px 50px rgb(2 6 23 / 0.18);
+}
+
+.dark .driver-popover {
+    background: white;
+    color: rgb(15 23 42);
+}
+
+.driver-popover-title {
+    color: rgb(38 38 38);
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+.driver-popover-description {
+    color: rgb(71 85 105);
+    font-size: 0.875rem;
+    line-height: 1.45rem;
+}
+
+.driver-popover-close-btn {
+    color: rgb(51 65 85);
+}
+
+.driver-popover-footer {
+    margin-top: 1rem;
+}
+
+.driver-popover-prev-btn,
+.driver-popover-next-btn {
+    min-width: 4.5rem;
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.driver-popover-prev-btn {
+    border: 1px solid rgb(203 213 225);
+    background: white;
+    color: rgb(15 23 42);
+}
+
+.driver-popover-next-btn {
+    border: 1px solid var(--weblex-admin-accent);
+    background: var(--weblex-admin-accent);
+    color: white;
+}
+
+.driver-popover-prev-btn:hover {
+    background: rgb(248 250 252);
+}
+
+.driver-popover-next-btn:hover {
+    background: var(--weblex-admin-accent-dark);
+}
+
+.weblex-admin-login-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgb(148 163 184 / 0.22);
+    color: rgb(51 65 85);
+    font-size: 0.8125rem;
+}
+
+.weblex-admin-login-footer nav {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.weblex-admin-login-footer a {
+    padding-inline: 0.7rem;
+    border: 1px solid transparent;
+}

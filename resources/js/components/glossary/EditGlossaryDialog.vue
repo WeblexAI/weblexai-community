@@ -11,7 +11,7 @@ import { routeWithProject, toastResponse } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
 import { GlossaryI, InputSelectOption, LanguageI } from '@/types';
 import { useForm } from '@inertiajs/vue3';
-import { ArrowRightLeft, Ban, Globe, Pencil, Save, Type } from 'lucide-vue-next';
+import { ArrowRightLeft, Ban, Globe, Info, Pencil, Save, Type } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 type Props = {
@@ -38,7 +38,6 @@ const form = useForm({
 });
 
 function submitForm() {
-    // If rule is never translate, clear the translated text
     if (form.rule === GlossaryRuleE.NEVER_TRANSLATED) {
         form.translated = '';
     }
@@ -77,11 +76,9 @@ function selectRule(rule: GlossaryRuleE) {
             </DialogHeader>
 
             <form @submit.prevent="submitForm" class="mt-2 space-y-6">
-                <!-- Rule Selection -->
                 <div class="space-y-3">
                     <Label class="text-sm font-medium text-gray-700">Rule Type</Label>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <!-- Never Translate Option -->
                         <div
                             @click="selectRule(GlossaryRuleE.NEVER_TRANSLATED)"
                             :class="
@@ -92,7 +89,7 @@ function selectRule(rule: GlossaryRuleE) {
                             "
                         >
                             <div class="flex items-center justify-between">
-                                <div class="rounded-full bg-orange-100 p-2 text-orange-600">
+                                <div class="rounded-full bg-slate-100 p-2 text-slate-600">
                                     <Ban class="h-5 w-5" />
                                 </div>
                                 <div v-if="form.rule === GlossaryRuleE.NEVER_TRANSLATED" class="text-primary">
@@ -118,7 +115,6 @@ function selectRule(rule: GlossaryRuleE) {
                             </div>
                         </div>
 
-                        <!-- Always Translate Option -->
                         <div
                             @click="selectRule(GlossaryRuleE.ALWAYS_TRANSLATED)"
                             :class="
@@ -157,7 +153,6 @@ function selectRule(rule: GlossaryRuleE) {
                     </div>
                 </div>
 
-                <!-- Term Inputs -->
                 <div class="space-y-4 rounded-xl border border-gray-100 bg-gray-50/50 p-4">
                     <div class="grid gap-4" :class="form.rule === GlossaryRuleE.ALWAYS_TRANSLATED ? 'sm:grid-cols-2' : ''">
                         <div class="space-y-2">
@@ -173,7 +168,6 @@ function selectRule(rule: GlossaryRuleE) {
                         </div>
                     </div>
 
-                    <!-- Case Sensitivity -->
                     <div class="flex items-center space-x-2 pt-2">
                         <Checkbox id="case_sensitive" :checked="form.is_case_sensitive" disabled />
                         <Label for="case_sensitive" class="flex cursor-not-allowed items-center gap-2 text-sm leading-none font-medium opacity-50">
@@ -183,7 +177,6 @@ function selectRule(rule: GlossaryRuleE) {
                     </div>
                 </div>
 
-                <!-- Languages -->
                 <div class="space-y-2">
                     <Label class="flex items-center gap-2 text-sm font-medium">
                         <Globe class="h-4 w-4 text-gray-500" />
@@ -196,15 +189,13 @@ function selectRule(rule: GlossaryRuleE) {
                     <InputError :message="form.errors.languages" />
                 </div>
 
-                <!-- Warning Note -->
                 <div class="flex items-start gap-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-xs text-blue-800">
-                    <span class="text-base text-blue-500">ℹ️</span>
+                    <Info class="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
                     <span class="mt-0.5"
                         >Existing translations matching this rule will be removed and automatically regenerated during the next live page translation, triggered by a visit to the page.</span
                     >
                 </div>
 
-                <!-- Footer -->
                 <div class="flex justify-end gap-3 pt-2">
                     <Button type="button" variant="outline" @click="open = false" :disabled="form.processing"> Cancel </Button>
                     <Button type="submit" :disabled="form.processing" class="min-w-[120px] bg-primary hover:bg-primary/90">

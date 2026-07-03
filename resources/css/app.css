@@ -20,8 +20,8 @@
     --secondary-foreground: #ffffff;
     --muted: #ddd9c4;
     --muted-foreground: #6e6e6e;
-    --accent: #d27d37;
-    --accent-foreground: #ffffff;
+    --accent: #e2e8f0;
+    --accent-foreground: #0f172a;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
     --border: #d4d4d4;
@@ -36,7 +36,7 @@
     --sidebar-foreground: #ffffff;
     --sidebar-primary: #34a85a;
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #d27d37;
+    --sidebar-accent: #334155;
     --sidebar-accent-foreground: #ffffff;
     --sidebar-border: #d4d4d4;
     --sidebar-ring: #34a85a;
@@ -69,8 +69,8 @@
     --secondary-foreground: #ffffff;
     --muted: #ddd9c4;
     --muted-foreground: #6e6e6e;
-    --accent: #d27d37;
-    --accent-foreground: #ffffff;
+    --accent: #e2e8f0;
+    --accent-foreground: #0f172a;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
     --border: #d4d4d4;
@@ -85,7 +85,7 @@
     --sidebar-foreground: #ffffff;
     --sidebar-primary: #34a85a;
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #d27d37;
+    --sidebar-accent: #334155;
     --sidebar-accent-foreground: #ffffff;
     --sidebar-border: #d4d4d4;
     --sidebar-ring: #34a85a;
@@ -190,7 +190,7 @@
 
         --vis-primary-color: 160.1 84.1% 39.4%;
         /* change to any hsl value you want */
-        --vis-secondary-color: 27 96% 61%;
+        --vis-secondary-color: 211 47% 46%;
         --vis-text-color: 215.4 16.3% 46.9%;
     }
 }

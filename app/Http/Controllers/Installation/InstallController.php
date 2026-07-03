@@ -104,7 +104,7 @@ class InstallController extends Controller
 
             return back()
                 ->withInput($request->except(['admin_password', 'admin_password_confirmation']))
-                ->withErrors(['installation' => 'Installation could not be completed. Review storage/logs/laravel.log, correct the issue, and retry.']);
+                ->withErrors(['installation' => 'Installation could not be completed. Review the latest file in storage/logs, correct the issue, and retry.']);
         }
     }
 

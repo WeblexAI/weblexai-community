@@ -18,6 +18,7 @@ use App\Http\Controllers\Dashboard\TranslationModelController;
 use App\Http\Controllers\Dashboard\TranslationRequestController;
 use App\Http\Controllers\Dashboard\TranslationUsageController;
 use App\Http\Controllers\Installation\InstallController;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/install', [InstallController::class, 'show'])->name('install.show');
@@ -27,7 +28,11 @@ Route::redirect('/', '/login')->name('home');
 Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
 Route::middleware('auth')->group(function () {
-    Route::get('admin/logs', fn () => redirect('/log-viewer'))->name('admin.logs');
+    Route::get('admin/logs', function () {
+        Gate::authorize('viewLogViewer');
+
+        return redirect()->route('log-viewer.index');
+    })->name('admin.logs');
 
     Route::get('overview', [OverviewController::class, 'index'])->name('overview');
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');

@@ -9,6 +9,7 @@ x-app: &app
     - ${WEBLEX_ENV_FILE:-./.env}:/bootstrap/.env:ro
     - weblex_config:/config
     - weblex_storage:/app/storage
+    - weblex_backups:/backups
   depends_on:
     postgres:
       condition: service_healthy

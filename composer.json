@@ -9,6 +9,7 @@
         "self-hosted"
     ],
     "require": {
+        "awcodes/filament-quick-create": "^4.0",
         "cyrildewit/eloquent-viewable": "^7.0",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.0",
@@ -16,6 +17,7 @@
         "geoip2/geoip2": "^2.1",
         "google/cloud-translate": "^2.1",
         "inertiajs/inertia-laravel": "^2.0",
+        "jibaymcs/filament-tour": "5.0",
         "laravel/ai": "^0.4.4",
         "laravel/framework": "^13.0",
         "laravel/horizon": "^5.45",
@@ -26,6 +28,8 @@
         "league/flysystem-aws-s3-v3": "^3.30",
         "maatwebsite/excel": "^3.1",
         "opcodesio/log-viewer": "^3.24.2",
+        "shuvroroy/filament-spatie-laravel-backup": "^3.4",
+        "shuvroroy/filament-spatie-laravel-health": "^3.3",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-medialibrary": "^11.13",
         "spatie/laravel-permission": "^6.23",
@@ -33,6 +37,7 @@
         "spatie/laravel-settings": "^3.6",
         "spatie/laravel-sluggable": "^3.7",
         "stechstudio/laravel-zipstream": "^5.7",
+        "swisnl/filament-backgrounds": "^2.0",
         "tightenco/ziggy": "^2.4",
         "torann/geoip": "^3.0"
     },

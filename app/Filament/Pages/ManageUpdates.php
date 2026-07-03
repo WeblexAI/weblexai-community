@@ -39,6 +39,52 @@ class ManageUpdates extends Page
     public function check(ReleaseFeed $feed): void
     {
         $this->loadRelease($feed, true);
+
+        if ($this->error) {
+            Notification::make()
+                ->danger()
+                ->title('Update check failed')
+                ->body($this->error)
+                ->send();
+
+            return;
+        }
+
+        if (! $this->release) {
+            Notification::make()
+                ->warning()
+                ->title('No release feed configured')
+                ->body('This installation does not have a release feed to check.')
+                ->send();
+
+            return;
+        }
+
+        if (! $this->release['compatible']) {
+            Notification::make()
+                ->warning()
+                ->title('Update found, but it is not compatible')
+                ->body(sprintf('Version %s is available, but this host does not meet its requirements.', $this->release['version']))
+                ->send();
+
+            return;
+        }
+
+        if (! $this->release['available']) {
+            Notification::make()
+                ->success()
+                ->title('No updates available')
+                ->body(sprintf('This installation is already on %s.', config('community.version')))
+                ->send();
+
+            return;
+        }
+
+        Notification::make()
+            ->success()
+            ->title('Update available')
+            ->body(sprintf('Version %s is ready to install.', $this->release['version']))
+            ->send();
     }
 
     public function apply(ReleaseFeed $feed, UpdateManager $updates): void

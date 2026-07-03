@@ -147,8 +147,8 @@ function submit() {
                 <Card class="border-none bg-white/80 shadow-sm backdrop-blur-sm">
                     <CardHeader>
                         <div class="flex items-center gap-2">
-                            <div class="rounded-lg bg-orange-50 p-2">
-                                <MousePointerClick class="h-5 w-5 text-orange-600" />
+                            <div class="rounded-lg bg-slate-100 p-2">
+                                <MousePointerClick class="h-5 w-5 text-slate-600" />
                             </div>
                             <div>
                                 <CardTitle class="text-lg">Behavior</CardTitle>

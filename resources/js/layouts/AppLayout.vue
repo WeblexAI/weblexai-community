@@ -10,9 +10,9 @@ import { computed } from 'vue';
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 
-const navItems = [
-    { label: 'Projects', href: route('projects.index'), active: 'Projects', icon: LayoutGrid },
-    { label: 'Admin', href: '/admin', active: 'Admin', icon: Shield },
+const navClasses = (component: string) => [
+    'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors',
+    page.component === component ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900',
 ];
 </script>
 
@@ -31,17 +31,14 @@ const navItems = [
                         </Link>
 
                         <nav class="hidden items-center gap-1 md:flex">
-                            <Link
-                                v-for="item in navItems"
-                                :key="item.href"
-                                :href="item.href"
-                                prefetch
-                                class="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors"
-                                :class="[$page.component === item.active ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900']"
-                            >
-                                <component :is="item.icon" :size="15" class="opacity-60" />
-                                {{ item.label }}
+                            <Link :href="route('projects.index')" prefetch :class="navClasses('Projects')">
+                                <LayoutGrid :size="15" class="opacity-60" />
+                                Projects
                             </Link>
+                            <a href="/admin" target="_blank" rel="noopener" :class="navClasses('Admin')">
+                                <Shield :size="15" class="opacity-60" />
+                                Admin
+                            </a>
                         </nav>
                     </div>
 

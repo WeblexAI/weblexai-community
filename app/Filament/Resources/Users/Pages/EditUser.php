@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Pages;
 
 use App\Enums\ModelStatus;
+use App\Enums\UserRole;
 use App\Filament\Concerns\LogsAdminActivity;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\User;
@@ -14,12 +15,15 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class EditUser extends EditRecord
 {
     use LogsAdminActivity;
 
     protected static string $resource = UserResource::class;
+
+    private ?int $selectedRoleId = null;
 
     protected function getHeaderActions(): array
     {
@@ -65,6 +69,11 @@ class EditUser extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        $this->selectedRoleId = isset($data['system_role']) ? (int) $data['system_role'] : null;
+        unset($data['system_role']);
+
+        $selectedRole = $this->selectedRoleId ? Role::query()->find($this->selectedRoleId) : null;
+
         $deactivatingLastAdmin = $this->record->hasRole('admin')
             && (int) $data['is_active'] === ModelStatus::INACTIVE->value
             && User::role('admin')->where('is_active', ModelStatus::ACTIVE->value)->count() <= 1;
@@ -75,11 +84,29 @@ class EditUser extends EditRecord
             ]);
         }
 
+        $demotingLastAdmin = $this->record->hasRole(UserRole::ADMIN->value)
+            && $selectedRole?->name !== UserRole::ADMIN->value
+            && User::role(UserRole::ADMIN->value)->where('is_active', ModelStatus::ACTIVE->value)->count() <= 1;
+
+        if ($demotingLastAdmin) {
+            throw ValidationException::withMessages([
+                'data.system_role' => 'The last active administrator must keep the admin role.',
+            ]);
+        }
+
         return $data;
     }
 
     protected function afterSave(): void
     {
+        if ($this->selectedRoleId) {
+            $role = Role::query()->find($this->selectedRoleId);
+
+            if ($role) {
+                $this->record->syncRoles([$role->name]);
+            }
+        }
+
         $this->logAdminActivity(
             description: sprintf('Updated user "%s".', $this->record->email),
             subject: $this->record,

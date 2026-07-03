@@ -215,12 +215,12 @@ function toggleAutomatics(newValue: boolean) {
                     description="Are you sure you want to disable this language? Translations will no longer be served, but your manual translations will be preserved."
                     :loading="disablingLanguage"
                 >
-                    <button class="group flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-orange-600 transition-colors hover:bg-orange-50" :disabled="disablingLanguage">
-                        <div class="rounded bg-orange-100 p-1.5 text-orange-600 transition-colors group-hover:bg-orange-200">
+                    <button class="group flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50" :disabled="disablingLanguage">
+                        <div class="rounded bg-slate-100 p-1.5 text-slate-600 transition-colors group-hover:bg-slate-200">
                             <EyeOff class="h-3.5 w-3.5" />
                         </div>
                         <span>Disable Language</span>
-                        <LoaderCircle v-if="disablingLanguage" class="ml-auto h-4 w-4 animate-spin text-orange-600" />
+                        <LoaderCircle v-if="disablingLanguage" class="ml-auto h-4 w-4 animate-spin text-slate-600" />
                     </button>
                 </ConfirmAction>
             </div>

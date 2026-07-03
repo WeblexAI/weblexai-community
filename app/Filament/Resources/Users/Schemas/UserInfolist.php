@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Enums\ModelStatus;
 use App\Filament\Resources\Projects\ProjectResource;
 use App\Models\User;
 use Filament\Infolists\Components\IconEntry;
@@ -20,8 +21,15 @@ class UserInfolist
                 ->schema([
                     TextEntry::make('name')->weight('bold')->size('lg'),
                     TextEntry::make('email')->copyable(),
-                    TextEntry::make('roles.name')->label('System role')->badge(),
-                    TextEntry::make('is_active')->label('Status')->badge(),
+                    TextEntry::make('roles.name')
+                        ->label('System role')
+                        ->separator(', ')
+                        ->weight('semibold'),
+                    TextEntry::make('is_active')
+                        ->label('Status')
+                        ->formatStateUsing(fn (ModelStatus $state): string => $state->getLabel())
+                        ->icon(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'heroicon-m-check-circle' : 'heroicon-m-pause-circle')
+                        ->color(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'success' : 'gray'),
                     IconEntry::make('force_password_change')->boolean(),
                     TextEntry::make('created_at')->dateTime(),
                 ])
@@ -46,10 +54,19 @@ class UserInfolist
                         ->schema([
                             TextEntry::make('name')
                                 ->url(fn ($record): string => ProjectResource::getUrl('view', ['record' => $record])),
-                            TextEntry::make('languages_count')->badge(),
-                            TextEntry::make('translations_count')->badge(),
-                            TextEntry::make('accepted_origins_count')->badge(),
-                            TextEntry::make('is_active')->badge(),
+                            TextEntry::make('languages_count')
+                                ->formatStateUsing(fn (int $state): string => number_format($state))
+                                ->weight('semibold'),
+                            TextEntry::make('translations_count')
+                                ->formatStateUsing(fn (int $state): string => number_format($state))
+                                ->weight('semibold'),
+                            TextEntry::make('accepted_origins_count')
+                                ->formatStateUsing(fn (int $state): string => number_format($state))
+                                ->weight('semibold'),
+                            TextEntry::make('is_active')
+                                ->formatStateUsing(fn (ModelStatus $state): string => $state->getLabel())
+                                ->icon(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'heroicon-m-check-circle' : 'heroicon-m-pause-circle')
+                                ->color(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'success' : 'gray'),
                         ]),
                 ]),
             Section::make('Project memberships')
@@ -73,7 +90,10 @@ class UserInfolist
                                 ->url(fn ($record): string => ProjectResource::getUrl('view', ['record' => $record])),
                             TextEntry::make('owner.name'),
                             TextEntry::make('pivot.role')->badge(),
-                            TextEntry::make('is_active')->badge(),
+                            TextEntry::make('is_active')
+                                ->formatStateUsing(fn (ModelStatus $state): string => $state->getLabel())
+                                ->icon(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'heroicon-m-check-circle' : 'heroicon-m-pause-circle')
+                                ->color(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'success' : 'gray'),
                         ]),
                 ]),
         ]);

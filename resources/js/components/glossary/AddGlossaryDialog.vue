@@ -11,7 +11,7 @@ import { routeWithProject, toastResponse } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
 import { InputSelectOption, LanguageI } from '@/types';
 import { useForm } from '@inertiajs/vue3';
-import { ArrowRightLeft, Ban, BookA, Globe, Save, Type, X } from 'lucide-vue-next';
+import { AlertTriangle, ArrowRightLeft, Ban, BookA, Globe, Info, Save, Type } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 type Props = {
@@ -32,14 +32,13 @@ const form = useForm({
     text: '',
     translated: '',
     is_case_sensitive: false,
-    rule: GlossaryRuleE.NEVER_TRANSLATED, // Default to never translate
+    rule: GlossaryRuleE.NEVER_TRANSLATED,
     languages: [],
 });
 
 function submitForm() {
     if (!props.languages.length) return;
 
-    // If rule is never translate, clear the translated text
     if (form.rule === GlossaryRuleE.NEVER_TRANSLATED) {
         form.translated = '';
     }
@@ -79,11 +78,9 @@ function selectRule(rule: GlossaryRuleE) {
             </DialogHeader>
 
             <form @submit.prevent="submitForm" class="mt-2 space-y-6">
-                <!-- Rule Selection -->
                 <div class="space-y-3">
                     <Label class="text-sm font-medium text-gray-700">Rule Type</Label>
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <!-- Never Translate Option -->
                         <div
                             @click="selectRule(GlossaryRuleE.NEVER_TRANSLATED)"
                             :class="
@@ -94,14 +91,11 @@ function selectRule(rule: GlossaryRuleE) {
                             "
                         >
                             <div class="flex items-center justify-between">
-                                <div class="rounded-full bg-orange-100 p-2 text-orange-600">
+                                <div class="rounded-full bg-slate-100 p-2 text-slate-600">
                                     <Ban class="h-5 w-5" />
                                 </div>
                                 <div v-if="form.rule === GlossaryRuleE.NEVER_TRANSLATED" class="text-primary">
                                     <div class="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white">
-                                        <X class="h-3 w-3" />
-                                        <!-- Using X as checkmark for 'never' conceptually or just check -->
-                                        <!-- Actually let's use a checkmark for selection state -->
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             viewBox="0 0 24 24"
@@ -123,7 +117,6 @@ function selectRule(rule: GlossaryRuleE) {
                             </div>
                         </div>
 
-                        <!-- Always Translate Option -->
                         <div
                             @click="selectRule(GlossaryRuleE.ALWAYS_TRANSLATED)"
                             :class="
@@ -162,7 +155,6 @@ function selectRule(rule: GlossaryRuleE) {
                     </div>
                 </div>
 
-                <!-- Term Inputs -->
                 <div class="space-y-4 rounded-xl border border-gray-100 bg-gray-50/50 p-4">
                     <div class="grid gap-4" :class="form.rule === GlossaryRuleE.ALWAYS_TRANSLATED ? 'sm:grid-cols-2' : ''">
                         <div class="space-y-2">
@@ -178,7 +170,6 @@ function selectRule(rule: GlossaryRuleE) {
                         </div>
                     </div>
 
-                    <!-- Case Sensitivity -->
                     <div class="flex items-center space-x-2 pt-2">
                         <Checkbox id="case_sensitive" v-model:checked="form.is_case_sensitive" :disabled="!languages.length || form.processing" />
                         <Label for="case_sensitive" class="flex items-center gap-2 text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
@@ -188,7 +179,6 @@ function selectRule(rule: GlossaryRuleE) {
                     </div>
                 </div>
 
-                <!-- Languages -->
                 <div class="space-y-2">
                     <Label class="flex items-center gap-2 text-sm font-medium">
                         <Globe class="h-4 w-4 text-gray-500" />
@@ -198,19 +188,20 @@ function selectRule(rule: GlossaryRuleE) {
                         <InputSelect :options="languagesOptions" :form="form" taggable options-only model="languages" placeholder="Select languages (leave empty for all)" />
                         <p class="mt-1.5 text-xs text-muted-foreground">Leave empty to apply this rule to <strong>all languages</strong> in the project.</p>
                     </div>
-                    <div v-else class="rounded-md border border-yellow-100 bg-yellow-50 p-3 text-sm text-yellow-800">⚠️ You need to add languages to your project before creating glossary rules.</div>
+                    <div v-else class="flex items-start gap-2 rounded-md border border-yellow-100 bg-yellow-50 p-3 text-sm text-yellow-800">
+                        <AlertTriangle class="mt-0.5 h-4 w-4 shrink-0" />
+                        <span>You need to add languages to your project before creating glossary rules.</span>
+                    </div>
                     <InputError :message="form.errors.languages" />
                 </div>
 
-                <!-- Warning Note -->
                 <div class="flex items-start gap-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-xs text-blue-800">
-                    <span class="text-base text-blue-500">ℹ️</span>
+                    <Info class="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
                     <span class="mt-0.5"
                         >Existing translations matching this rule will be removed and automatically regenerated during the next live page translation, triggered by a visit to the page.</span
                     >
                 </div>
 
-                <!-- Footer -->
                 <div class="flex justify-end gap-3 pt-2">
                     <Button type="button" variant="outline" @click="open = false" :disabled="form.processing"> Cancel </Button>
                     <Button type="submit" :disabled="!languages.length || form.processing" class="min-w-[120px] bg-primary hover:bg-primary/90">

@@ -49,7 +49,12 @@ RUN install-php-extensions \
     zip
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends gosu \
+    && apt-get install -y --no-install-recommends ca-certificates curl gnupg gosu \
+    && install -d -m 0755 /usr/share/postgresql-common/pgdg \
+    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg \
+    && echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends postgresql-client-17 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -58,9 +63,11 @@ COPY --from=assets --chown=www-data:www-data /app/public/build /app/public/build
 COPY --from=assets --chown=www-data:www-data /app/public/wlai /app/public/wlai
 
 RUN chmod +x /app/entrypoint.sh \
-    && mkdir -p /bootstrap /config /tmp/caddy/config /tmp/caddy/data storage/app/private storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
+    && mkdir -p /backups /bootstrap /config /tmp/caddy/config /tmp/caddy/data storage/app/backups storage/app/private storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
     && ln -s /config/.env /app/.env \
-    && chown -R www-data:www-data /config /tmp/caddy storage bootstrap/cache
+    && rm -rf /app/public/storage \
+    && ln -s /app/storage/app/public /app/public/storage \
+    && chown -R www-data:www-data /backups /config /tmp/caddy storage bootstrap/cache
 
 EXPOSE 8080
 ENTRYPOINT ["/app/entrypoint.sh"]

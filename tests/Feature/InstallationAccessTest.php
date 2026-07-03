@@ -1,6 +1,6 @@
 <?php
 
-use App\Settings\GeneralSettings;
+use App\Settings\CacheSettings;
 use App\Support\Installation\RequirementsChecker;
 
 beforeEach(function () {
@@ -12,7 +12,7 @@ it('renders the installer without loading database-backed settings', function ()
     @unlink(storage_path('app/installed'));
 
     $this->app->bind(
-        GeneralSettings::class,
+        CacheSettings::class,
         fn () => throw new RuntimeException('Settings must not load before installation.'),
     );
 

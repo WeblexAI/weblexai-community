@@ -27,9 +27,7 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
     data: { [key]: value };
     project: ProjectI;
     full_url: string;
-    marketing_url: string;
-    dashboard_url: string;
-    cdn_url: string;
+    asset_url: string;
 };
 
 export interface ModelI {

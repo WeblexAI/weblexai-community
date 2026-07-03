@@ -38,7 +38,7 @@ export const badgeVariants = cva(
                 destructive:
                     'text-red-600 bg-red-50 border-red-200',
                 primary:
-                    'text-primary bg-orange-50 border-orange-200',
+                    'text-primary bg-blue-50 border-blue-200',
                 outline:
                     'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
             },

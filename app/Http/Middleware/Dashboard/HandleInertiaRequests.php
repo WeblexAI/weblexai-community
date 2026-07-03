@@ -3,7 +3,6 @@
 namespace App\Http\Middleware\Dashboard;
 
 use App\Enums\CollaboratorRole;
-use App\Settings\GeneralSettings;
 use App\Support\Installation\InstallationState;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -32,8 +31,6 @@ class HandleInertiaRequests extends Middleware
                     ->first()?->pivot->role?->value;
         }
 
-        $settings = app(GeneralSettings::class);
-
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -53,9 +50,7 @@ class HandleInertiaRequests extends Middleware
             'message' => fn () => $request->session()->get('message') ?? '',
             'data' => fn () => $request->session()->get('data') ?? [],
             'full_url' => url()->current(),
-            'marketing_url' => $settings->marketing_url,
-            'dashboard_url' => $settings->dashboard_url,
-            'cdn_url' => $settings->cdn_url,
+            'asset_url' => rtrim(config('app.asset_url') ?: config('app.url'), '/'),
         ];
     }
 }

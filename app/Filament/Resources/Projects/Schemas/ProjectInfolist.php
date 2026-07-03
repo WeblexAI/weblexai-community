@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects\Schemas;
 
+use App\Enums\ModelStatus;
 use App\Filament\Resources\Languages\LanguageResource;
 use App\Filament\Resources\Users\UserResource;
 use App\Models\Project;
@@ -46,8 +47,13 @@ class ProjectInfolist
                                                 $record->providerCredential->provider_type,
                                             )
                                             : 'Not configured')
-                                        ->badge(),
-                                    TextEntry::make('is_active')->label('Status')->badge(),
+                                        ->icon(fn (Project $record): string => $record->providerCredential ? 'heroicon-m-key' : 'heroicon-m-exclamation-triangle')
+                                        ->color(fn (Project $record): string => $record->providerCredential ? 'primary' : 'gray'),
+                                    TextEntry::make('is_active')
+                                        ->label('Status')
+                                        ->formatStateUsing(fn (ModelStatus $state): string => $state->getLabel())
+                                        ->icon(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'heroicon-m-check-circle' : 'heroicon-m-pause-circle')
+                                        ->color(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'success' : 'gray'),
                                     TextEntry::make('created_at')->dateTime(),
                                     TextEntry::make('updated_at')->dateTime(),
                                 ])
@@ -57,27 +63,33 @@ class ProjectInfolist
                                     TextEntry::make('pages_count')
                                         ->label('Pages')
                                         ->state(fn (Project $record): int => $record->pages()->count())
-                                        ->badge(),
+                                        ->formatStateUsing(fn (int $state): string => number_format($state))
+                                        ->weight('semibold'),
                                     TextEntry::make('translations_count')
                                         ->label('Translations')
                                         ->state(fn (Project $record): int => $record->translations()->count())
-                                        ->badge(),
+                                        ->formatStateUsing(fn (int $state): string => number_format($state))
+                                        ->weight('semibold'),
                                     TextEntry::make('languages_count')
                                         ->label('Languages')
                                         ->state(fn (Project $record): int => $record->languages()->count())
-                                        ->badge(),
+                                        ->formatStateUsing(fn (int $state): string => number_format($state))
+                                        ->weight('semibold'),
                                     TextEntry::make('collaborators_count')
                                         ->label('Members')
                                         ->state(fn (Project $record): int => $record->collaborators()->count())
-                                        ->badge(),
+                                        ->formatStateUsing(fn (int $state): string => number_format($state))
+                                        ->weight('semibold'),
                                     TextEntry::make('origins_count')
                                         ->label('Accepted origins')
                                         ->state(fn (Project $record): int => $record->acceptedOrigins()->count())
-                                        ->badge(),
+                                        ->formatStateUsing(fn (int $state): string => number_format($state))
+                                        ->weight('semibold'),
                                     TextEntry::make('requests_count')
                                         ->label('Translation requests')
                                         ->state(fn (Project $record): int => $record->translationRequests()->count())
-                                        ->badge(),
+                                        ->formatStateUsing(fn (int $state): string => number_format($state))
+                                        ->weight('semibold'),
                                 ])
                                 ->columns(3),
                         ]),
@@ -118,7 +130,10 @@ class ProjectInfolist
                                     TextEntry::make('name')
                                         ->url(fn ($record): string => LanguageResource::getUrl('view', ['record' => $record])),
                                     TextEntry::make('iso_2'),
-                                    TextEntry::make('is_active')->badge(),
+                                    TextEntry::make('is_active')
+                                        ->formatStateUsing(fn (ModelStatus $state): string => $state->getLabel())
+                                        ->icon(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'heroicon-m-check-circle' : 'heroicon-m-pause-circle')
+                                        ->color(fn (ModelStatus $state): string => $state === ModelStatus::ACTIVE ? 'success' : 'gray'),
                                 ]),
                         ]),
                 ])

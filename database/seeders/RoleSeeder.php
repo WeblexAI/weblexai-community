@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\UserRole;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
@@ -13,5 +14,17 @@ class RoleSeeder extends Seeder
         foreach (UserRole::toArray() as $role) {
             Role::findOrCreate($role);
         }
+
+        $backupPermissions = [
+            'create-backup',
+            'download-backup',
+            'delete-backup',
+        ];
+
+        foreach ($backupPermissions as $permission) {
+            Permission::findOrCreate($permission);
+        }
+
+        Role::findOrCreate(UserRole::ADMIN->value)->givePermissionTo($backupPermissions);
     }
 }
