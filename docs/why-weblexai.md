@@ -14,17 +14,20 @@ WeblexAI is a strong fit when:
 
 It is not the right first choice when the only requirement is translating static app strings at build time.
 
+For SEO-heavy public marketing sites, validate the rendering strategy first. The default browser SDK translates after page load. That makes it useful for many web apps and existing websites, but it is not the same as serving separate crawlable HTML for each locale.
+
 ## Comparison
 
-| Area | WeblexAI | Hosted website translation tools |
-| --- | --- | --- |
-| Hosting | Runs on your infrastructure. | Runs on the vendor platform. |
-| Provider keys | You bring and control provider credentials. | Provider choice and cost model are controlled by the vendor. |
-| Data path | Browser SDK talks to your WeblexAI instance. | Browser SDK talks to the vendor service. |
-| Access control | Admin-created users, project membership, exact accepted origins. | Vendor-defined access model. |
-| Translation quality controls | Glossary, exclusions, review state, LLM context, tone, and audience. | Depends on vendor plan and workflow. |
-| Operational responsibility | Your team manages updates, backups, logs, and infrastructure. | Vendor manages operations. |
-| Managed option | Available separately for teams that want WeblexAI without operating it. | Included by default. |
+| Area                         | WeblexAI                                                                | Hosted website translation tools                             |
+| ---------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Hosting                      | Runs on your infrastructure.                                            | Runs on the vendor platform.                                 |
+| Provider keys                | You bring and control provider credentials.                             | Provider choice and cost model are controlled by the vendor. |
+| Data path                    | Browser SDK talks to your WeblexAI instance.                            | Browser SDK talks to the vendor service.                     |
+| Access control               | Admin-created users, project membership, exact accepted origins.        | Vendor-defined access model.                                 |
+| Translation quality controls | Glossary, exclusions, review state, LLM context, tone, and audience.    | Depends on vendor plan and workflow.                         |
+| SEO behavior                 | Browser SDK by default. SEO strategy depends on deployment.             | Often includes vendor-managed SEO routing.                   |
+| Operational responsibility   | Your team manages updates, backups, logs, and infrastructure.           | Vendor manages operations.                                   |
+| Managed option               | Available separately for teams that want WeblexAI without operating it. | Included by default.                                         |
 
 ## Positioning
 

@@ -56,7 +56,7 @@ class SystemOverviewWidget extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color($integratedProjects > 0 ? 'success' : 'gray'),
             Stat::make('Setup gaps', number_format($readinessGaps))
-                ->description('Projects missing provider, origins, or languages')
+                ->description($readinessGaps > 0 ? 'Projects missing provider, origins, or languages' : 'All projects are ready')
                 ->descriptionIcon($readinessGaps > 0 ? 'heroicon-m-exclamation-triangle' : 'heroicon-m-check-circle')
                 ->color($readinessGaps > 0 ? 'warning' : 'success'),
             Stat::make('Requests today', number_format($requestsToday))

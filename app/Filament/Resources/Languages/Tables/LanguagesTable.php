@@ -23,7 +23,7 @@ class LanguagesTable
                         try {
                             $media = $record->getFirstMedia('flag');
 
-                            return $media?->getUrl() ?? url('/images/default-flag.png');
+                            return $media?->getUrl();
                         } catch (\Exception $e) {
                             return '';
                         }

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>WeblexAI Plain HTML Example</title>
+        <style>
+            :root {
+                color-scheme: light;
+                font-family:
+                    Inter,
+                    ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    'Segoe UI',
+                    sans-serif;
+                color: #132238;
+                background: #f4f7fb;
+            }
+
+            body {
+                margin: 0;
+            }
+
+            main {
+                display: grid;
+                min-height: 100vh;
+                place-items: center;
+                padding: 32px;
+            }
+
+            .shell {
+                width: min(920px, 100%);
+                overflow: hidden;
+                border: 1px solid #d8e0ea;
+                border-radius: 28px;
+                background: white;
+                box-shadow: 0 24px 80px rgb(15 23 42 / 0.12);
+            }
+
+            .hero {
+                padding: 42px;
+                background: linear-gradient(135deg, #092032, #1b473a);
+                color: white;
+            }
+
+            .hero p {
+                max-width: 640px;
+                color: #cbd8e5;
+                line-height: 1.7;
+            }
+
+            .content {
+                display: grid;
+                gap: 24px;
+                padding: 32px 42px 42px;
+            }
+
+            .grid {
+                display: grid;
+                gap: 16px;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+
+            label {
+                display: grid;
+                gap: 8px;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            input {
+                border: 1px solid #cbd5e1;
+                border-radius: 12px;
+                padding: 13px 14px;
+                font: inherit;
+            }
+
+            button {
+                width: fit-content;
+                border: 0;
+                border-radius: 999px;
+                padding: 13px 18px;
+                background: #1c7c54;
+                color: white;
+                font: inherit;
+                font-weight: 800;
+                cursor: pointer;
+            }
+
+            .status {
+                min-height: 22px;
+                color: #475569;
+                font-size: 14px;
+            }
+
+            .cards {
+                display: grid;
+                gap: 14px;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+
+            .card {
+                border: 1px solid #e2e8f0;
+                border-radius: 18px;
+                padding: 18px;
+                background: #f8fafc;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <section class="shell">
+                <div class="hero">
+                    <h1>Translate this page with WeblexAI.</h1>
+                    <p>
+                        This plain HTML page is a local smoke test for the browser SDK. Add the local origin to your project, paste the project API key, and load the SDK from your WeblexAI
+                        installation.
+                    </p>
+                </div>
+
+                <div class="content">
+                    <div class="grid">
+                        <label>
+                            WeblexAI URL
+                            <input id="weblex-url" value="http://localhost:8787" autocomplete="off" />
+                        </label>
+                        <label>
+                            Project API key
+                            <input id="project-key" placeholder="Paste project API key" autocomplete="off" />
+                        </label>
+                    </div>
+
+                    <button type="button" id="load-sdk">Load WeblexAI</button>
+                    <div class="status" id="status"></div>
+
+                    <div class="cards">
+                        <article class="card">
+                            <h2>Product copy</h2>
+                            <p>Use clear language that keeps product names consistent across translated pages.</p>
+                        </article>
+                        <article class="card">
+                            <h2>Support content</h2>
+                            <p>Translate help text, onboarding screens, and customer-facing instructions.</p>
+                        </article>
+                        <article class="card">
+                            <h2>Dashboard text</h2>
+                            <p>Give internal users translated interfaces without rebuilding the frontend.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <script>
+            const button = document.querySelector('#load-sdk');
+            const status = document.querySelector('#status');
+
+            function appendAsset(tagName, attributes) {
+                const node = document.createElement(tagName);
+
+                Object.entries(attributes).forEach(([key, value]) => {
+                    node.setAttribute(key, value);
+                });
+
+                document.head.appendChild(node);
+
+                return node;
+            }
+
+            button.addEventListener('click', () => {
+                const baseUrl = document.querySelector('#weblex-url').value.replace(/\/+$/, '');
+                const projectKey = document.querySelector('#project-key').value.trim();
+
+                if (!baseUrl || !projectKey) {
+                    status.textContent = 'Enter the WeblexAI URL and project API key.';
+                    return;
+                }
+
+                appendAsset('link', {
+                    rel: 'stylesheet',
+                    href: `${baseUrl}/wlai/weblexai.css`,
+                });
+
+                const script = appendAsset('script', {
+                    src: `${baseUrl}/wlai/weblexai.min.js`,
+                });
+
+                script.onload = () => {
+                    window.WeblexAI.init(projectKey);
+                    status.textContent = 'WeblexAI SDK loaded. Check the project setup page for integration status.';
+                };
+
+                script.onerror = () => {
+                    status.textContent = 'Could not load the SDK. Check the WeblexAI URL.';
+                };
+            });
+        </script>
+    </body>
+</html>

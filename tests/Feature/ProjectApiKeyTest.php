@@ -34,7 +34,10 @@ it('shows the API key on the authorized project setup page', function () {
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Project/Setup')
-            ->where('apiKey', $project->api_key));
+            ->where('apiKey', $project->api_key)
+            ->has('adminUrls.providerCredentials')
+            ->has('adminUrls.project')
+            ->has('adminUrls.projectEdit'));
 });
 
 it('shows the API key and project detail tabs to administrators', function () {

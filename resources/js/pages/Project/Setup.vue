@@ -5,13 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import useProject from '@/composables/useProject';
 import ProjectLayout from '@/layouts/ProjectLayout.vue';
+import { routeWithProject } from '@/lib/helpers';
 import { Head, usePage } from '@inertiajs/vue3';
-import { AlertCircle, Check, CheckCircle2, Clipboard, Code2, Globe2, KeyRound, Languages, Lightbulb, Rocket, Settings2, ShieldCheck } from 'lucide-vue-next';
+import { AlertCircle, Check, CheckCircle2, Clipboard, Code2, ExternalLink, Globe2, KeyRound, Languages, Lightbulb, Rocket, Settings2, ShieldCheck } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const project = useProject();
 const page = usePage();
-const props = defineProps<{ apiKey: string | null }>();
+const props = defineProps<{
+    apiKey: string | null;
+    adminUrls: {
+        providerCredentials: string;
+        project: string;
+        projectEdit: string;
+    };
+}>();
 const copied = ref<string | null>(null);
 
 const installationCode = `<link rel="stylesheet" href="${page.props.asset_url}/wlai/weblexai.css">
@@ -28,12 +36,18 @@ const launchItems = computed(() => [
         description: project.provider_credential ? `${project.provider_credential.provider_label} is assigned.` : 'Assign a provider credential in the admin panel.',
         complete: Boolean(project.provider_credential),
         icon: Settings2,
+        href: project.provider_credential ? props.adminUrls.projectEdit : props.adminUrls.providerCredentials,
+        external: true,
+        action: project.provider_credential ? 'Change credential' : 'Add credential',
     },
     {
         label: 'Project API key',
         description: props.apiKey ? 'The browser SDK can identify this project.' : 'Generate or rotate the project API key from the admin panel.',
         complete: Boolean(props.apiKey),
         icon: KeyRound,
+        href: props.adminUrls.projectEdit,
+        external: true,
+        action: props.apiKey ? 'Rotate key' : 'Generate key',
     },
     {
         label: 'Accepted origin',
@@ -41,18 +55,27 @@ const launchItems = computed(() => [
             acceptedOriginsCount.value > 0 ? `${acceptedOriginsCount.value} accepted origin${acceptedOriginsCount.value === 1 ? '' : 's'} configured.` : 'Add the exact website origin before testing.',
         complete: acceptedOriginsCount.value > 0,
         icon: ShieldCheck,
+        href: props.adminUrls.project,
+        external: true,
+        action: acceptedOriginsCount.value > 0 ? 'Manage origins' : 'Add origin',
     },
     {
         label: 'Target language',
         description: hasTargetLanguage.value ? 'At least one target language is available.' : 'Add a target language before loading the SDK.',
         complete: hasTargetLanguage.value,
         icon: Languages,
+        href: routeWithProject('projects.languages.index'),
+        external: false,
+        action: hasTargetLanguage.value ? 'Manage languages' : 'Add language',
     },
     {
         label: 'Website detected',
         description: project.is_integrated ? 'WeblexAI has received content from the website.' : 'Visit the website after installing the snippet.',
         complete: project.is_integrated,
         icon: Globe2,
+        href: null,
+        external: false,
+        action: null,
     },
 ]);
 const completedLaunchItems = computed(() => launchItems.value.filter((item) => item.complete).length);
@@ -99,6 +122,16 @@ async function copy(value: string, label: string) {
                             </div>
                             <div class="mt-4 text-sm font-semibold">{{ item.label }}</div>
                             <p class="mt-1 text-xs leading-5 text-slate-300">{{ item.description }}</p>
+                            <a
+                                v-if="item.href && item.action"
+                                :href="item.href"
+                                :target="item.external ? '_blank' : undefined"
+                                :rel="item.external ? 'noopener noreferrer' : undefined"
+                                class="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald-200 hover:text-white"
+                            >
+                                {{ item.action }}
+                                <ExternalLink v-if="item.external" class="h-3 w-3" />
+                            </a>
                         </div>
                     </div>
                 </CardContent>

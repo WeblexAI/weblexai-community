@@ -31,6 +31,15 @@ On Windows with Docker Desktop:
 powershell -ExecutionPolicy Bypass -File tests\e2e\run.ps1
 ```
 
+Run the plain HTML smoke test against the release candidate:
+
+```bash
+cd examples/plain-html
+python -m http.server 4173
+```
+
+Add `http://localhost:4173` as an accepted origin, load the SDK from the example page, then confirm the project setup page reports an active integration.
+
 ## Security
 
 - Run `composer audit --locked`.
@@ -53,5 +62,6 @@ powershell -ExecutionPolicy Bypass -File tests\e2e\run.ps1
 - Install from the published artifact in a clean environment.
 - Run the browser installer and create the first administrator.
 - Configure a mock or low-risk provider key and complete one translation request.
+- Confirm README quick start, first project guide, and examples match the published release.
 - Verify backup and restore using the published artifact.
 - Record any accepted audit exception in the release notes.

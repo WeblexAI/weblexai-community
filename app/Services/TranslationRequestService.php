@@ -23,7 +23,6 @@ class TranslationRequestService
                     'name' => $row->targetLanguage->name,
                     'total' => $row->total,
                     'color' => $row->targetLanguage->color,
-                    'date' => 'Aug 11, 2024',
                 ];
             });
     }

@@ -116,16 +116,24 @@
     color: rgb(226 232 240 / 0.5);
 }
 
+.fi-sidebar .fi-sidebar-item-btn,
 .fi-sidebar .fi-sidebar-item-button {
     color: rgb(226 232 240 / 0.78) !important;
 }
 
+.fi-sidebar .fi-sidebar-item-btn:hover,
+.fi-sidebar .fi-sidebar-item-btn:focus-visible,
 .fi-sidebar .fi-sidebar-item-button:hover,
 .fi-sidebar .fi-sidebar-item-button:focus-visible {
     background: var(--weblex-admin-panel-hover) !important;
+    background-color: var(--weblex-admin-panel-hover) !important;
     color: white !important;
 }
 
+.fi-sidebar .fi-sidebar-item-btn:hover .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-btn:hover .fi-sidebar-item-icon,
+.fi-sidebar .fi-sidebar-item-btn:focus-visible .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-btn:focus-visible .fi-sidebar-item-icon,
 .fi-sidebar .fi-sidebar-item-button:hover .fi-sidebar-item-label,
 .fi-sidebar .fi-sidebar-item-button:hover .fi-sidebar-item-icon,
 .fi-sidebar .fi-sidebar-item-button:focus-visible .fi-sidebar-item-label,
@@ -133,22 +141,38 @@
     color: white !important;
 }
 
+.fi-sidebar .fi-sidebar-item.fi-active > a.fi-sidebar-item-btn,
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
+.fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-btn,
+.fi-sidebar .fi-sidebar-item-btn.fi-active,
+.fi-sidebar .fi-sidebar-item-btn[aria-current='page'],
 .fi-sidebar-item.fi-active > .fi-sidebar-item-button,
 .fi-sidebar .fi-sidebar-item.fi-active .fi-sidebar-item-button,
 .fi-sidebar .fi-sidebar-item-button.fi-active,
 .fi-sidebar .fi-sidebar-item-button[aria-current='page'] {
     border: 1px solid rgb(122 74 128 / 0.42);
     background: linear-gradient(135deg, rgb(91 44 98 / 0.56), rgb(25 16 36 / 0.96)) !important;
+    background-color: var(--weblex-admin-panel-hover) !important;
     color: white !important;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
 }
 
+.fi-sidebar .fi-sidebar-item.fi-active > a.fi-sidebar-item-btn > .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item.fi-active > a.fi-sidebar-item-btn > .fi-icon,
+.fi-sidebar-item.fi-active .fi-sidebar-item-btn .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-btn.fi-active .fi-sidebar-item-label,
+.fi-sidebar .fi-sidebar-item-btn[aria-current='page'] .fi-sidebar-item-label,
 .fi-sidebar-item.fi-active .fi-sidebar-item-label,
 .fi-sidebar .fi-sidebar-item-button.fi-active .fi-sidebar-item-label,
 .fi-sidebar .fi-sidebar-item-button[aria-current='page'] .fi-sidebar-item-label {
     color: white !important;
 }
 
+.fi-sidebar .fi-sidebar-item.fi-active > a.fi-sidebar-item-btn > .fi-sidebar-item-icon,
+.fi-sidebar-item.fi-active .fi-sidebar-item-btn .fi-sidebar-item-icon,
+.fi-sidebar .fi-sidebar-item-btn.fi-active .fi-sidebar-item-icon,
+.fi-sidebar .fi-sidebar-item-btn[aria-current='page'] .fi-sidebar-item-icon,
 .fi-sidebar-item.fi-active .fi-sidebar-item-icon,
 .fi-sidebar .fi-sidebar-item-button.fi-active .fi-sidebar-item-icon,
 .fi-sidebar .fi-sidebar-item-button[aria-current='page'] .fi-sidebar-item-icon {
@@ -185,6 +209,95 @@
 
 .fi-main {
     background: var(--weblex-admin-page);
+}
+
+.fi-wi-stats-overview,
+.fi-wi-stats-overview .fi-section {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.fi-wi-stats-overview .fi-section-content {
+    padding: 0;
+    background: transparent;
+}
+
+.fi-wi-stats-overview .fi-section-header {
+    padding-inline: 0;
+    padding-top: 0;
+    background: transparent;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat {
+    min-height: 9.25rem;
+    border: 1px solid rgb(33 48 71 / 0.1);
+    border-radius: 1rem;
+    background: white;
+    box-shadow:
+        0 1px 2px rgb(11 19 32 / 0.06),
+        0 14px 32px rgb(11 19 32 / 0.035);
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat-label {
+    color: rgb(71 85 105);
+    font-weight: 650;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat-value {
+    color: rgb(2 6 23);
+    font-weight: 750;
+    letter-spacing: -0.035em;
+}
+
+.fi-wi-stats-overview .fi-wi-stats-overview-stat-description {
+    align-items: center;
+    gap: 0.35rem;
+    color: rgb(71 85 105);
+}
+
+.fi-wi-table {
+    background: transparent;
+}
+
+.fi-wi-table .fi-ta {
+    overflow: hidden;
+    border: 1px solid rgb(33 48 71 / 0.1);
+    border-radius: 1rem;
+    background: white;
+    box-shadow:
+        0 1px 2px rgb(11 19 32 / 0.06),
+        0 14px 32px rgb(11 19 32 / 0.035);
+}
+
+.fi-wi-table .fi-ta-header,
+.fi-wi-table .fi-ta-toolbar,
+.fi-wi-table .fi-ta-content-ctn,
+.fi-wi-table .fi-ta-main,
+.fi-wi-table .fi-ta-content,
+.fi-wi-table .fi-ta-empty-state {
+    background: transparent;
+}
+
+.fi-wi-table .fi-ta-header {
+    border-bottom: 1px solid rgb(33 48 71 / 0.1);
+}
+
+.fi-wi-table .fi-ta-toolbar {
+    border-bottom-color: rgb(33 48 71 / 0.08);
+}
+
+.fi-wi-table .fi-ta-table {
+    background: white;
+}
+
+.fi-wi-table .fi-ta-header-cell {
+    background: rgb(248 250 252 / 0.75);
+    color: rgb(15 23 42);
+}
+
+.fi-wi-table .fi-empty-state {
+    min-height: 10rem;
 }
 
 .fi-badge {

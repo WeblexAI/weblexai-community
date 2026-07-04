@@ -11,11 +11,19 @@ Contract version `1` is exposed through `X-Weblex-Contract: 1`.
 Authentication failures always return:
 
 ```json
-{"message":"Unauthenticated."}
+{ "message": "Unauthenticated." }
 ```
 
 The translations endpoint accepts `source`, `target`, and up to 100 `translatables`. Each translatable has an ID and up to 10,000 characters of text. It returns `application/x-ndjson` containing `batch`, `complete`, or sanitized `error` events. The event schema is in [api-contract-v1.json](api-contract-v1.json).
 
-The browser SDK auto-initializes when `window.WeblexAIConfig.apiKey` is set before loading `/wlai/weblexai.min.js`.
+The browser SDK is normally initialized with:
+
+```html
+<script>
+    WeblexAI.init('your-project-api-key');
+</script>
+```
+
+The project setup page generates the full snippet using the configured application URL.
 
 Breaking changes require a new contract version and parallel compatibility period.

@@ -19,13 +19,13 @@ Open `/admin`, then go to **Provider Credentials**.
 
 Choose one provider:
 
-| Provider | Type | Use when |
-| --- | --- | --- |
-| Google Cloud Translation | NMT | You want fast direct machine translation. |
-| OpenAI | LLM | You want tone, audience, and website context to influence translations. |
-| OpenRouter | LLM | You want to route LLM requests through OpenRouter. |
-| Gemini | LLM | You want Google Gemini models. |
-| Qwen | LLM | You want Qwen-compatible LLM translation. |
+| Provider                 | Type | Use when                                                                |
+| ------------------------ | ---- | ----------------------------------------------------------------------- |
+| Google Cloud Translation | NMT  | You want fast direct machine translation.                               |
+| OpenAI                   | LLM  | You want tone, audience, and website context to influence translations. |
+| OpenRouter               | LLM  | You want to route LLM requests through OpenRouter.                      |
+| Gemini                   | LLM  | You want Google Gemini models.                                          |
+| Qwen                     | LLM  | You want Qwen-compatible LLM translation.                               |
 
 LLM providers can use the project context configured on the dashboard. NMT providers translate directly and use glossary rules for consistency.
 
@@ -89,10 +89,10 @@ The launch checklist should show:
 Copy the browser SDK snippet and add it to the website layout so it loads on every page.
 
 ```html
-<link rel="stylesheet" href="https://translations.example.com/wlai/weblexai.css">
+<link rel="stylesheet" href="https://translations.example.com/wlai/weblexai.css" />
 <script src="https://translations.example.com/wlai/weblexai.min.js"></script>
 <script>
-  WeblexAI.init('your-project-api-key');
+    WeblexAI.init('your-project-api-key');
 </script>
 ```
 
@@ -104,15 +104,33 @@ Open the website from an accepted origin and navigate through a page that should
 
 Then return to **Project Setup**. The status changes to active after WeblexAI receives website content.
 
+## Local Smoke Test
+
+If you want to test WeblexAI before touching a real website, use the plain HTML example:
+
+```bash
+cd examples/plain-html
+python -m http.server 4173
+```
+
+Add this accepted origin to the project:
+
+```text
+http://localhost:4173
+```
+
+Open `http://localhost:4173`, enter your WeblexAI URL and project API key, then load the SDK.
+
 ## Common Blockers
 
-| Symptom | Fix |
-| --- | --- |
-| Integration remains inactive | Confirm the website origin exactly matches an accepted origin. |
-| SDK loads but requests are rejected | Confirm the project API key in the snippet matches the project. |
-| No translations appear | Add at least one target language and assign an active provider credential. |
-| LLM output ignores brand voice | Add glossary rules and make the website context more specific. |
-| Local testing works but production fails | Set the application URL to the public HTTPS URL exposed by your proxy or tunnel. |
+| Symptom                                     | Fix                                                                                                                     |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Integration remains inactive                | Confirm the website origin exactly matches an accepted origin.                                                          |
+| SDK loads but requests are rejected         | Confirm the project API key in the snippet matches the project.                                                         |
+| No translations appear                      | Add at least one target language and assign an active provider credential.                                              |
+| LLM output ignores brand voice              | Add glossary rules and make the website context more specific.                                                          |
+| Local testing works but production fails    | Set the application URL to the public HTTPS URL exposed by your proxy or tunnel.                                        |
+| Search engines do not show translated pages | The browser SDK translates after page load. Review [known limits](known-limits.md) before using it for SEO-heavy sites. |
 
 ## Production Checklist
 

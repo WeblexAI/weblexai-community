@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\CollaboratorRole;
+use App\Filament\Resources\Projects\ProjectResource;
+use App\Filament\Resources\ProviderCredentials\ProviderCredentialResource;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use Inertia\Inertia;
@@ -18,6 +20,11 @@ class ProjectSetupController extends Controller
 
         return Inertia::render('Project/Setup', [
             'apiKey' => $project->api_key,
+            'adminUrls' => [
+                'providerCredentials' => ProviderCredentialResource::getUrl('index'),
+                'project' => ProjectResource::getUrl('view', ['record' => $project]),
+                'projectEdit' => ProjectResource::getUrl('edit', ['record' => $project]),
+            ],
         ]);
     }
 }

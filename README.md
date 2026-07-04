@@ -36,6 +36,19 @@ WeblexAI also offers a separately operated managed service for teams that want t
 
 For the full walkthrough, see [First project guide](docs/first-project.md).
 
+## Fast Local Smoke Test
+
+After WeblexAI is installed and a project has a provider credential, API key, accepted origin, and target language:
+
+```bash
+cd examples/plain-html
+python -m http.server 4173
+```
+
+Add `http://localhost:4173` as an accepted origin on the project, open `http://localhost:4173`, paste the WeblexAI URL and project API key, then load the SDK.
+
+More snippets are available in [examples](examples/).
+
 ## Docker Quick Start
 
 ```bash
@@ -63,10 +76,10 @@ docker compose --profile tools run --rm migrate
 Copy the installation snippet from the project setup page after the project has a provider credential, project API key, accepted origin, and target language.
 
 ```html
-<link rel="stylesheet" href="https://translations.example.com/wlai/weblexai.css">
+<link rel="stylesheet" href="https://translations.example.com/wlai/weblexai.css" />
 <script defer src="https://translations.example.com/wlai/weblexai.min.js"></script>
 <script>
-  WeblexAI.init('your-project-api-key');
+    WeblexAI.init('your-project-api-key');
 </script>
 ```
 
@@ -78,9 +91,16 @@ WeblexAI is closest to Weglot and Localize when the goal is translating an exist
 
 It is not a replacement for every localization platform. If you need only source-code string extraction for mobile apps or backend services, a file-based localization tool may be a better fit. WeblexAI is designed for browser-delivered websites and teams that want operational control.
 
+## Current Fit And Limits
+
+WeblexAI translates browser-delivered pages through its SDK. It is a strong fit for SaaS dashboards, customer portals, documentation-style interfaces, internal tools, and existing websites where self-hosted control matters.
+
+For SEO-heavy marketing sites, confirm your rendering strategy before relying on client-side translation alone. The browser SDK translates after the page loads; it is not a full server-rendered multilingual SEO system by itself.
+
 ## Documentation
 
 - [First project guide](docs/first-project.md)
+- [Known limits and SEO notes](docs/known-limits.md)
 - [Provider credentials](docs/provider-credentials.md)
 - [Why WeblexAI vs hosted website translation tools](docs/why-weblexai.md)
 - [Docker hosting and generated credentials](docs/docker-hosting.md)

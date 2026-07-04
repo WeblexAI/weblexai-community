@@ -21,6 +21,21 @@ docker compose up -d --build
 
 The repository includes `docker-compose.override.yml`, so Compose builds the application and update-agent images directly from the working tree. Production installations download only `docker-compose.yml` and use published images.
 
+Use `--build` when the image needs to be rebuilt:
+
+- after changing `Dockerfile`, `entrypoint.sh`, or deployment scripts
+- after changing Composer or npm dependencies
+- after changing frontend or SDK assets that must be compiled into the image
+- after pulling changes that affect the built application image
+
+For normal restarts while containers already exist, use:
+
+```bash
+docker compose up -d
+```
+
+`docker compose up -d --build` runs the full production image build, including Composer install, npm install, frontend build, SDK build, PHP extension setup, and PostgreSQL client setup. It is expected to take longer than a normal restart.
+
 ## Quality Checks
 
 Use one command before opening a pull request:
