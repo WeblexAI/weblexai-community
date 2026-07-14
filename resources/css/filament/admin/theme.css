@@ -211,6 +211,58 @@
     background: var(--weblex-admin-page);
 }
 
+.fi-ta {
+    overflow: hidden;
+    border: 1px solid rgb(33 48 71 / 0.1);
+    border-radius: 1rem;
+    background: white;
+    box-shadow:
+        0 1px 2px rgb(11 19 32 / 0.06),
+        0 14px 32px rgb(11 19 32 / 0.035);
+}
+
+.fi-ta-ctn {
+    border-radius: inherit;
+    background: transparent;
+    box-shadow: none;
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+.fi-ta-header,
+.fi-ta-toolbar,
+.fi-ta-header-toolbar,
+.fi-ta-content-ctn,
+.fi-ta-main,
+.fi-ta-content,
+.fi-ta-empty-state {
+    background: transparent;
+}
+
+.fi-ta-header,
+.fi-ta-header-toolbar {
+    border-bottom-color: rgb(33 48 71 / 0.1);
+}
+
+.fi-ta-table {
+    background: white;
+}
+
+.fi-ta-header-cell {
+    background: rgb(248 250 252 / 0.78);
+    color: rgb(15 23 42);
+}
+
+.fi-ta .fi-empty-state {
+    min-height: 10rem;
+}
+
+.fi-ta .fi-empty-state:not(.fi-empty-state-not-contained) {
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    --tw-ring-shadow: 0 0 #0000;
+}
+
 .fi-wi-stats-overview,
 .fi-wi-stats-overview .fi-section {
     border: 0;
@@ -258,46 +310,6 @@
 
 .fi-wi-table {
     background: transparent;
-}
-
-.fi-wi-table .fi-ta {
-    overflow: hidden;
-    border: 1px solid rgb(33 48 71 / 0.1);
-    border-radius: 1rem;
-    background: white;
-    box-shadow:
-        0 1px 2px rgb(11 19 32 / 0.06),
-        0 14px 32px rgb(11 19 32 / 0.035);
-}
-
-.fi-wi-table .fi-ta-header,
-.fi-wi-table .fi-ta-toolbar,
-.fi-wi-table .fi-ta-content-ctn,
-.fi-wi-table .fi-ta-main,
-.fi-wi-table .fi-ta-content,
-.fi-wi-table .fi-ta-empty-state {
-    background: transparent;
-}
-
-.fi-wi-table .fi-ta-header {
-    border-bottom: 1px solid rgb(33 48 71 / 0.1);
-}
-
-.fi-wi-table .fi-ta-toolbar {
-    border-bottom-color: rgb(33 48 71 / 0.08);
-}
-
-.fi-wi-table .fi-ta-table {
-    background: white;
-}
-
-.fi-wi-table .fi-ta-header-cell {
-    background: rgb(248 250 252 / 0.75);
-    color: rgb(15 23 42);
-}
-
-.fi-wi-table .fi-empty-state {
-    min-height: 10rem;
 }
 
 .fi-badge {
