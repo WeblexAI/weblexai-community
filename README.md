@@ -4,7 +4,7 @@ WeblexAI is a self-hosted alternative to Weglot and Localize for teams that want
 
 Community Edition packages the admin panel, project dashboard, translation API, browser SDK, workers, and provider integrations into one Apache-2.0 application. You bring your own Google, OpenAI, OpenRouter, Gemini, or Qwen credentials and run the stack on infrastructure you control.
 
-WeblexAI also offers a separately operated managed service for teams that want the same product without maintaining PostgreSQL, Redis, workers, backups, and upgrades.
+Managed hosting is planned for teams that want the same product without maintaining PostgreSQL, Redis, workers, backups, and upgrades. It is not available yet.
 
 ## Why Teams Use It
 
@@ -51,15 +51,17 @@ More snippets are available in [examples](examples/).
 
 ## Docker Quick Start
 
+The one-command installer requires a published stable GitHub release. After the first release is available, run:
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/weblexai/weblexai-community/main/deployment/install.sh | sudo sh
+curl -fsSL https://github.com/weblexai/weblexai-community/releases/latest/download/install.sh | sudo sh
 ```
 
 The installer downloads the production Compose file, generates secure PostgreSQL credentials, pulls the current stable images, and starts WeblexAI. It uses the first available port beginning at `8787`.
 
 Open the installation URL printed by the command. The browser setup writes the public application URL, runs migrations, seeds defaults, and creates the first administrator.
 
-Release images are published publicly at:
+Stable releases publish public images at:
 
 - `ghcr.io/weblexai/weblexai-community`
 - `ghcr.io/weblexai/weblexai-community-update-agent`
@@ -87,7 +89,7 @@ Accepted origins must be exact origins such as `https://www.example.com`. Wildca
 
 ## How It Compares
 
-WeblexAI is closest to Weglot and Localize when the goal is translating an existing website through a browser SDK. The difference is ownership: you host the application, keep provider credentials under your control, choose your translation provider, and can inspect or extend the full stack.
+WeblexAI covers the core website-translation workflow offered by Weglot and Localize: add a browser SDK, manage languages and translations, and publish changes from a dashboard. It is built for teams that need that workflow on their own infrastructure, with provider credentials, project data, API traffic, and operations under their control.
 
 It is not a replacement for every localization platform. If you need only source-code string extraction for mobile apps or backend services, a file-based localization tool may be a better fit. WeblexAI is designed for browser-delivered websites and teams that want operational control.
 

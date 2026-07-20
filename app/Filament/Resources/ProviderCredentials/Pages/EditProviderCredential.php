@@ -16,7 +16,9 @@ class EditProviderCredential extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $provider = TranslationProvider::from($data['provider']);
+        $provider = $data['provider'] instanceof TranslationProvider
+            ? $data['provider']
+            : TranslationProvider::from($data['provider']);
         $data['model'] = ($data['model'] ?? null) ?: $provider->defaultModel();
         $data['base_url'] = ($data['base_url'] ?? null) ?: $provider->defaultBaseUrl();
 

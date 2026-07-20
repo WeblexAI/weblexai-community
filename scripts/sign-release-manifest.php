@@ -45,7 +45,7 @@ $payload = [
     'security' => filter_var($options['security'] ?? false, FILTER_VALIDATE_BOOL),
     'requirements' => [
         'application' => getenv('RELEASE_REQUIRES_APP') ?: '1.0.0',
-        'php' => getenv('RELEASE_REQUIRES_PHP') ?: '8.4.0',
+        'php' => getenv('RELEASE_REQUIRES_PHP') ?: '8.3.0',
         'postgres' => getenv('RELEASE_REQUIRES_POSTGRES') ?: '14.0',
         'redis' => getenv('RELEASE_REQUIRES_REDIS') ?: '6.0',
     ],

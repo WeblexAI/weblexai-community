@@ -7,7 +7,13 @@ github_url="${WEBLEX_GITHUB_URL:-https://github.com/weblexai/weblexai-community}
 docs_url="${WEBLEX_DOCS_URL:-https://github.com/weblexai/weblexai-community/tree/main/docs}"
 release_feed_url="${WEBLEX_RELEASE_FEED_URL:-https://github.com/weblexai/weblexai-community/releases/latest/download/stable.json}"
 release_public_key="${WEBLEX_RELEASE_PUBLIC_KEY:-zmQC1sHMkYYb01WwmEzFpbIYK/hCSra2hQBw+eVWr9M=}"
+app_version="${WEBLEX_VERSION:-__WEBLEX_VERSION__}"
 port="${WEBLEX_PORT:-8787}"
+
+if [ "$app_version" = "__WEBLEX_VERSION__" ]; then
+    echo "Use the installer attached to a GitHub release or set WEBLEX_VERSION explicitly." >&2
+    exit 1
+fi
 
 if [ "$(id -u)" -ne 0 ]; then
     echo "Run this installer as root." >&2
@@ -108,7 +114,7 @@ APP_KEY=
 APP_DEBUG=false
 APP_URL=http://localhost:${port}
 APP_INSTALLED=false
-APP_VERSION=stable
+APP_VERSION=${app_version}
 APP_PORT=${port}
 WEBLEX_GITHUB_URL=${github_url}
 WEBLEX_DOCS_URL=${docs_url}

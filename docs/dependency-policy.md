@@ -10,5 +10,3 @@ Temporary compatibility forks are allowed only when all of these are true:
 - the fork purpose is documented before release
 
 Current temporary forks: none.
-
-Before a stable public release, either move these forks under WeblexAI-controlled repositories with tags or replace them with compatible upstream releases.

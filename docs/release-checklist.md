@@ -5,6 +5,7 @@ Use this checklist for every WeblexAI Community Edition release.
 ## Build Inputs
 
 - Version is updated in `package.json`, release manifest, Docker tags, and `CHANGELOG.md`.
+- The `Unreleased` changelog section is renamed to the release version and date.
 - `composer.lock` and `package-lock.json` are committed and match manifests.
 - Both GHCR packages are public and can be pulled without authentication.
 - No private commercial-only module, credential, dump, log, or generated cache is included.
@@ -59,6 +60,8 @@ Add `http://localhost:4173` as an accepted origin, load the SDK from the example
 
 ## Post-Release
 
+- Download `install.sh`, `stable.json`, `docker-compose.yml`, and the source archive from the public release without authentication.
+- Run the one-command installer from the README on a clean host.
 - Install from the published artifact in a clean environment.
 - Run the browser installer and create the first administrator.
 - Configure a mock or low-risk provider key and complete one translation request.

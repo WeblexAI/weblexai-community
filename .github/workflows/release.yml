@@ -10,7 +10,31 @@ permissions:
   id-token: write
 
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: bcmath, curl, exif, gd, intl, mbstring, pcntl, pdo_pgsql, redis, sodium, zip
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: composer install --prefer-dist --no-interaction --no-progress
+      - run: npm ci
+      - run: composer quality
+
+  docker-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tests/e2e/run.sh
+
   artifacts:
+    needs: [quality, docker-e2e]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +47,7 @@ jobs:
           cache: npm
       - run: composer install --no-dev --prefer-dist --classmap-authoritative
       - run: npm ci && npm run build
-      - run: tar --exclude=.git --exclude=node_modules --exclude=vendor --exclude=storage/logs --exclude=tests/e2e/*.runtime* -czf "weblexai-community-${GITHUB_REF_NAME#v}.tar.gz" .
+      - run: tar --exclude=.git --exclude=.env --exclude=node_modules --exclude=vendor --exclude=storage/logs --exclude=storage/app/installation.lock --exclude=storage/app/update.lock --exclude=tests/e2e/*.runtime* --exclude='weblexai-community-*.tar.gz' -czf "weblexai-community-${GITHUB_REF_NAME#v}.tar.gz" .
       - run: sha256sum weblexai-community-*.tar.gz > SHA256SUMS
       - name: Sign release manifest
         env:
@@ -38,17 +62,26 @@ jobs:
             --sha256="$sha" \
             --notes-url="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${GITHUB_REF_NAME}" \
             --output=stable.json
-      - uses: softprops/action-gh-release@v2
+      - name: Build versioned installer
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          sed "s/__WEBLEX_VERSION__/${version}/g" deployment/install.sh > install.sh
+          chmod 0755 install.sh
+      - uses: actions/upload-artifact@v4
         with:
-          files: |
+          name: release-bundle
+          path: |
             weblexai-community-*.tar.gz
             SHA256SUMS
             stable.json
+            install.sh
             docker-compose.yml
             scripts/backup-docker.sh
             scripts/restore-docker.sh
 
   image:
+    needs: [quality, docker-e2e]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,6 +112,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   update-agent-image:
+    needs: [quality, docker-e2e]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -118,3 +152,17 @@ jobs:
           owner="${GITHUB_REPOSITORY_OWNER,,}"
           docker pull "ghcr.io/${owner}/weblexai-community:stable"
           docker pull "ghcr.io/${owner}/weblexai-community-update-agent:stable"
+
+  publish:
+    needs: [artifacts, verify-public-images]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-bundle
+          path: release
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          fail_on_unmatched_files: true
+          generate_release_notes: true

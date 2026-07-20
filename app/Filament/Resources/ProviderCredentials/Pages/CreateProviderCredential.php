@@ -15,7 +15,9 @@ class CreateProviderCredential extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $provider = TranslationProvider::from($data['provider']);
+        $provider = $data['provider'] instanceof TranslationProvider
+            ? $data['provider']
+            : TranslationProvider::from($data['provider']);
         $data['user_id'] = auth()->id();
         $data['model'] = ($data['model'] ?? null) ?: $provider->defaultModel();
         $data['base_url'] = ($data['base_url'] ?? null) ?: $provider->defaultBaseUrl();

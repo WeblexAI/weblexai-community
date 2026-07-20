@@ -38,4 +38,4 @@ Self-hosting gives control and adds responsibility. The team operating WeblexAI 
 - update checks and release verification
 - reverse proxy and HTTPS configuration
 
-Teams that want WeblexAI without operating infrastructure should use the managed service.
+Managed hosting is planned but is not available yet. Current installations are self-hosted and operator-managed.

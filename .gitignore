@@ -48,6 +48,7 @@ Thumbs.db
 /app/waitlist.txt
 /app/analytics/service-account-credentials.json
 /storage/app/installed
+/storage/app/installation.lock
 /storage/app/update.lock
 /tests/e2e/*.runtime*
 /tests/e2e/backups.runtime

@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.0.0 - 2026-06-08
+## Unreleased
 
-Initial WeblexAI Community Edition release.
+Initial WeblexAI Community Edition release candidate.
 
 - Apache-2.0 licensed monolith with admin, dashboard, translation API, and browser SDK.
 - Browser installer for PostgreSQL, Redis, storage, and first administrator setup.

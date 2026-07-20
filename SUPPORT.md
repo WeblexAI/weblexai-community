@@ -8,4 +8,4 @@ Community support is provided on a best-effort basis with no guaranteed response
 
 Security vulnerabilities must follow [SECURITY.md](SECURITY.md), not public issues.
 
-Managed hosting and commercial support are separate services and do not change the Apache-2.0 rights granted for Community Edition.
+Future managed hosting and commercial support services will not change the Apache-2.0 rights granted for Community Edition.
