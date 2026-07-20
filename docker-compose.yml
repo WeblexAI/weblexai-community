@@ -1,10 +1,14 @@
 name: weblex-community
 
+x-app-environment: &app-environment
+  WEBLEX_DEPLOYMENT_MODE: docker
+  BACKUP_PATH: /backups
+
 x-app: &app
   image: ${WEBLEX_IMAGE:-ghcr.io/weblexai/weblexai-community}:${APP_VERSION:-stable}
   restart: unless-stopped
   environment:
-    WEBLEX_DEPLOYMENT_MODE: docker
+    <<: *app-environment
   volumes:
     - ${WEBLEX_ENV_FILE:-./.env}:/bootstrap/.env:ro
     - weblex_config:/config
@@ -33,6 +37,7 @@ services:
   worker:
     <<: *app
     environment:
+      <<: *app-environment
       CONTAINER_ROLE: worker
     depends_on:
       app:
@@ -50,6 +55,7 @@ services:
   scheduler:
     <<: *app
     environment:
+      <<: *app-environment
       CONTAINER_ROLE: scheduler
     depends_on:
       app:
@@ -100,6 +106,7 @@ services:
     restart: "no"
     profiles: ["tools"]
     environment:
+      <<: *app-environment
       CONTAINER_ROLE: migrate
 
   update-agent:
