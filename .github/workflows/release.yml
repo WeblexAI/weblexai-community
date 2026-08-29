@@ -89,8 +89,16 @@ jobs:
         shell: bash
         run: |
           version="${GITHUB_REF_NAME#v}"
-          sed "s/__WEBLEX_VERSION__/${version}/g" deployment/install.sh > install.sh
+          sed "s|app_version=\"\${WEBLEX_VERSION:-__WEBLEX_VERSION__}\"|app_version=\"\${WEBLEX_VERSION:-${version}}\"|" deployment/install.sh > install.sh
           chmod 0755 install.sh
+      - name: Verify versioned installer guard
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          grep -q "WEBLEX_VERSION:-${version}" install.sh
+          test "$(grep -c '__WEBLEX_VERSION__' install.sh)" = "1"
+          grep -q 'if \[ "$app_version" = "__WEBLEX_VERSION__" \]; then' install.sh
+          sh -n install.sh
       - uses: actions/upload-artifact@v4
         with:
           name: release-bundle
