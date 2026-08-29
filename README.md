@@ -61,7 +61,7 @@ The script creates a local configuration, builds the application, and prints the
 
 ## Docker Quick Start
 
-A Linux server with Docker and root access is the production path. Run:
+A Linux server with Docker and root access is the production path. The installer is a root shell script, so native Windows (PowerShell, cmd, Git Bash) cannot run it directly. On Windows, use the local quickstart above for an evaluation instance, or run the installer inside WSL2, where it works like any Linux server. Run:
 
 ```bash
 curl -fsSL https://github.com/weblexai/weblexai-community/releases/latest/download/install.sh | sudo sh
