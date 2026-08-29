@@ -18,32 +18,7 @@ Administrators can check status in `/admin/updates` or run:
 php artisan weblex:update --check
 ```
 
-Release maintainers sign metadata with:
-
-```bash
-php scripts/generate-release-keypair.php
-```
-
-If local PHP does not have the sodium extension, run the generator in Docker:
-
-```bash
-docker run --rm -v "${PWD}:/app" -w /app composer:2.8.9 php scripts/generate-release-keypair.php
-```
-
-Store `RELEASE_PRIVATE_KEY` as a GitHub Actions secret in the repository or organization that publishes releases. Store `RELEASE_PUBLIC_KEY` in the application environment used by installations. The public key is safe to distribute; the private key must never be committed.
-
-Each release signs metadata with:
-
-```bash
-RELEASE_PRIVATE_KEY=base64-ed25519-secret-key php scripts/sign-release-manifest.php \
-  --version=1.0.1 \
-  --artifact-url=https://github.com/weblexai/weblexai-community/releases/download/v1.0.1/weblexai-community-1.0.1.tar.gz \
-  --sha256=64-lowercase-hex-characters \
-  --notes-url=https://github.com/weblexai/weblexai-community/releases/tag/v1.0.1 \
-  --output=stable.json
-```
-
-The release workflow uploads `stable.json` to each GitHub Release. The update feed uses GitHub's latest-release download URL, so publishing a new stable tag automatically points update checks at the newest signed manifest after the workflow completes.
+Release maintainers sign each release metadata file with the private key before publishing. See [release checklist](release-checklist.md) for the signing workflow.
 
 ## Traditional Driver
 

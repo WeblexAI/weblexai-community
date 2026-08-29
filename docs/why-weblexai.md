@@ -27,7 +27,7 @@ For SEO-heavy public marketing sites, validate the rendering strategy first. The
 | Translation quality controls | Glossary, exclusions, review state, LLM context, tone, and audience.    | Depends on vendor plan and workflow.                         |
 | SEO behavior                 | Browser SDK by default. SEO strategy depends on deployment.             | Often includes vendor-managed SEO routing.                   |
 | Operational responsibility   | Your team manages updates, backups, logs, and infrastructure.           | Vendor manages operations.                                   |
-| Managed option               | Planned, but not available yet.                                         | Included by default.                                         |
+| Managed option               | Not available yet.                                                       | Included by default.                                         |
 
 ## Positioning
 

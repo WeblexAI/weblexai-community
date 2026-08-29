@@ -106,6 +106,8 @@ Then return to **Project Setup**. The status changes to active after WeblexAI re
 
 ## Local Smoke Test
 
+If you do not have an installation yet, run the full stack on your machine with `bash scripts/local-quickstart.sh` and open the printed URL. Then continue below.
+
 If you want to test WeblexAI before touching a real website, use the plain HTML example:
 
 ```bash

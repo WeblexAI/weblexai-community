@@ -19,6 +19,25 @@ it('renders operational admin dashboard widgets', function () {
         ->assertSee('Start tour');
 });
 
+it('shows the backup nudge when no backup exists and hides it after the first backup', function () {
+    $admin = User::factory()->create(['is_active' => ModelStatus::ACTIVE]);
+    $admin->assignRole(UserRole::ADMIN->value);
+
+    Storage::disk('backups')->deleteDirectory(config('backup.backup.name'));
+
+    $this->actingAs($admin)
+        ->get('/admin')
+        ->assertOk()
+        ->assertSee('No backups exist yet');
+
+    Storage::disk('backups')->put(config('backup.backup.name').'/weblex-test.zip', 'fixture');
+
+    $this->actingAs($admin)
+        ->get('/admin')
+        ->assertOk()
+        ->assertDontSee('No backups exist yet');
+});
+
 it('renders backup and health administration pages for administrators', function () {
     $admin = User::factory()->create(['is_active' => ModelStatus::ACTIVE]);
     $admin->assignRole(UserRole::ADMIN->value);

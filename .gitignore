@@ -63,3 +63,6 @@ frankenphp-worker.php
 AGENTS.md
 CLAUDE.md
 GEMINI.md
+
+# Local Hermes plans
+.hermes/

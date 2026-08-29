@@ -17,6 +17,23 @@ Do not publish PostgreSQL or Redis ports to the host. View the generated configu
 sudo cat /opt/weblexai/.env
 ```
 
+## HTTPS With Your Own Domain
+
+The installer serves plain HTTP by default. To enable automatic HTTPS certificates with your own domain:
+
+1. Point an `A` record at the server IP (for example `translations.example.com -> 203.0.113.10`).
+2. Re-run the installer with the domain set:
+
+```bash
+sudo WEBLEX_DOMAIN=translations.example.com sh install.sh
+```
+
+3. Allow TCP `80` and `443` in the server firewall. Certificates are issued and renewed automatically by the included Caddy proxy.
+
+The public URL becomes `https://translations.example.com`. Set `WEBLEX_EMAIL` (also as an installer environment variable) to receive Let's Encrypt expiry notices.
+
+Without a domain, the stack keeps serving plain HTTP on the configured port. HTTPS is required for browser SDK traffic from other sites, so production installs should use a domain.
+
 ## Commands
 
 ```bash

@@ -4,7 +4,7 @@ WeblexAI is a self-hosted alternative to Weglot and Localize for teams that want
 
 Community Edition packages the admin panel, project dashboard, translation API, browser SDK, workers, and provider integrations into one Apache-2.0 application. You bring your own Google, OpenAI, OpenRouter, Gemini, or Qwen credentials and run the stack on infrastructure you control.
 
-Managed hosting is planned for teams that want the same product without maintaining PostgreSQL, Redis, workers, backups, and upgrades. It is not available yet.
+Managed hosting is not available yet.
 
 ## Why Teams Use It
 
@@ -49,9 +49,19 @@ Add `http://localhost:4173` as an accepted origin on the project, open `http://l
 
 More snippets are available in [examples](examples/).
 
+## Try It Locally (No Server Required)
+
+If you have Docker Desktop (Windows or macOS) or Docker Engine (Linux), run the full stack on your machine:
+
+```bash
+bash scripts/local-quickstart.sh
+```
+
+The script creates a local configuration, builds the application, and prints the installation URL. Data stays in local Docker volumes; `docker compose down` stops everything. Then follow the [First project guide](docs/first-project.md).
+
 ## Docker Quick Start
 
-The one-command installer requires a published stable GitHub release. After the first release is available, run:
+A Linux server with Docker and root access is the production path. Run:
 
 ```bash
 curl -fsSL https://github.com/weblexai/weblexai-community/releases/latest/download/install.sh | sudo sh
@@ -60,6 +70,8 @@ curl -fsSL https://github.com/weblexai/weblexai-community/releases/latest/downlo
 The installer downloads the production Compose file, generates secure PostgreSQL credentials, pulls the current stable images, and starts WeblexAI. It uses the first available port beginning at `8787`.
 
 Open the installation URL printed by the command. The browser setup writes the public application URL, runs migrations, seeds defaults, and creates the first administrator.
+
+For HTTPS with your own domain, point an `A` record at the server and run the installer with `WEBLEX_DOMAIN=translations.example.com` set. Automatic certificates are issued for you; see [Docker hosting](docs/docker-hosting.md).
 
 Stable releases publish public images at:
 

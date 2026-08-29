@@ -47,7 +47,30 @@ jobs:
           cache: npm
       - run: composer install --no-dev --prefer-dist --classmap-authoritative
       - run: npm ci && npm run build
-      - run: tar --exclude=.git --exclude=.env --exclude=node_modules --exclude=vendor --exclude=storage/logs --exclude=storage/app/installation.lock --exclude=storage/app/update.lock --exclude=tests/e2e/*.runtime* --exclude='weblexai-community-*.tar.gz' -czf "weblexai-community-${GITHUB_REF_NAME#v}.tar.gz" .
+      - name: Verify release signing key is configured
+        shell: bash
+        run: |
+          if [ -z "${RELEASE_PRIVATE_KEY:-}" ]; then
+            echo "::error::RELEASE_PRIVATE_KEY secret is not set. Add it to repository secrets before publishing a release." >&2
+            exit 1
+          fi
+        env:
+          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
+      - name: Create source archive outside the workspace
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          tar \
+            --exclude=.git \
+            --exclude=.env \
+            --exclude=node_modules \
+            --exclude=vendor \
+            --exclude=storage/logs \
+            --exclude=storage/app/installation.lock \
+            --exclude=storage/app/update.lock \
+            --exclude='tests/e2e/*.runtime*' \
+            -czf "${RUNNER_TEMP}/weblexai-community-${version}.tar.gz" .
+          mv "${RUNNER_TEMP}/weblexai-community-${version}.tar.gz" .
       - run: sha256sum weblexai-community-*.tar.gz > SHA256SUMS
       - name: Sign release manifest
         env:
@@ -77,6 +100,8 @@ jobs:
             stable.json
             install.sh
             docker-compose.yml
+            docker-compose.tls.yml
+            Caddyfile.tls
             scripts/backup-docker.sh
             scripts/restore-docker.sh
 
@@ -161,6 +186,26 @@ jobs:
         with:
           name: release-bundle
           path: release
+      - name: Verify all release assets are present
+        shell: bash
+        run: |
+          expected=(
+            "weblexai-community-*.tar.gz"
+            "SHA256SUMS"
+            "stable.json"
+            "install.sh"
+            "docker-compose.yml"
+            "docker-compose.tls.yml"
+            "Caddyfile.tls"
+            "scripts/backup-docker.sh"
+            "scripts/restore-docker.sh"
+          )
+          for pattern in "${expected[@]}"; do
+            if ! compgen -G "release/${pattern}" > /dev/null; then
+              echo "::error::Missing release asset: ${pattern}" >&2
+              exit 1
+            fi
+          done
       - uses: softprops/action-gh-release@v2
         with:
           files: release/*

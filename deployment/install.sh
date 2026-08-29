@@ -9,6 +9,8 @@ release_feed_url="${WEBLEX_RELEASE_FEED_URL:-https://github.com/weblexai/weblexa
 release_public_key="${WEBLEX_RELEASE_PUBLIC_KEY:-zmQC1sHMkYYb01WwmEzFpbIYK/hCSra2hQBw+eVWr9M=}"
 app_version="${WEBLEX_VERSION:-__WEBLEX_VERSION__}"
 port="${WEBLEX_PORT:-8787}"
+domain="${WEBLEX_DOMAIN:-}"
+email="${WEBLEX_EMAIL:-}"
 
 if [ "$app_version" = "__WEBLEX_VERSION__" ]; then
     echo "Use the installer attached to a GitHub release or set WEBLEX_VERSION explicitly." >&2
@@ -93,6 +95,11 @@ curl -fsSL "$download_base/scripts/backup-docker.sh" -o "$install_dir/scripts/ba
 curl -fsSL "$download_base/scripts/restore-docker.sh" -o "$install_dir/scripts/restore-docker.sh"
 chmod 0700 "$install_dir/scripts/backup-docker.sh" "$install_dir/scripts/restore-docker.sh"
 
+if [ -n "$domain" ]; then
+    curl -fsSL "$download_base/docker-compose.tls.yml" -o "$install_dir/docker-compose.tls.yml"
+    curl -fsSL "$download_base/Caddyfile.tls" -o "$install_dir/Caddyfile.tls"
+fi
+
 if [ -f "$install_dir/.env" ]; then
     configured_port="$(sed -n 's/^APP_PORT=//p' "$install_dir/.env" | tr -d '"')"
     port="${configured_port:-$port}"
@@ -107,17 +114,24 @@ else
     database_suffix="$(random_hex 6)"
     database_user_suffix="$(random_hex 4)"
 
+    app_url="http://localhost:${port}"
+    if [ -n "$domain" ]; then
+        app_url="https://${domain}"
+    fi
+
     cat > "$install_dir/.env" <<EOF
 APP_NAME="WeblexAI Community Edition"
 APP_ENV=production
 APP_KEY=
 APP_DEBUG=false
-APP_URL=http://localhost:${port}
+APP_URL=${app_url}
 APP_INSTALLED=false
 APP_VERSION=${app_version}
 APP_PORT=${port}
 WEBLEX_GITHUB_URL=${github_url}
 WEBLEX_DOCS_URL=${docs_url}
+WEBLEX_DOMAIN=${domain}
+WEBLEX_EMAIL=${email}
 APP_LOCALE=en
 APP_TIMEZONE=UTC
 
@@ -195,9 +209,19 @@ ensure_env_required UPDATE_AGENT_URL "http://update-agent:8080"
 ensure_env_required UPDATE_AGENT_SECRET "$(random_hex 32)"
 chmod 0600 "$install_dir/.env"
 
+if [ -n "$domain" ]; then
+    set_env_value APP_URL "https://${domain}"
+    ensure_env_value WEBLEX_DOMAIN "$domain"
+    ensure_env_value WEBLEX_EMAIL "$email"
+fi
+
 cd "$install_dir"
-docker compose --profile updates pull app worker scheduler postgres redis update-agent
-docker compose --profile updates up -d
+compose_files="-f docker-compose.yml"
+if [ -n "$domain" ]; then
+    compose_files="$compose_files -f docker-compose.tls.yml"
+fi
+docker compose $compose_files --profile updates pull app worker scheduler postgres redis update-agent
+docker compose $compose_files --profile updates up -d
 
 attempt=0
 until curl -fsS "http://127.0.0.1:${port}/up" >/dev/null 2>&1; do
@@ -214,4 +238,9 @@ server_address="${server_address:-localhost}"
 
 echo
 echo "WeblexAI is running."
-echo "Open http://${server_address}:${port}/install to finish setup."
+if [ -n "$domain" ]; then
+    echo "Open https://${domain}/install to finish setup."
+else
+    echo "Open http://${server_address}:${port}/install to finish setup."
+    echo "Set WEBLEX_DOMAIN in $install_dir/.env and re-run this installer to enable HTTPS."
+fi

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+Changes since the initial Community Edition release candidate.
+
+- One-command installer now supports automatic HTTPS with `WEBLEX_DOMAIN` (included Caddy proxy with automatic certificates).
+- Added `scripts/local-quickstart.sh` to run the full stack locally with Docker Desktop or Docker Engine.
+- Fixed the release pipeline source archive step that prevented release assets from being published.
+- Release workflow now verifies the signing key and all release assets before publishing.
+- Added a first-backup nudge to the admin dashboard when no backup exists yet.
+- Removed builder-directed notes from user-facing documentation.
+
 Initial WeblexAI Community Edition release candidate.
 
 - Apache-2.0 licensed monolith with admin, dashboard, translation API, and browser SDK.

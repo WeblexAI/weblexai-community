@@ -46,9 +46,48 @@ Add `http://localhost:4173` as an accepted origin, load the SDK from the example
 - Run `composer audit --locked`.
 - Run `npm audit --audit-level=high`.
 - Run secret scanning against the release branch.
-- Complete `docs/credential-rotation-checklist.md`.
+- Complete the release secret hygiene checks:
+  - Confirm `.env`, `.env.*`, provider credentials, service-account JSON files, database dumps, and private keys are ignored.
+  - Rotate any credential that ever appeared in copied source, logs, screenshots, exported database rows, or test fixtures.
+  - Generate a fresh release signing key pair if private-key handling is uncertain.
+  - Store production secrets outside the repository in the host secret manager or deployment environment.
+- Audit the user-facing documentation for builder-directed notes. Every match must be a deliberate, user-facing product fact:
+
+  ```bash
+  grep -rniE "first release is available|release maintainers|maintainer gate|planned but|we will" README.md docs/ || true
+  ```
+
 - Confirm project API authentication requires accepted origins.
 - Confirm update manifests are signed and checksums are verified.
+
+## Signing Releases
+
+Generate the signing key pair (repeat only if private-key handling is uncertain):
+
+```bash
+php scripts/generate-release-keypair.php
+```
+
+If local PHP does not have the sodium extension, run the generator in Docker:
+
+```bash
+docker run --rm -v "${PWD}:/app" -w /app composer:2.8.9 php scripts/generate-release-keypair.php
+```
+
+Store `RELEASE_PRIVATE_KEY` as a GitHub Actions secret in the repository or organization that publishes releases. Store `RELEASE_PUBLIC_KEY` in the application environment used by installations. The public key is safe to distribute; the private key must never be committed.
+
+The release workflow signs each release with the key. To sign manually:
+
+```bash
+RELEASE_PRIVATE_KEY=base64-ed25519-secret-key php scripts/sign-release-manifest.php \
+  --version=1.0.1 \
+  --artifact-url=https://github.com/weblexai/weblexai-community/releases/download/v1.0.1/weblexai-community-1.0.1.tar.gz \
+  --sha256=64-lowercase-hex-characters \
+  --notes-url=https://github.com/weblexai/weblexai-community/releases/tag/v1.0.1 \
+  --output=stable.json
+```
+
+The release workflow uploads `stable.json` to each GitHub Release. The update feed uses GitHub's latest-release download URL, so publishing a new stable tag automatically points update checks at the newest signed manifest after the workflow completes.
 
 ## Artifacts
 

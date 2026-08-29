@@ -38,4 +38,4 @@ Self-hosting gives control and adds responsibility. The team operating WeblexAI 
 - update checks and release verification
 - reverse proxy and HTTPS configuration
 
-Managed hosting is planned but is not available yet. Current installations are self-hosted and operator-managed.
+Managed hosting is not available yet. Current installations are self-hosted and operator-managed.
