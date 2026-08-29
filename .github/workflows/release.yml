@@ -186,6 +186,9 @@ jobs:
         with:
           name: release-bundle
           path: release
+      - name: Flatten nested assets for release upload
+        shell: bash
+        run: cp release/scripts/*.sh release/
       - name: Verify all release assets are present
         shell: bash
         run: |
@@ -197,8 +200,8 @@ jobs:
             "docker-compose.yml"
             "docker-compose.tls.yml"
             "Caddyfile.tls"
-            "scripts/backup-docker.sh"
-            "scripts/restore-docker.sh"
+            "backup-docker.sh"
+            "restore-docker.sh"
           )
           for pattern in "${expected[@]}"; do
             if ! compgen -G "release/${pattern}" > /dev/null; then

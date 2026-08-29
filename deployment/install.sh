@@ -91,8 +91,8 @@ umask 077
 mkdir -p "$install_dir/scripts"
 
 curl -fsSL "$download_base/docker-compose.yml" -o "$install_dir/docker-compose.yml"
-curl -fsSL "$download_base/scripts/backup-docker.sh" -o "$install_dir/scripts/backup-docker.sh"
-curl -fsSL "$download_base/scripts/restore-docker.sh" -o "$install_dir/scripts/restore-docker.sh"
+curl -fsSL "$download_base/backup-docker.sh" -o "$install_dir/scripts/backup-docker.sh"
+curl -fsSL "$download_base/restore-docker.sh" -o "$install_dir/scripts/restore-docker.sh"
 chmod 0700 "$install_dir/scripts/backup-docker.sh" "$install_dir/scripts/restore-docker.sh"
 
 if [ -n "$domain" ]; then
