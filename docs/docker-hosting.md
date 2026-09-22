@@ -1,47 +1,64 @@
 # Docker Hosting
 
-The Docker installer creates the deployment in `/opt/weblexai` and starts these services:
+WeblexAI runs as one Docker Compose stack:
 
-| Service | Network port | Host access |
-| --- | ---: | --- |
-| WeblexAI | `8080` | Published on the first available port beginning at `8787` |
-| PostgreSQL | `5432` | Private Compose network |
-| Redis | `6379` | Private Compose network |
-| Update agent | `8080` | Private Compose network |
+| Service | Host access |
+| --- | --- |
+| WeblexAI app | `APP_PORT` (8787 by default) |
+| PostgreSQL | Private Compose network |
+| Redis | Private Compose network |
+| Worker and scheduler | Private Compose network |
 
-PostgreSQL receives a random database name, username, and 64-character password. The update agent receives a separate random secret. These values are stored in `/opt/weblexai/.env`, which is created with owner-only permissions.
+## Start the stack
 
-Do not publish PostgreSQL or Redis ports to the host. View the generated configuration only when required:
-
-```bash
-sudo cat /opt/weblexai/.env
-```
-
-## HTTPS With Your Own Domain
-
-The installer serves plain HTTP by default. To enable automatic HTTPS certificates with your own domain:
-
-1. Point an `A` record at the server IP (for example `translations.example.com -> 203.0.113.10`).
-2. Re-run the installer with the domain set:
+From a directory containing `docker-compose.yml` and `.env`:
 
 ```bash
-sudo WEBLEX_DOMAIN=translations.example.com sh install.sh
+cp .env.example .env
 ```
 
-3. Allow TCP `80` and `443` in the server firewall. Certificates are issued and renewed automatically by the included Caddy proxy.
-
-The public URL becomes `https://translations.example.com`. Set `WEBLEX_EMAIL` (also as an installer environment variable) to receive Let's Encrypt expiry notices.
-
-Without a domain, the stack keeps serving plain HTTP on the configured port. HTTPS is required for browser SDK traffic from other sites, so production installs should use a domain.
-
-## Commands
+Set a strong `DB_PASSWORD` and review `APP_URL`, `APP_PORT`, `DB_DATABASE`, and `DB_USERNAME`. Then run:
 
 ```bash
-cd /opt/weblexai
-sudo docker compose ps
-sudo docker compose logs -f app worker scheduler update-agent
-sudo docker compose --profile updates pull
-sudo docker compose --profile updates up -d
+docker compose pull
+docker compose up -d
 ```
 
-The application, worker, and scheduler use the same versioned WeblexAI image. PostgreSQL data, Redis data, application storage, and the final application environment are stored in named Docker volumes.
+Open `http://localhost:8787/install`, or use the configured `APP_URL` from a remote browser, to create the first administrator.
+
+PostgreSQL, Redis, application storage, backups, and the persistent application environment use named Docker volumes. Do not publish PostgreSQL or Redis ports to the host.
+
+## Custom domains
+
+Use an external reverse proxy or deployment platform for public access. Point DNS at that platform, terminate HTTPS there, and proxy requests to the WeblexAI app port.
+
+Set the public URL before completing the installer:
+
+```dotenv
+APP_URL=https://translations.example.com
+```
+
+The proxy must preserve `Host`, `Authorization`, `Content-Type`, `Origin`, and `X-Page-Url`. Disable response buffering for streaming translation responses.
+
+## Upgrades
+
+For a convenient rolling tag:
+
+```bash
+docker compose pull
+docker compose --profile tools run --rm migrate
+docker compose up -d
+```
+
+For a pinned release, set `APP_VERSION` in `.env` to a published semver tag before pulling. Apply pending database migrations and create and verify a backup before upgrading.
+
+## Logs and service status
+
+```bash
+docker compose ps
+docker compose logs -f app worker scheduler
+docker compose exec worker php artisan horizon:status
+docker compose exec scheduler php artisan schedule:list
+```
+
+See [backup and restore](backup-restore.md) and [operations](operations.md) for ongoing maintenance.

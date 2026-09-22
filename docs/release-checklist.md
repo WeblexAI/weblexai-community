@@ -1,25 +1,25 @@
 # Release Checklist
 
-Use this checklist for every WeblexAI Community Edition release.
+Use this checklist for each semver Docker image release.
 
-## Build Inputs
+## Before tagging
 
-- Version is updated in `package.json`, release manifest, Docker tags, and `CHANGELOG.md`.
-- The `Unreleased` changelog section is renamed to the release version and date.
-- `composer.lock` and `package-lock.json` are committed and match manifests.
-- Both GHCR packages are public and can be pulled without authentication.
-- No private commercial-only module, credential, dump, log, or generated cache is included.
-- Apache-2.0, NOTICE, trademark, support, security, and contributing docs are present.
+- `composer.lock` and `package-lock.json` match their manifests.
+- `CHANGELOG.md` contains the release notes.
+- The Docker Hub repository `kofibusy/weblexai` is public.
+- GitHub has the `DOCKERHUB_USERNAME` repository variable set to `kofibusy` and the `DOCKERHUB_TOKEN` secret.
+- No private credentials, dumps, logs, or generated caches are included.
+- Apache-2.0, security, support, contributing, and third-party notices are present.
 
 ## Verification
 
-Run the local quality gates:
+Run the quality gates:
 
 ```bash
 composer quality
 ```
 
-Run the container and E2E gates:
+Validate the Compose files and run Docker E2E:
 
 ```bash
 docker compose --env-file tests/e2e/docker.env.example -f docker-compose.yml -f tests/e2e/docker-compose.e2e.yml config --quiet
@@ -32,78 +32,21 @@ On Windows with Docker Desktop:
 powershell -ExecutionPolicy Bypass -File tests\e2e\run.ps1
 ```
 
-Run the plain HTML smoke test against the release candidate:
-
-```bash
-cd examples/plain-html
-python -m http.server 4173
-```
-
-Add `http://localhost:4173` as an accepted origin, load the SDK from the example page, then confirm the project setup page reports an active integration.
+Run the plain HTML smoke test, confirm accepted-origin authentication, complete one translation request, and verify backup/restore.
 
 ## Security
 
 - Run `composer audit --locked`.
 - Run `npm audit --audit-level=high`.
-- Run secret scanning against the release branch.
-- Complete the release secret hygiene checks:
-  - Confirm `.env`, `.env.*`, provider credentials, service-account JSON files, database dumps, and private keys are ignored.
-  - Rotate any credential that ever appeared in copied source, logs, screenshots, exported database rows, or test fixtures.
-  - Generate a fresh release signing key pair if private-key handling is uncertain.
-  - Store production secrets outside the repository in the host secret manager or deployment environment.
-- Audit the user-facing documentation for builder-directed notes. Every match must be a deliberate, user-facing product fact:
+- Run secret scanning.
+- Keep the Docker Hub token in GitHub Actions secrets; the username remains a repository variable.
+- Confirm project API authentication still requires exact accepted origins.
 
-  ```bash
-  grep -rniE "first release is available|release maintainers|maintainer gate|planned but|we will" README.md docs/ || true
-  ```
+## Publish
 
-- Confirm project API authentication requires accepted origins.
-- Confirm update manifests are signed and checksums are verified.
+Push a tag in the form `vX.Y.Z`. CI publishes:
 
-## Signing Releases
+- `kofibusy/weblexai:X.Y.Z`
+- `kofibusy/weblexai:latest`
 
-Generate the signing key pair (repeat only if private-key handling is uncertain):
-
-```bash
-php scripts/generate-release-keypair.php
-```
-
-If local PHP does not have the sodium extension, run the generator in Docker:
-
-```bash
-docker run --rm -v "${PWD}:/app" -w /app composer:2.8.9 php scripts/generate-release-keypair.php
-```
-
-Store `RELEASE_PRIVATE_KEY` as a GitHub Actions secret in the repository or organization that publishes releases. Store `RELEASE_PUBLIC_KEY` in the application environment used by installations. The public key is safe to distribute; the private key must never be committed.
-
-The release workflow signs each release with the key. To sign manually:
-
-```bash
-RELEASE_PRIVATE_KEY=base64-ed25519-secret-key php scripts/sign-release-manifest.php \
-  --version=1.0.1 \
-  --artifact-url=https://github.com/weblexai/weblexai-community/releases/download/v1.0.1/weblexai-community-1.0.1.tar.gz \
-  --sha256=64-lowercase-hex-characters \
-  --notes-url=https://github.com/weblexai/weblexai-community/releases/tag/v1.0.1 \
-  --output=stable.json
-```
-
-The release workflow uploads `stable.json` to each GitHub Release. The update feed uses GitHub's latest-release download URL, so publishing a new stable tag automatically points update checks at the newest signed manifest after the workflow completes.
-
-## Artifacts
-
-- Build the source archive from a clean checkout.
-- Build and tag the Docker image with the exact release version.
-- Generate SHA-256 checksums for source and image artifacts.
-- Sign the release manifest with the offline Ed25519 private key.
-- Publish release notes with upgrade, rollback, and migration compatibility notes.
-
-## Post-Release
-
-- Download `install.sh`, `stable.json`, `docker-compose.yml`, and the source archive from the public release without authentication.
-- Run the one-command installer from the README on a clean host.
-- Install from the published artifact in a clean environment.
-- Run the browser installer and create the first administrator.
-- Configure a mock or low-risk provider key and complete one translation request.
-- Confirm README quick start, first project guide, and examples match the published release.
-- Verify backup and restore using the published artifact.
-- Record any accepted audit exception in the release notes.
+After publishing, pull both tags anonymously and start a clean Compose stack with the published image.

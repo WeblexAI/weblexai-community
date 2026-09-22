@@ -19,32 +19,12 @@ class InstallationState
         return $configured || is_file($this->completedPath());
     }
 
-    public function progress(): array
-    {
-        if (! is_file($this->progressPath())) {
-            return [];
-        }
-
-        return json_decode((string) file_get_contents($this->progressPath()), true) ?: [];
-    }
-
-    public function saveProgress(string $step, array $context = []): void
-    {
-        $this->writeJson($this->progressPath(), [
-            'step' => $step,
-            'updated_at' => now()->toIso8601String(),
-            'context' => $context,
-        ]);
-    }
-
     public function complete(): void
     {
         $this->writeJson($this->completedPath(), [
             'version' => $this->version ?? config('community.version'),
             'installed_at' => now()->toIso8601String(),
         ]);
-
-        @unlink($this->progressPath());
     }
 
     public function reset(): void
@@ -53,7 +33,7 @@ class InstallationState
             config(['community.installed' => false]);
         }
 
-        foreach ([$this->completedPath(), $this->progressPath()] as $path) {
+        foreach ([$this->completedPath()] as $path) {
             if (is_file($path)) {
                 unlink($path);
             }
@@ -84,11 +64,6 @@ class InstallationState
     public function completedPath(): string
     {
         return $this->path('installed');
-    }
-
-    private function progressPath(): string
-    {
-        return $this->path('installation.json');
     }
 
     private function lockPath(): string

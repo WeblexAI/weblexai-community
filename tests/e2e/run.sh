@@ -84,7 +84,6 @@ curl -sS -i -b "$cookie_file" -c "$cookie_file" \
     -F "app_url=http://localhost:$port" \
     -F "app_locale=en" \
     -F "app_timezone=UTC" \
-    -F "filesystem_disk=public" \
     -F "admin_name=E2E Admin" \
     -F "admin_email=admin@example.test" \
     -F "admin_password=E2e-Password-123!" \

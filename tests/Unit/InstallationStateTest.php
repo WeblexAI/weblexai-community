@@ -2,18 +2,15 @@
 
 use App\Support\Installation\InstallationState;
 
-it('persists resumable progress and completion', function () {
+it('persists completion state', function () {
     $directory = sys_get_temp_dir().DIRECTORY_SEPARATOR.'weblex-install-'.bin2hex(random_bytes(5));
     mkdir($directory);
     $state = new InstallationState($directory, false, '1.0.0');
 
     expect($state->isInstalled())->toBeFalse();
-    $state->saveProgress('migrating', ['attempt' => 1]);
-    expect($state->progress()['step'])->toBe('migrating');
 
     $state->complete();
-    expect($state->isInstalled())->toBeTrue()
-        ->and($state->progress())->toBe([]);
+    expect($state->isInstalled())->toBeTrue();
 
     $state->reset();
     expect($state->isInstalled())->toBeFalse();

@@ -52,7 +52,7 @@ class Dashboard extends BaseDashboard
                         ->iconColor('primary'),
                     Step::make('.fi-sidebar-nav')
                         ->title('Main navigation')
-                        ->description('Projects, provider credentials, languages, users, activity logs, backups, health checks, updates, and reset tools live here.')
+                        ->description('Projects, provider credentials, languages, users, activity logs, backups, health checks, and reset tools live here.')
                         ->icon('heroicon-o-bars-3')
                         ->iconColor('gray'),
                     Step::make('[data-tour="admin-logs"]')

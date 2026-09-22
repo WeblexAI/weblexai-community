@@ -62,14 +62,6 @@ if ! grep -Eq '^BACKUP_PATH=.+$' /config/.env; then
     set_env_value BACKUP_PATH /backups
 fi
 
-if ! grep -Eq '^RELEASE_FEED_URL=.+$' /config/.env; then
-    set_env_value RELEASE_FEED_URL https://github.com/weblexai/weblexai-community/releases/latest/download/stable.json
-fi
-
-if ! grep -Eq '^RELEASE_PUBLIC_KEY=.+$' /config/.env; then
-    set_env_value RELEASE_PUBLIC_KEY zmQC1sHMkYYb01WwmEzFpbIYK/hCSra2hQBw+eVWr9M=
-fi
-
 if [ "$role" = "app" ] && ! grep -Eq '^APP_KEY=.+$' .env; then
     app_key="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
     temporary="/config/.env.key"

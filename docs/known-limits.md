@@ -35,7 +35,7 @@ Self-hosting gives control and adds responsibility. The team operating WeblexAI 
 - queue workers and scheduler health
 - provider credential rotation
 - backups and restore tests
-- update checks and release verification
+- Docker image upgrades and release compatibility
 - reverse proxy and HTTPS configuration
 
-Managed hosting is not available yet. Current installations are self-hosted and operator-managed.
+WeblexAI supports self-hosted deployments only. Each installation is operator-managed.

@@ -49,7 +49,7 @@ To rotate a provider key:
 4. Test one low-risk page from an accepted origin.
 5. Review application logs if translation requests fail.
 
-Existing projects continue using the same credential record after rotation.
+Projects retain their assignment to the credential after rotation.
 
 ## Choosing A Provider
 

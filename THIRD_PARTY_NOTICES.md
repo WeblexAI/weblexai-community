@@ -32,7 +32,7 @@ Simple Icons is licensed under CC0-1.0. The GitHub logo remains a GitHub tradema
 
 ## Container Images
 
-The default deployment uses the images declared in `Dockerfile` and `docker-compose.yml`, including FrankenPHP, PostgreSQL, Redis, and Python for the optional update-agent and E2E mock provider. Review image licenses and security advisories during each release.
+The default deployment uses the images declared in `Dockerfile` and `docker-compose.yml`, including FrankenPHP, PostgreSQL, and Redis. The E2E Compose override adds Python for its mock provider. Review image licenses and security advisories during each release.
 
 ## Release Gate
 

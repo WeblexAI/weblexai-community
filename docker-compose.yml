@@ -1,11 +1,10 @@
 name: weblex-community
 
 x-app-environment: &app-environment
-  WEBLEX_DEPLOYMENT_MODE: docker
   BACKUP_PATH: /backups
 
 x-app: &app
-  image: ${WEBLEX_IMAGE:-ghcr.io/weblexai/weblexai-community}:${APP_VERSION:-stable}
+  image: kofibusy/weblexai:${APP_VERSION:-latest}
   restart: unless-stopped
   environment:
     <<: *app-environment
@@ -108,19 +107,6 @@ services:
     environment:
       <<: *app-environment
       CONTAINER_ROLE: migrate
-
-  update-agent:
-    image: ${WEBLEX_UPDATE_IMAGE:-ghcr.io/weblexai/weblexai-community-update-agent}:${APP_VERSION:-stable}
-    restart: unless-stopped
-    profiles: ["updates"]
-    environment:
-      UPDATE_AGENT_SECRET: ${UPDATE_AGENT_SECRET:-}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./:/workspace
-      - weblex_backups:/backups
-    networks:
-      - weblex
 
 volumes:
   weblex_postgres:

@@ -1,14 +1,16 @@
 <?php
 
 use App\Settings\CacheSettings;
-use App\Support\Installation\RequirementsChecker;
 
 beforeEach(function () {
     $this->withoutVite();
 });
 
-it('renders the installer without loading database-backed settings', function () {
-    config(['community.installed' => false]);
+it('renders the Docker installer without loading database-backed settings', function () {
+    config([
+        'app.url' => 'http://localhost:8787',
+        'community.installed' => false,
+    ]);
     @unlink(storage_path('app/installed'));
 
     $this->app->bind(
@@ -18,36 +20,12 @@ it('renders the installer without loading database-backed settings', function ()
 
     $this->get('/install')
         ->assertOk()
-        ->assertSee('Install WeblexAI Community Edition');
-});
-
-it('hides managed infrastructure fields in docker deployments', function () {
-    config([
-        'app.url' => 'http://localhost:8787',
-        'community.installed' => false,
-        'community.deployment_mode' => 'docker',
-    ]);
-    @unlink(storage_path('app/installed'));
-
-    $this->get('/install')
-        ->assertOk()
-        ->assertSee('Managed Docker services')
+        ->assertSee('Install WeblexAI Community Edition')
+        ->assertSee('Docker services are ready')
         ->assertSee('value="http://localhost:8787"', false)
         ->assertDontSee('name="db_host"', false)
-        ->assertDontSee('name="redis_host"', false);
-});
-
-it('shows infrastructure fields in traditional deployments', function () {
-    config([
-        'community.installed' => false,
-        'community.deployment_mode' => 'traditional',
-    ]);
-    @unlink(storage_path('app/installed'));
-
-    $this->get('/install')
-        ->assertOk()
-        ->assertSee('name="db_host"', false)
-        ->assertSee('name="redis_host"', false);
+        ->assertDontSee('name="redis_host"', false)
+        ->assertDontSee('Traditional install');
 });
 
 it('redirects an uninstalled browser request to the installer', function () {
@@ -70,65 +48,4 @@ it('locks the installer after installation', function () {
     config(['community.installed' => true]);
 
     $this->get('/install')->assertRedirect('/admin');
-});
-
-it('renders indexed infrastructure errors after failed connection checks', function () {
-    config([
-        'community.installed' => false,
-        'community.deployment_mode' => 'traditional',
-    ]);
-    @unlink(storage_path('app/installed'));
-
-    $checker = Mockery::mock(RequirementsChecker::class);
-    $checker->shouldReceive('system')->twice()->andReturn([]);
-    $checker->shouldReceive('infrastructure')->once()->andReturn([
-        [
-            'name' => 'PostgreSQL connection',
-            'passed' => false,
-            'detail' => 'Check the PostgreSQL connection.',
-        ],
-        [
-            'name' => 'Redis connection',
-            'passed' => false,
-            'detail' => 'Check the Redis connection.',
-        ],
-    ]);
-    $this->app->instance(RequirementsChecker::class, $checker);
-
-    $response = $this
-        ->from(route('install.show'))
-        ->post(route('install.store'), [
-            'app_name' => 'WeblexAI Community Edition',
-            'app_url' => 'http://localhost:8787',
-            'app_locale' => 'en',
-            'app_timezone' => 'UTC',
-            'db_host' => 'postgres',
-            'db_port' => 5432,
-            'db_database' => 'weblex',
-            'db_username' => 'weblex',
-            'db_password' => 'database-password',
-            'redis_host' => 'redis',
-            'redis_port' => 6379,
-            'redis_password' => null,
-            'redis_db' => 0,
-            'admin_name' => 'Administrator',
-            'admin_email' => 'admin@example.com',
-            'admin_password' => 'AdminPassword123!',
-            'admin_password_confirmation' => 'AdminPassword123!',
-            'filesystem_disk' => 'public',
-        ]);
-
-    $response
-        ->assertRedirect(route('install.show'))
-        ->assertSessionHasErrors('infrastructure');
-
-    expect(session('errors')->get('infrastructure'))->toBe([
-        'PostgreSQL connection: Check the PostgreSQL connection.',
-        'Redis connection: Check the Redis connection.',
-    ]);
-
-    $this->get(route('install.show'))
-        ->assertOk()
-        ->assertSee('PostgreSQL connection: Check the PostgreSQL connection.')
-        ->assertSee('Redis connection: Check the Redis connection.');
 });

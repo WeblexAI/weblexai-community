@@ -12,7 +12,7 @@ it('stores dashboard backups on the dedicated backup disk', function () {
         ->toBe(storage_path('app/backups'));
 });
 
-it('uses a host-writable backup path in the environment template', function () {
+it('uses the Docker backup volume path in the environment template', function () {
     $contents = file_get_contents(base_path('.env.example'));
 
     expect($contents)->toBeString();
@@ -22,5 +22,5 @@ it('uses a host-writable backup path in the environment template', function () {
 
     expect($backupPath)->toBeInstanceOf(Entry::class)
         ->and($backupPath->getValue()->get()->getChars())
-        ->toBe('');
+        ->toBe('/backups');
 });

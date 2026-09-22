@@ -7,8 +7,8 @@
 - Administrators can open **System > Application logs** in a new tab from `/admin`.
 - Administrators can open **System > Health** to review database, cache, Redis, disk, environment, debug mode, and backup checks.
 - Docker logs: `docker compose logs -f app worker scheduler`.
-- Queue status: `php artisan horizon:status`.
-- Scheduler: `php artisan schedule:list`.
+- Queue status: `docker compose exec worker php artisan horizon:status`.
+- Scheduler: `docker compose exec scheduler php artisan schedule:list`.
 
 The application log viewer is read-only; log deletion is disabled.
 
@@ -66,7 +66,7 @@ Preflight requests are allowed without credentials. Actual requests with a missi
 Administrators can reset another user's password in `/admin`. For emergency recovery on the server:
 
 ```bash
-php artisan weblex:user:reset-password user@example.com
+docker compose exec app php artisan weblex:user:reset-password user@example.com
 ```
 
 ## Application Reset
@@ -80,7 +80,7 @@ The reset runs fresh database migrations and deletes local public uploads, cache
 Redis databases default to `0` for general data, `1` for cache, and `2` for queues. Do not run `FLUSHALL` on shared Redis infrastructure. Restart workers after deploying code:
 
 ```bash
-php artisan horizon:terminate
+docker compose exec worker php artisan horizon:terminate
 ```
 
 ## Proxy Issues
@@ -89,8 +89,8 @@ Disable response buffering for streaming translation responses. Permit `Authoriz
 
 ## Installer Recovery
 
-The installer records progress in `storage/app/installation.json`. If a process dies and leaves a stale lock, verify no installation is running and execute:
+If a process dies and leaves a stale installer lock, verify no installation is running and execute:
 
 ```bash
-php artisan weblex:install:unlock
+docker compose exec app php artisan weblex:install:unlock
 ```

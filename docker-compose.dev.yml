@@ -1,0 +1,24 @@
+services:
+  app:
+    build:
+      context: .
+    image: kofibusy/weblexai:dev
+    pull_policy: build
+
+  worker:
+    build:
+      context: .
+    image: kofibusy/weblexai:dev
+    pull_policy: build
+
+  scheduler:
+    build:
+      context: .
+    image: kofibusy/weblexai:dev
+    pull_policy: build
+
+  migrate:
+    build:
+      context: .
+    image: kofibusy/weblexai:dev
+    pull_policy: build

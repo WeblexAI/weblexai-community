@@ -11,17 +11,15 @@ This checklist is for self-hosted operators preparing a production WeblexAI Comm
 - Configure exact accepted origins for every project before using the browser SDK.
 - Use unique project API keys and rotate them after exposure.
 - Configure provider keys through `/admin`; do not place provider secrets in public frontend code.
-- Run Horizon workers and scheduler as non-root users on traditional hosting.
 - Back up PostgreSQL, `.env`, and storage before every update.
 - Test restore in an isolated environment before relying on backups.
 
 ## Recommended
 
-- Terminate TLS at FrankenPHP or a trusted reverse proxy that preserves `Host`, `Origin`, `Authorization`, and `X-Page-Url`.
+- Terminate TLS at the external reverse proxy or deployment platform; preserve `Host`, `Origin`, `Authorization`, and `X-Page-Url`.
 - Disable proxy buffering for `application/x-ndjson` translation responses.
 - Put Redis on dedicated databases for app data, cache, and queues.
 - Keep only one scheduler process active.
-- Limit outbound network access to configured providers and update endpoints.
+- Limit outbound network access to configured providers and required infrastructure services.
 - Monitor authentication failures, origin mismatches, provider errors, worker failures, and queue depth.
-- Keep Docker update-agent on the internal Compose network with no published host port.
 - Use least-privilege credentials for S3, Cloudinary, MaxMind, and provider APIs.

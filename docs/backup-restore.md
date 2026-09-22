@@ -18,20 +18,6 @@ Review the script before use and test it against your Compose and retention poli
 
 The Docker stack keeps the live environment in the `weblex_config` volume. The host `.env` is bootstrap input for a new volume; the backup script exports the live copy.
 
-## Traditional Hosting
-
-```bash
-scripts/backup-traditional.sh /var/backups/weblex /srv/weblex/current
-```
-
-Restore `.env` and storage with their original owner and restrictive permissions, restore PostgreSQL, then run:
-
-```bash
-php artisan migrate --force
-php artisan storage:link
-php artisan optimize:clear
-```
-
 ## Verification
 
 Start the restored application in an isolated environment. Verify administrator login, provider credential decryption, project membership, accepted origins, media, one translation request, Horizon, and the scheduler.

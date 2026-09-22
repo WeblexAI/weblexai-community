@@ -9,24 +9,12 @@
 </head>
 <body>
 @php
-    $requirementsReady = collect($checks)->every('passed');
-    $errorFields = array_keys($errors->toArray());
-    $steps = $isDocker
-        ? [
-            ['id' => 'public', 'title' => 'Public access', 'description' => 'Set the browser-facing URL'],
-            ['id' => 'admin', 'title' => 'Administrator', 'description' => 'Create the owner account'],
-        ]
-        : [
-            ['id' => 'readiness', 'title' => 'Readiness', 'description' => 'Verify server requirements'],
-            ['id' => 'public', 'title' => 'Public access', 'description' => 'Set the browser-facing URL'],
-            ['id' => 'services', 'title' => 'Services', 'description' => 'Connect PostgreSQL and Redis'],
-            ['id' => 'admin', 'title' => 'Administrator', 'description' => 'Create the owner account'],
-        ];
-    $stepIds = array_column($steps, 'id');
-    $stepIndexes = array_flip($stepIds);
-    $firstStep = $stepIds[0];
-    $lastStep = $stepIds[array_key_last($stepIds)];
+    $steps = [
+        ['id' => 'public', 'title' => 'Public access', 'description' => 'Set the browser-facing URL'],
+        ['id' => 'admin', 'title' => 'Administrator', 'description' => 'Create the owner account'],
+    ];
     $docsUrl = config('community.docs_url');
+    $githubUrl = config('community.github_url');
 @endphp
 
 <div class="min-h-screen bg-slate-50">
@@ -42,7 +30,7 @@
                     </div>
                     <div>
                         <p class="text-base font-semibold tracking-tight text-slate-950">WeblexAI</p>
-                        <p class="text-sm text-slate-500">Community Edition installer</p>
+                        <p class="text-sm text-slate-500">Docker setup</p>
                     </div>
                 </div>
 
@@ -71,20 +59,12 @@
             <div class="w-full">
                 @if ($errors->any())
                     <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800" role="alert">
-                        <div class="flex gap-3">
-                            <svg class="mt-0.5 size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="M12 8v4M12 16h.01"/>
-                            </svg>
-                            <div>
-                                <p class="font-semibold">Review the highlighted information.</p>
-                                <ul class="mt-1 list-disc space-y-1 pl-5">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
+                        <p class="font-semibold">Review the highlighted information.</p>
+                        <ul class="mt-1 list-disc space-y-1 pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
 
@@ -92,58 +72,12 @@
                     @csrf
                     <input type="hidden" name="app_locale" value="en">
 
-                    @unless ($isDocker)
-                        <div data-step="readiness">
-                            <div class="install-panel">
-                                <section class="install-copy">
-                                    <p class="eyebrow">Server checks</p>
-                                    <h1>Confirm this server is ready.</h1>
-                                    <p>Check PHP, extensions, and writable paths before setup continues.</p>
-
-                                    <div class="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                                        <div class="flex items-center justify-between gap-4 border-b border-slate-100 bg-slate-50 px-5 py-4">
-                                            <div>
-                                                <p class="font-semibold text-slate-950">{{ $requirementsReady ? 'Requirements passed' : 'Action required' }}</p>
-                                                <p class="text-sm text-slate-500">{{ count($checks) }} checks completed.</p>
-                                            </div>
-                                            <span class="status-pill {{ $requirementsReady ? 'status-ready' : 'status-error' }}">{{ $requirementsReady ? 'Ready' : 'Fix required' }}</span>
-                                        </div>
-                                        <div class="divide-y divide-slate-100 px-5">
-                                            @foreach ($checks as $check)
-                                                <div class="flex items-start justify-between gap-4 py-3">
-                                                    <span class="text-sm font-medium text-slate-700">{{ $check['name'] }}</span>
-                                                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold {{ $check['passed'] ? 'text-brand-700' : 'text-red-700' }}">
-                                                        <span class="size-1.5 rounded-full {{ $check['passed'] ? 'bg-brand-500' : 'bg-red-500' }}"></span>
-                                                        {{ $check['passed'] ? 'Ready' : $check['detail'] }}
-                                                    </span>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </section>
-
-                                <aside class="install-visual">
-                                    <div class="install-visual-graphic is-readiness" aria-hidden="true">
-                                        <span class="visual-orbit"></span>
-                                        <span class="visual-card visual-card-primary"></span>
-                                        <span class="visual-card visual-card-light"></span>
-                                        <span class="visual-pulse"></span>
-                                    </div>
-                                    <div class="visual-note">
-                                        <p class="font-semibold text-slate-950">Traditional install</p>
-                                        <p>Resolve failed checks on the host before continuing.</p>
-                                    </div>
-                                </aside>
-                            </div>
-                        </div>
-                    @endunless
-
-                    <div data-step="public" @if ($firstStep !== 'public') hidden @endif>
+                    <div data-step="public">
                         <div class="install-panel">
                             <section class="install-copy">
                                 <p class="eyebrow">Public access</p>
                                 <h1>Set the address browsers will use.</h1>
-                                <p>Use the final HTTPS URL exposed by your proxy, tunnel, or load balancer.</p>
+                                <p>Use the final URL exposed by your reverse proxy, tunnel, or local Docker port.</p>
 
                                 <div class="form-card">
                                     <label>Application name
@@ -157,12 +91,7 @@
                                                 <button type="button" data-use-current-url>Use current</button>
                                             @endif
                                         </span>
-                                        <small>Use <code>localhost</code> only for local testing. Public websites need a browser-reachable URL.</small>
-                                    </label>
-
-                                    <label>Locale
-                                        <input value="English" disabled>
-                                        <small>Only English is supported for the installer interface right now.</small>
+                                        <small>For a custom domain, configure DNS and HTTPS in your external proxy, then use that final HTTPS URL here.</small>
                                     </label>
 
                                     <label>Timezone
@@ -184,135 +113,72 @@
                                     <span class="visual-dot two"></span>
                                 </div>
                                 <div class="visual-note">
-                                    @if ($isDocker)
-                                        <p class="font-semibold text-slate-950">Managed Docker services</p>
-                                        <p>PostgreSQL and Redis are provided by the Compose stack.</p>
-                                    @else
-                                        <p class="font-semibold text-slate-950">Production URL</p>
-                                        <p>Point DNS and HTTPS at WeblexAI before using the project snippet on a public website.</p>
-                                    @endif
+                                    <p class="font-semibold text-slate-950">Docker services are ready</p>
+                                    <p>PostgreSQL, Redis, the application, workers, and scheduler run in the Compose stack.</p>
                                 </div>
                             </aside>
                         </div>
                     </div>
-
-                    @unless ($isDocker)
-                        <div data-step="services" hidden>
-                            <div class="install-panel">
-                                <section class="install-copy">
-                                    <p class="eyebrow">Infrastructure</p>
-                                    <h1>Connect PostgreSQL and Redis.</h1>
-                                    <p>Use private services reachable by this application server.</p>
-
-                                    <div class="form-card">
-                                        <h2>PostgreSQL</h2>
-                                        <label>Host <input name="db_host" value="{{ old('db_host', '127.0.0.1') }}" required></label>
-                                        <label>Port <input type="number" name="db_port" value="{{ old('db_port', 5432) }}" min="1" max="65535" required></label>
-                                        <label>Database <input name="db_database" value="{{ old('db_database', 'weblex') }}" required></label>
-                                        <label>Username <input name="db_username" value="{{ old('db_username', 'weblex') }}" required></label>
-                                        <label>Password
-                                            <span class="password-field">
-                                                <input type="password" name="db_password" autocomplete="new-password">
-                                                <button type="button" data-password-toggle aria-label="Show password" aria-pressed="false"></button>
-                                            </span>
-                                        </label>
-
-                                        <h2 class="pt-3">Redis</h2>
-                                        <label>Host <input name="redis_host" value="{{ old('redis_host', '127.0.0.1') }}" required></label>
-                                        <label>Port <input type="number" name="redis_port" value="{{ old('redis_port', 6379) }}" min="1" max="65535" required></label>
-                                        <label>Password
-                                            <span class="password-field">
-                                                <input type="password" name="redis_password" autocomplete="new-password">
-                                                <button type="button" data-password-toggle aria-label="Show password" aria-pressed="false"></button>
-                                            </span>
-                                        </label>
-                                        <label>Database <input type="number" name="redis_db" value="{{ old('redis_db', 0) }}" min="0" max="15" required></label>
-                                    </div>
-                                </section>
-
-                                <aside class="install-visual">
-                                    <div class="install-visual-graphic is-services" aria-hidden="true">
-                                        <span class="visual-cylinder"></span>
-                                        <span class="visual-stack one"></span>
-                                        <span class="visual-stack two"></span>
-                                        <span class="visual-stack three"></span>
-                                        <span class="visual-connector"></span>
-                                    </div>
-                                    <div class="visual-note">
-                                        <p class="font-semibold text-slate-950">Private services</p>
-                                        <p>Keep database and cache ports closed to the public internet.</p>
-                                    </div>
-                                </aside>
-                            </div>
-                        </div>
-                    @endunless
 
                     <div data-step="admin" hidden>
                         <div class="install-panel">
                             <section class="install-copy">
                                 <p class="eyebrow">Administrator</p>
-                                <h1>Create the owner account.</h1>
-                                <p>This account signs in after setup and manages every user.</p>
+                                <h1>Create the first administrator.</h1>
+                                <p>This account manages projects, provider credentials, users, backups, and application settings.</p>
 
                                 <div class="form-card">
-                                    <label>Name <input name="admin_name" value="{{ old('admin_name') }}" autocomplete="name" required maxlength="100"></label>
-                                    <label>Email <input type="email" name="admin_email" value="{{ old('admin_email') }}" autocomplete="email" required></label>
-                                    <label>Password
-                                        <span class="password-field">
-                                            <input type="password" name="admin_password" autocomplete="new-password" required>
-                                            <button type="button" data-password-toggle aria-label="Show password" aria-pressed="false"></button>
-                                        </span>
-                                        <small>At least 12 characters with uppercase, lowercase, number, and symbol.</small>
+                                    <label>Name
+                                        <input name="admin_name" value="{{ old('admin_name') }}" required maxlength="100" autocomplete="name">
                                     </label>
+
+                                    <label>Email
+                                        <input type="email" name="admin_email" value="{{ old('admin_email') }}" required maxlength="255" autocomplete="email">
+                                    </label>
+
+                                    <label>Password
+                                        <input type="password" name="admin_password" required autocomplete="new-password">
+                                        <small>Use at least 12 characters with letters, mixed case, numbers, and symbols.</small>
+                                    </label>
+
                                     <label>Confirm password
-                                        <span class="password-field">
-                                            <input type="password" name="admin_password_confirmation" autocomplete="new-password" required>
-                                            <button type="button" data-password-toggle aria-label="Show password confirmation" aria-pressed="false"></button>
-                                        </span>
+                                        <input type="password" name="admin_password_confirmation" required autocomplete="new-password">
                                     </label>
                                 </div>
                             </section>
 
                             <aside class="install-visual">
-                                <div class="install-visual-graphic is-admin" aria-hidden="true">
+                                <div class="install-visual-graphic" aria-hidden="true">
                                     <span class="visual-user"></span>
                                     <span class="visual-shield"></span>
                                     <span class="visual-panel"></span>
                                 </div>
                                 <div class="visual-note">
-                                    <p class="font-semibold text-slate-950">Ready to finish</p>
-                                    <p>WeblexAI will write the environment file, run migrations, seed defaults, and sign you in.</p>
+                                    <p class="font-semibold text-slate-950">Keep your application key safe</p>
+                                    <p>It protects encrypted provider credentials and is retained in the persistent Docker configuration volume.</p>
                                 </div>
                             </aside>
                         </div>
                     </div>
 
-                    <div class="mt-7 flex items-center justify-between gap-4">
-                        <button type="button" id="previous-step" class="secondary-button" hidden>
-                            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-                            Back
-                        </button>
-                        <span></span>
-                        <button type="button" id="next-step" class="primary-button" @disabled(! $isDocker && ! $requirementsReady && $firstStep === 'readiness')>
-                            Continue
-                            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-                        </button>
-                        <button type="submit" id="install-button" class="primary-button" hidden>
-                            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>
-                            <span id="install-button-label">Install WeblexAI</span>
-                        </button>
+                    <div class="mt-6 flex flex-wrap justify-between gap-3">
+                        <button type="button" id="previous-step" class="secondary-button">Back</button>
+                        <div class="ml-auto flex gap-3">
+                            <button type="button" id="next-step" class="primary-button">Continue</button>
+                            <button type="submit" id="install-button" class="primary-button" hidden>
+                                <span id="install-button-label">Install WeblexAI</span>
+                            </button>
+                        </div>
                     </div>
                 </form>
 
                 <footer class="install-footer">
-                    <a class="github-link" href="{{ config('community.github_url') }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository">
-                        <img src="{{ asset('images/brand/github.svg') }}" alt="" aria-hidden="true">
-                    </a>
-                    <span aria-hidden="true">/</span>
-                    @if ($docsUrl !== '#')
-                        <a href="{{ $docsUrl }}" target="_blank" rel="noopener noreferrer">Docs</a>
-                    @else
-                        <span class="is-disabled">Docs</span>
+                    <span>Docker-only Community Edition</span>
+                    @if ($docsUrl && $docsUrl !== '#')
+                        <a href="{{ $docsUrl }}" target="_blank" rel="noopener noreferrer">Documentation</a>
+                    @endif
+                    @if ($githubUrl && $githubUrl !== '#')
+                        <a href="{{ $githubUrl }}" target="_blank" rel="noopener noreferrer">GitHub</a>
                     @endif
                 </footer>
             </div>
@@ -322,66 +188,28 @@
 
 <script>
     const form = document.querySelector('#installer-form');
-    const steps = Array.from(document.querySelectorAll('[data-step]'));
-    const triggers = Array.from(document.querySelectorAll('[data-step-trigger]'));
+    const steps = [...document.querySelectorAll('[data-step]')];
+    const triggers = [...document.querySelectorAll('[data-step-trigger]')];
     const previousButton = document.querySelector('#previous-step');
     const nextButton = document.querySelector('#next-step');
     const installButton = document.querySelector('#install-button');
     const installButtonLabel = document.querySelector('#install-button-label');
-    const password = form.elements.namedItem('admin_password');
-    const passwordConfirmation = form.elements.namedItem('admin_password_confirmation');
-    const errorFields = @json($errorFields);
-    const requirementsReady = @json($requirementsReady);
-    const isDocker = @json($isDocker);
-    const currentRequestUrl = @json($currentRequestUrl);
-    const stepIds = @json($stepIds);
-    const fieldStepIds = {
-        app_name: 'public',
-        app_url: 'public',
-        app_locale: 'public',
-        app_timezone: 'public',
-        db_host: 'services',
-        db_port: 'services',
-        db_database: 'services',
-        db_username: 'services',
-        db_password: 'services',
-        redis_host: 'services',
-        redis_port: 'services',
-        redis_password: 'services',
-        redis_db: 'services',
-        admin_name: 'admin',
-        admin_email: 'admin',
-        admin_password: 'admin',
-        admin_password_confirmation: 'admin',
-        infrastructure: isDocker ? 'public' : 'services',
-        installation: 'admin',
-    };
-    let currentStep = errorFields.reduce((index, field) => {
-        const stepId = fieldStepIds[field] ?? stepIds[0];
-        return Math.max(index, stepIds.indexOf(stepId));
-    }, 0);
+    let currentStep = 0;
 
     const validateStep = () => {
-        const controls = Array.from(steps[currentStep].querySelectorAll('input:not([disabled]), select:not([disabled])'));
-        const invalid = controls.find((control) => !control.checkValidity());
-
-        if (invalid) {
-            invalid.reportValidity();
-            invalid.focus();
-            return false;
-        }
-
-        return true;
+        const fields = [...steps[currentStep].querySelectorAll('input, select')];
+        return fields.every((field) => field.reportValidity());
     };
 
-    const showStep = (step) => {
-        currentStep = Math.max(0, Math.min(step, steps.length - 1));
-        steps.forEach((panel, index) => panel.hidden = index !== currentStep);
-        triggers.forEach((trigger, index) => {
-            const active = index === currentStep;
-            const complete = index < currentStep;
+    const showStep = (index) => {
+        currentStep = index;
+        steps.forEach((step, stepIndex) => {
+            step.hidden = stepIndex !== currentStep;
+        });
+        triggers.forEach((trigger, triggerIndex) => {
+            const active = triggerIndex === currentStep;
             trigger.classList.toggle('is-active', active);
-            trigger.classList.toggle('is-complete', complete);
+            trigger.classList.toggle('is-complete', triggerIndex < currentStep);
             trigger.setAttribute('aria-current', active ? 'step' : 'false');
         });
         previousButton.hidden = currentStep === 0;
@@ -390,49 +218,8 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const hiddenIcon = `
-        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M2.1 12a10.8 10.8 0 0 1 19.8 0 10.8 10.8 0 0 1-19.8 0Z"/>
-            <circle cx="12" cy="12" r="3"/>
-        </svg>
-    `;
-    const visibleIcon = `
-        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 4.2A10.8 10.8 0 0 1 21.9 12a11 11 0 0 1-3.2 4.2M6.6 6.6A11.1 11.1 0 0 0 2.1 12a10.8 10.8 0 0 0 7.8 6.8"/>
-        </svg>
-    `;
-
-    document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
-        const input = toggle.previousElementSibling;
-        toggle.innerHTML = hiddenIcon;
-        toggle.addEventListener('click', () => {
-            const isVisible = input.type === 'text';
-            input.type = isVisible ? 'password' : 'text';
-            toggle.innerHTML = isVisible ? hiddenIcon : visibleIcon;
-            toggle.setAttribute('aria-label', isVisible ? 'Show value' : 'Hide value');
-            toggle.setAttribute('aria-pressed', String(!isVisible));
-            input.focus({ preventScroll: true });
-        });
-    });
-
-    document.querySelectorAll('[data-use-current-url]').forEach((button) => {
-        button.addEventListener('click', () => {
-            const input = form.elements.namedItem('app_url');
-            input.value = currentRequestUrl;
-            input.focus();
-        });
-    });
-
-    const validatePasswordConfirmation = () => {
-        passwordConfirmation.setCustomValidity(
-            passwordConfirmation.value && passwordConfirmation.value !== password.value
-                ? 'The password confirmation does not match.'
-                : '',
-        );
-    };
-
     triggers.forEach((trigger) => trigger.addEventListener('click', () => {
-        const target = stepIds.indexOf(trigger.dataset.stepTrigger);
+        const target = triggers.indexOf(trigger);
         if (target <= currentStep || (target === currentStep + 1 && validateStep())) {
             showStep(target);
         }
@@ -444,20 +231,19 @@
             showStep(currentStep + 1);
         }
     });
-    form.addEventListener('submit', (event) => {
-        if (currentStep < steps.length - 1) {
-            event.preventDefault();
-            if (validateStep()) {
-                showStep(currentStep + 1);
-            }
-            return;
-        }
+
+    form.addEventListener('submit', () => {
         installButton.disabled = true;
         installButtonLabel.textContent = 'Installing...';
     });
-    password.addEventListener('input', validatePasswordConfirmation);
-    passwordConfirmation.addEventListener('input', validatePasswordConfirmation);
-    showStep(currentStep);
+
+    document.querySelector('[data-use-current-url]')?.addEventListener('click', () => {
+        const input = form.elements.namedItem('app_url');
+        input.value = @json($currentRequestUrl);
+        input.focus();
+    });
+
+    showStep(0);
 </script>
 </body>
 </html>

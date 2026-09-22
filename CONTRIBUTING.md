@@ -16,14 +16,14 @@ Copy the example environment and set a development database password:
 
 ```bash
 cp .env.example .env
-docker compose up -d --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
-The repository includes `docker-compose.override.yml`, so Compose builds the application and update-agent images directly from the working tree. Production installations download only `docker-compose.yml` and use published images.
+The development override builds the application image from the working tree. Production uses the published Docker Hub image from `docker-compose.yml`.
 
 Use `--build` when the image needs to be rebuilt:
 
-- after changing `Dockerfile`, `entrypoint.sh`, or deployment scripts
+- after changing `Dockerfile` or `entrypoint.sh`
 - after changing Composer or npm dependencies
 - after changing frontend or SDK assets that must be compiled into the image
 - after pulling changes that affect the built application image
@@ -31,10 +31,10 @@ Use `--build` when the image needs to be rebuilt:
 For normal restarts while containers already exist, use:
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
-`docker compose up -d --build` runs the full production image build, including Composer install, npm install, frontend build, SDK build, PHP extension setup, and PostgreSQL client setup. It is expected to take longer than a normal restart.
+The development build runs Composer install, npm install, frontend build, SDK build, PHP extension setup, and PostgreSQL client setup. It is expected to take longer than a normal restart.
 
 ## Quality Checks
 

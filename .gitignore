@@ -35,8 +35,6 @@ test-results
 *.zip
 *.bak
 *.tmp
-SHA256SUMS
-stable.json
 /auth.json
 .DS_Store
 Thumbs.db
@@ -49,7 +47,6 @@ Thumbs.db
 /app/analytics/service-account-credentials.json
 /storage/app/installed
 /storage/app/installation.lock
-/storage/app/update.lock
 /tests/e2e/*.runtime*
 /tests/e2e/backups.runtime
 __pycache__/
