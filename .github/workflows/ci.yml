@@ -49,6 +49,10 @@ jobs:
           composer-options: --prefer-dist
       - run: npm ci
       - run: cp .env.example .env
+      - name: Use a writable CI backup path
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/storage/app/backups"
+          sed -i "s|^BACKUP_PATH=.*|BACKUP_PATH=$GITHUB_WORKSPACE/storage/app/backups|" .env
       - run: php artisan key:generate
       - run: composer quality
         env:
