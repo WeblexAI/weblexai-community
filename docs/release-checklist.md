@@ -7,7 +7,7 @@ Use this checklist for each semver Docker image release.
 - `composer.lock` and `package-lock.json` match their manifests.
 - `CHANGELOG.md` contains the release notes.
 - The Docker Hub repository `kofibusy/weblexai` is public.
-- GitHub has the `DOCKERHUB_USERNAME` repository variable set to `kofibusy` and the `DOCKERHUB_TOKEN` secret.
+- GitHub has the `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets configured.
 - No private credentials, dumps, logs, or generated caches are included.
 - Apache-2.0, security, support, contributing, and third-party notices are present.
 
@@ -39,7 +39,7 @@ Run the plain HTML smoke test, confirm accepted-origin authentication, complete 
 - Run `composer audit --locked`.
 - Run `npm audit --audit-level=high`.
 - Run secret scanning.
-- Keep the Docker Hub token in GitHub Actions secrets; the username remains a repository variable.
+- Keep the Docker Hub credentials in GitHub Actions secrets.
 - Confirm project API authentication still requires exact accepted origins.
 
 ## Publish
