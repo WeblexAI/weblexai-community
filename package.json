@@ -30,15 +30,15 @@
         "prettier-plugin-tailwindcss": "^0.6.11",
         "typescript-eslint": "^8.23.0",
         "vite": "^6.4.3",
-        "vitest": "^4.1.8",
+        "vitest": "^4.1.11",
         "vue-tsc": "^2.2.4"
     },
     "dependencies": {
         "@inertiajs/vue3": "^2.3.10",
         "@tailwindcss/vite": "^4.1.1",
         "@tanstack/vue-table": "^8.21.3",
-        "@unovis/ts": "^1.6.0",
-        "@unovis/vue": "^1.6.0",
+        "@unovis/ts": "^1.7.0",
+        "@unovis/vue": "^1.7.0",
         "@vitejs/plugin-vue": "^5.2.1",
         "@vortechron/query-builder-ts": "^1.2.0",
         "@vueuse/components": "^12.8.2",
