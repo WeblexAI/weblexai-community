@@ -57,6 +57,7 @@ jobs:
       - run: composer quality
         env:
           APP_INSTALLED: "true"
+          FORK_MEM_PER_PROC: "999999999999"
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1
           DB_PORT: 5432
