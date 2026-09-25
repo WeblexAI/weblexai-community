@@ -11,6 +11,15 @@ WeblexAI runs as one Docker Compose stack:
 
 ## Start the stack
 
+The published image is available at `kofibusy/weblexai`. You do not need to clone the repository to use the full Compose stack. Download the deployment files into a new directory:
+
+```bash
+mkdir weblexai && cd weblexai
+curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/docker-compose.yml -o docker-compose.yml
+curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/.env.example -o .env.example
+cp .env.example .env
+```
+
 From a directory containing `docker-compose.yml` and `.env`:
 
 ```bash
@@ -27,6 +36,8 @@ docker compose up -d
 Open `http://localhost:8787/install`, or use the configured `APP_URL` from a remote browser, to create the first administrator.
 
 PostgreSQL, Redis, application storage, backups, and the persistent application environment use named Docker volumes. Do not publish PostgreSQL or Redis ports to the host.
+
+You can also run the application image directly with `docker run` without mounting an `.env`; it falls back to the bundled `.env.example` template. This requires PostgreSQL and Redis to be reachable from the container, with their connection settings passed as container environment variables. Compose provisions the complete stack automatically, so it is the recommended no-clone setup.
 
 ## Custom domains
 

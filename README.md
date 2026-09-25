@@ -17,6 +17,17 @@ Community Edition is distributed as a Docker image with a Docker Compose stack. 
 
 Requirements: Docker Engine or Docker Desktop with Docker Compose v2.
 
+The published image can be used without cloning the repository. Download the Compose file and environment template into a new directory:
+
+```bash
+mkdir weblexai && cd weblexai
+curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/docker-compose.yml -o docker-compose.yml
+curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/.env.example -o .env.example
+cp .env.example .env
+```
+
+Alternatively, clone the repository to keep the deployment files locally.
+
 ```bash
 git clone https://github.com/WeblexAI/weblexai-community.git
 cd weblexai-community
@@ -39,6 +50,8 @@ docker pull kofibusy/weblexai:latest
 ```
 
 For a production deployment, set `APP_VERSION` to a published semver tag instead of `latest`.
+
+You can also run the application image directly with `docker run` without mounting an `.env`; it falls back to the bundled `.env.example` template. This requires PostgreSQL and Redis to be available as external services. For the complete stack, use the no-clone Compose setup above.
 
 ## Custom Domains
 

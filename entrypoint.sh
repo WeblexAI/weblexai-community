@@ -3,10 +3,23 @@ set -eu
 
 role="${CONTAINER_ROLE:-app}"
 
+copy_initial_env() {
+    if [ -f /bootstrap/.env ]; then
+        cp /bootstrap/.env /config/.env
+    elif [ -f /app/.env.example ]; then
+        echo "No /bootstrap/.env was mounted; using /app/.env.example. Provide database and Redis settings through the container environment or a mounted .env file." >&2
+        cp /app/.env.example /config/.env
+    else
+        echo "No environment file is available. Mount a .env file at /bootstrap/.env or provide /app/.env.example in the image." >&2
+        exit 1
+    fi
+
+    chmod 600 /config/.env
+}
+
 if [ "$(id -u)" = "0" ]; then
     if [ ! -f /config/.env ]; then
-        cp /bootstrap/.env /config/.env
-        chmod 600 /config/.env
+        copy_initial_env
     fi
 
     chown www-data:www-data /config/.env
@@ -22,8 +35,7 @@ fi
 ln -sfn /app/storage/app/public public/storage
 
 if [ ! -f /config/.env ]; then
-    cp /bootstrap/.env /config/.env
-    chmod 600 /config/.env
+    copy_initial_env
 fi
 
 set_env_value() {
@@ -62,7 +74,7 @@ if ! grep -Eq '^BACKUP_PATH=.+$' /config/.env; then
     set_env_value BACKUP_PATH /backups
 fi
 
-if [ "$role" = "app" ] && ! grep -Eq '^APP_KEY=.+$' .env; then
+if [ "$role" = "app" ] && [ -z "${APP_KEY:-}" ] && ! grep -Eq '^APP_KEY=.+$' .env; then
     app_key="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
     temporary="/config/.env.key"
 
