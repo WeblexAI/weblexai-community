@@ -113,7 +113,7 @@ Copy the browser SDK snippet and add it to the website layout so it loads on eve
 </script>
 ```
 
-Use the URL of your own WeblexAI installation.
+The snippet uses the WeblexAI application URL configured during installation.
 
 ## 8. Verify The Integration
 
