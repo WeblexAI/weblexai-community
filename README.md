@@ -49,7 +49,7 @@ The update pulls the selected image, runs database migrations, and restarts the 
 
 1. Create the first administrator at `/install`.
 2. Add a provider credential in `/admin`.
-3. Create a project, assign the credential, and add the exact website origin.
+3. Create a project, assign the credential, and add the address of the website you want to translate.
 4. Add a target language and copy the SDK snippet from **Project Setup** into the website.
 
 See the [first project guide](docs/first-project.md) for details.

@@ -28,7 +28,7 @@ When the stack starts:
 - **Administrator account**: create it at `/install` in step 1.
 - **Translation provider credential**: obtain credentials from your chosen provider, then add them in `/admin` in step 2. See the [provider credentials guide](provider-credentials.md).
 - **WeblexAI address**: use `http://localhost:8787` for a local installation, or the public HTTPS address configured in the previous step.
-- **Website origin**: use the exact address of the website where the SDK will run, including its scheme, host, and optional port. For example, use `https://www.example.com`, not `https://www.example.com/about`.
+- **Accepted origin**: enter the address of the website whose content you want to translate, such as `https://www.example.com`. Do not include a page path such as `/about`.
 
 ## 2. Add A Provider Credential
 

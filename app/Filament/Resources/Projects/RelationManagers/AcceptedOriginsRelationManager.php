@@ -32,6 +32,7 @@ class AcceptedOriginsRelationManager extends RelationManager
         return $schema->components([
             TextInput::make('origin')
                 ->placeholder('https://example.com')
+                ->helperText('Enter the address of the website whose content you want to translate, such as https://example.com. Do not include a path, query string, or wildcard.')
                 ->required()
                 ->rule(function () {
                     return function (string $attribute, mixed $value, \Closure $fail): void {
