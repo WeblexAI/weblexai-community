@@ -4,6 +4,7 @@ use App\Enums\CollaboratorRole;
 use App\Enums\ModelStatus;
 use App\Enums\UserRole;
 use App\Filament\Resources\Projects\Pages\EditProject;
+use App\Filament\Resources\Projects\Pages\ViewProject;
 use App\Filament\Resources\Projects\RelationManagers\AcceptedOriginsRelationManager;
 use App\Filament\Resources\Projects\RelationManagers\MembersRelationManager;
 use App\Filament\Resources\Users\Pages\EditUser;
@@ -103,6 +104,15 @@ it('logs project member lifecycle actions', function () {
 
 it('logs project key rotation and deletion', function () {
     Livewire::test(EditProject::class, [
+        'record' => $this->project->getRouteKey(),
+    ])->callAction('rotateApiKey');
+
+    expectAdminActivity(
+        'Rotated API key for project "Documentation".',
+        'updated',
+    );
+
+    Livewire::test(ViewProject::class, [
         'record' => $this->project->getRouteKey(),
     ])->callAction('rotateApiKey');
 
