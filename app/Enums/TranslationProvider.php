@@ -41,13 +41,14 @@ enum TranslationProvider: string implements HasLabel
         };
     }
 
-    public function defaultBaseUrl(): ?string
+    public function endpoint(): string
     {
-        return match ($this) {
-            self::OPENAI => 'https://api.openai.com/v1',
-            self::OPENROUTER => 'https://openrouter.ai/api/v1',
-            self::QWEN => 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1',
-            default => null,
-        };
+        $endpoint = config("ai.providers.{$this->value}.url");
+
+        if (! is_string($endpoint) || blank($endpoint)) {
+            throw new \LogicException("The {$this->value} translation provider endpoint is not configured.");
+        }
+
+        return $endpoint;
     }
 }

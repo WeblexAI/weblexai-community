@@ -32,7 +32,16 @@ On Windows with Docker Desktop:
 powershell -ExecutionPolicy Bypass -File tests\e2e\run.ps1
 ```
 
-Run the plain HTML smoke test, confirm accepted-origin authentication, complete one translation request, and verify backup/restore.
+Validate the no-clone installers:
+
+```bash
+bash -n scripts/install-docker.sh
+bash tests/installer/install-docker.sh
+```
+
+The Bash and PowerShell installer URLs use `main`. Verify that an explicit `--version X.Y.Z` downloads the matching `vX.Y.Z` Compose files and selects the `X.Y.Z` Docker image tag.
+
+Confirm accepted-origin authentication, one translation request, and backup/restore.
 
 ## Security
 

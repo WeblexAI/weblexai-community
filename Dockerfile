@@ -1,6 +1,7 @@
 FROM composer:2.8.9 AS php-dependencies
 
 WORKDIR /app
+ARG WEBLEX_E2E_QWEN_ENDPOINT=
 COPY composer.json composer.lock ./
 RUN --mount=type=cache,target=/tmp/cache \
     composer install \
@@ -14,6 +15,9 @@ RUN --mount=type=cache,target=/tmp/cache \
     --ignore-platform-req=ext-intl \
     --ignore-platform-req=ext-pcntl
 COPY . .
+RUN if [ -n "$WEBLEX_E2E_QWEN_ENDPOINT" ]; then \
+    sed -i "/'qwen' => \[/,/^[[:space:]]*],/ s#'url' => '[^']*'#'url' => '$WEBLEX_E2E_QWEN_ENDPOINT'#" config/ai.php; \
+fi
 RUN composer dump-autoload --optimize --no-dev --classmap-authoritative --no-scripts
 RUN rm -f bootstrap/cache/*.php \
     && APP_ENV=production \

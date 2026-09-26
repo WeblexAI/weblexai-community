@@ -2,6 +2,8 @@ services:
   app:
     build:
       context: .
+      args:
+        WEBLEX_E2E_QWEN_ENDPOINT: http://mock-provider:8081/v1
     volumes:
       - ./tests/e2e:/app/tests/e2e:ro
 

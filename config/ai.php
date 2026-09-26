@@ -56,6 +56,11 @@ return [
             'url' => env('ANTHROPIC_URL', 'https://api.anthropic.com/v1'),
         ],
 
+        'google' => [
+            'driver' => 'google',
+            'url' => 'translation.googleapis.com:443',
+        ],
+
         'azure' => [
             'driver' => 'azure',
             'key' => env('AZURE_OPENAI_API_KEY'),
@@ -83,6 +88,7 @@ return [
         'gemini' => [
             'driver' => 'gemini',
             'key' => env('GEMINI_API_KEY'),
+            'url' => 'https://generativelanguage.googleapis.com/v1beta',
         ],
 
         'groq' => [
@@ -110,12 +116,18 @@ return [
         'openai' => [
             'driver' => 'openai',
             'key' => env('OPENAI_API_KEY'),
-            'url' => env('OPENAI_URL', 'https://api.openai.com/v1'),
+            'url' => 'https://api.openai.com/v1',
         ],
 
         'openrouter' => [
             'driver' => 'openrouter',
             'key' => env('OPENROUTER_API_KEY'),
+            'url' => 'https://openrouter.ai/api/v1',
+        ],
+
+        'qwen' => [
+            'driver' => 'openai',
+            'url' => 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1',
         ],
 
         'voyageai' => [

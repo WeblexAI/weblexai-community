@@ -19,7 +19,6 @@ $credential = ProviderCredential::query()->updateOrCreate(
     [
         'provider' => TranslationProvider::QWEN,
         'api_key' => 'mock-provider-key',
-        'base_url' => 'http://mock-provider:8081/v1',
         'model' => 'mock-qwen',
         'is_active' => true,
     ],

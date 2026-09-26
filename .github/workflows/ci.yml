@@ -81,6 +81,31 @@ jobs:
         env:
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
 
+  installer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Bash installer
+        shell: bash
+        run: bash -n scripts/install-docker.sh
+      - name: Validate PowerShell installer
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path scripts/install-docker.ps1),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { $_.ToString() }
+            exit 1
+          }
+      - name: Exercise Bash installer behavior
+        shell: bash
+        run: bash tests/installer/install-docker.sh
+
   docker-e2e:
     runs-on: ubuntu-latest
     steps:
@@ -91,7 +116,7 @@ jobs:
         shell: bash
 
   image:
-    needs: [quality, secrets, docker-e2e]
+    needs: [quality, secrets, installer, docker-e2e]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -20,12 +20,10 @@ class CreateProviderCredential extends CreateRecord
             : TranslationProvider::from($data['provider']);
         $data['user_id'] = auth()->id();
         $data['model'] = ($data['model'] ?? null) ?: $provider->defaultModel();
-        $data['base_url'] = ($data['base_url'] ?? null) ?: $provider->defaultBaseUrl();
 
         if ($provider === TranslationProvider::GOOGLE) {
             $data['api_key'] = null;
             $data['model'] = null;
-            $data['base_url'] = null;
         } else {
             $data['service_account'] = null;
             $data['google_project_id'] = null;

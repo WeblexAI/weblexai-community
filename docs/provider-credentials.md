@@ -6,12 +6,12 @@ Provider credentials are created by administrators and assigned to projects. The
 
 WeblexAI uses two provider types:
 
-| Type | Providers | Behavior |
-| --- | --- | --- |
-| NMT | Google Cloud Translation | Direct machine translation. Fast and predictable. Does not use tone, audience, or website context. |
-| LLM | OpenAI, OpenRouter, Gemini, Qwen | Context-aware translation. Uses glossary rules, website context, tone, and audience settings. |
+| Type | Providers                      | Behavior                                                                                           |
+| ---- | ------------------------------ | -------------------------------------------------------------------------------------------------- |
+| NMT  | Google Cloud Translation, Qwen | Direct machine translation. Fast and predictable. Does not use tone, audience, or website context. |
+| LLM  | OpenAI, OpenRouter, Gemini     | Context-aware translation. Uses website context, tone, and audience settings.                      |
 
-The assigned credential determines the project translation type. Project users do not choose NMT or LLM separately.
+The provider assigned to a project determines whether it uses NMT or LLM translation.
 
 ## Creating A Credential
 
@@ -23,7 +23,6 @@ Set:
 - **Provider**: the provider that owns the key
 - **API key** or **Service account JSON**: the secret supplied by the provider
 - **Model**: optional for LLM providers
-- **Base URL**: optional for OpenAI-compatible custom endpoints
 - **Active**: enabled when projects are allowed to use it
 
 Leave secret fields blank when editing a credential if you want to keep the existing secret.
@@ -61,10 +60,9 @@ Use glossary rules with every provider. Glossaries protect brand terms before th
 
 ## Troubleshooting
 
-| Problem | Check |
-| --- | --- |
-| Project says no provider is assigned | Confirm the project has an active credential selected in `/admin`. |
-| LLM context fields are hidden | The assigned credential is an NMT provider. |
-| Translation requests fail after saving | Confirm the provider key is valid and the provider account has access to the selected model. |
-| Google credential fails | Confirm the service account JSON is complete and the Google Cloud Translation API is enabled for the project. |
-| OpenAI-compatible endpoint fails | Confirm the base URL points to the provider API root expected by that provider. |
+| Problem                                | Check                                                                                                         |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Project says no provider is assigned   | Confirm the project has an active credential selected in `/admin`.                                            |
+| LLM context fields are hidden          | The assigned credential is an NMT provider.                                                                   |
+| Translation requests fail after saving | Confirm the provider key is valid and the provider account has access to the selected model.                  |
+| Google credential fails                | Confirm the service account JSON is complete and the Google Cloud Translation API is enabled for the project. |

@@ -44,7 +44,7 @@ class ProviderCredentialResource extends Resource
                         ->maxLength(255),
                     Select::make('provider')
                         ->options(TranslationProvider::class)
-                        ->helperText('Google Cloud Translation is NMT. OpenAI, OpenRouter, Gemini, and Qwen are LLM providers and can use project context.')
+                        ->helperText('Google Cloud Translation and Qwen are NMT providers. OpenAI, OpenRouter, and Gemini are LLM providers and can use project context.')
                         ->required()
                         ->live(),
                     TextInput::make('api_key')
@@ -57,14 +57,6 @@ class ProviderCredentialResource extends Resource
                     TextInput::make('model')
                         ->helperText('Leave blank to use WeblexAI recommended model for this provider.')
                         ->visible(fn (Get $get): bool => $get('provider') !== TranslationProvider::GOOGLE->value),
-                    TextInput::make('base_url')
-                        ->url()
-                        ->helperText('Optional. Use this only for a compatible custom endpoint.')
-                        ->visible(fn (Get $get): bool => in_array($get('provider'), [
-                            TranslationProvider::OPENAI->value,
-                            TranslationProvider::OPENROUTER->value,
-                            TranslationProvider::QWEN->value,
-                        ], true)),
                     TextInput::make('google_project_id')
                         ->helperText('The Google Cloud project that owns the Translation API credential.')
                         ->required(fn (Get $get): bool => $get('provider') === TranslationProvider::GOOGLE->value)

@@ -27,6 +27,7 @@ class GeminiTranslationService implements TranslationServiceInterface
     ): array {
         $apiKey = $this->credential->api_key;
         $model = $this->credential->model ?: $this->credential->provider->defaultModel();
+        $endpoint = $this->credential->provider->endpoint();
 
         if (blank($apiKey) || blank($model)) {
             throw new \RuntimeException('Gemini is not configured.');
@@ -41,7 +42,7 @@ class GeminiTranslationService implements TranslationServiceInterface
                 ->retry(2, 500)
                 ->post(
                     sprintf(
-                        'https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s',
+                        rtrim($endpoint, '/').'/models/%s:generateContent?key=%s',
                         rawurlencode($model),
                         rawurlencode($apiKey),
                     ),

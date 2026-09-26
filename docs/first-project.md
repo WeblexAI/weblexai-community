@@ -1,19 +1,36 @@
 # First Project Guide
 
-This guide takes a fresh WeblexAI installation to a working translated website.
+Start with the Docker installation, then follow these steps to connect your website to WeblexAI and start translating it.
 
-## Before You Start
+## 1. Install WeblexAI
 
-You need:
+Requirements: Docker Engine or Docker Desktop with Docker Compose v2.
 
-- an administrator account
-- one translation provider credential
-- the public URL where WeblexAI is reachable from browsers
-- the website origin that will load the WeblexAI browser SDK
+Install the latest version:
 
-The website origin is the scheme, host, and optional port only. Use `https://www.example.com`, not `https://www.example.com/about`.
+```bash
+curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.sh \
+  | bash
+```
 
-## 1. Add A Provider Credential
+For PowerShell and version-pinned installations, see the [Docker hosting guide](docker-hosting.md).
+
+When the stack starts:
+
+- Local installation: open `http://localhost:8787/install` and create the first administrator.
+- Public installation:
+    1. Point your domain's DNS record to the server running WeblexAI.
+    2. Configure your reverse proxy to forward HTTPS traffic to `http://127.0.0.1:8787`.
+    3. Open `https://your-domain.example/install` and create the first administrator.
+
+## What You Will Need
+
+- **Administrator account**: create it at `/install` in step 1.
+- **Translation provider credential**: obtain credentials from your chosen provider, then add them in `/admin` in step 2. See the [provider credentials guide](provider-credentials.md).
+- **WeblexAI address**: use `http://localhost:8787` for a local installation, or the public HTTPS address configured in the previous step.
+- **Website origin**: use the exact address of the website where the SDK will run, including its scheme, host, and optional port. For example, use `https://www.example.com`, not `https://www.example.com/about`.
+
+## 2. Add A Provider Credential
 
 Open `/admin`, then go to **Provider Credentials**.
 
@@ -25,11 +42,11 @@ Choose one provider:
 | OpenAI                   | LLM  | You want tone, audience, and website context to influence translations. |
 | OpenRouter               | LLM  | You want to route LLM requests through OpenRouter.                      |
 | Gemini                   | LLM  | You want Google Gemini models.                                          |
-| Qwen                     | LLM  | You want Qwen-compatible LLM translation.                               |
+| Qwen                     | NMT  | You want fast direct translation through Qwen Machine Translation.      |
 
-LLM providers can use the project context configured on the dashboard. NMT providers translate directly and use glossary rules for consistency.
+LLM providers can use the project context configured on the dashboard. All providers use glossary rules for consistent terminology; NMT providers translate directly and do not use tone, audience, or website context.
 
-## 2. Create The Project
+## 3. Create The Project
 
 In `/admin`, go to **Projects** and create a project.
 
@@ -42,7 +59,7 @@ Set:
 
 Open the project details page and confirm the project has an API key. If it does not, rotate the API key once.
 
-## 3. Add Accepted Origins
+## 4. Add Accepted Origins
 
 Open the project in `/admin`, then add each website origin that is allowed to request translations.
 
@@ -56,13 +73,13 @@ http://localhost:3000
 
 WeblexAI requires an exact origin match. Wildcards, paths, and query strings are rejected.
 
-## 4. Add Target Languages
+## 5. Add Target Languages
 
 Open the user dashboard, select the project, then go to **Languages**.
 
 Attach at least one target language. A project without target languages can load the SDK, but there is nothing to translate.
 
-## 5. Review Translation Quality Settings
+## 6. Review Translation Quality Settings
 
 Open **Translation Provider** in the project dashboard.
 
@@ -73,9 +90,9 @@ WeblexAI is a self-hosted website translation platform for technical teams.
 Keep product names unchanged. Use direct professional language.
 ```
 
-For NMT credentials, create glossary rules for brand names, product terms, and phrases that must stay consistent.
+For any provider, create glossary rules for brand names, product terms, and phrases that must stay consistent. NMT providers use glossary rules without the LLM context settings.
 
-## 6. Copy The Browser SDK Snippet
+## 7. Copy The Browser SDK Snippet
 
 Open **Project Setup** in the project dashboard.
 
@@ -98,15 +115,13 @@ Copy the browser SDK snippet and add it to the website layout so it loads on eve
 
 Use the URL of your own WeblexAI installation.
 
-## 7. Verify The Integration
+## 8. Verify The Integration
 
 Open the website from an accepted origin and navigate through a page that should be translated.
 
 Then return to **Project Setup**. The status changes to active after WeblexAI receives website content.
 
-## Local Smoke Test
-
-If you do not have an installation yet, start the Docker Compose stack from the [Docker hosting guide](docker-hosting.md), open `/install`, and create the first administrator. Then continue below.
+## Optional Local Smoke Test
 
 If you want to test WeblexAI before touching a real website, use the plain HTML example:
 

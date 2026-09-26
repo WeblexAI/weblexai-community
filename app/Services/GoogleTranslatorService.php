@@ -23,7 +23,10 @@ class GoogleTranslatorService implements TranslationServiceInterface
             throw new \RuntimeException('Google Cloud Translation is not configured.');
         }
 
-        $client = new TranslationServiceClient(['credentials' => $credentials]);
+        $client = new TranslationServiceClient([
+            'credentials' => $credentials,
+            'apiEndpoint' => $this->credential->provider->endpoint(),
+        ]);
         $results = [];
 
         try {

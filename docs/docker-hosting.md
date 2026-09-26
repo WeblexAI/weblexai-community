@@ -1,69 +1,69 @@
 # Docker Hosting
 
-WeblexAI runs as one Docker Compose stack:
+WeblexAI runs as one Docker Compose stack containing the app, worker, scheduler, PostgreSQL, and Redis.
 
-| Service | Host access |
-| --- | --- |
-| WeblexAI app | `APP_PORT` (8787 by default) |
-| PostgreSQL | Private Compose network |
-| Redis | Private Compose network |
-| Worker and scheduler | Private Compose network |
+## Install
 
-## Start the stack
+Requirements: Docker Engine or Docker Desktop with Docker Compose v2.
 
-The published image is available at `kofibusy/weblexai`. You do not need to clone the repository to use the full Compose stack. Download the deployment files into a new directory:
+Install the latest image and configuration:
 
 ```bash
-mkdir weblexai && cd weblexai
-curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/docker-compose.yml -o docker-compose.yml
-curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/.env.example -o .env.example
-cp .env.example .env
+curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.sh \
+  | bash
 ```
 
-From a directory containing `docker-compose.yml` and `.env`:
+Install a specific release when needed:
 
 ```bash
-cp .env.example .env
+curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.sh \
+  | bash -s -- --version 1.0.0
 ```
 
-Set a strong `DB_PASSWORD` and review `APP_URL`, `APP_PORT`, `DB_DATABASE`, and `DB_USERNAME`. Then run:
+On Windows PowerShell:
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.ps1"))) -Mode Install
+```
+
+PowerShell uses `-Version` and `-Directory` for the same options.
+
+The installer creates `.env`, generates `DB_PASSWORD` without printing it, pulls the images, and starts the stack. The container generates `APP_KEY` on first start.
+
+- Local installation: open `http://localhost:8787/install`.
+- Public installation: open `https://your-domain.example/install`.
+
+Create the first administrator from the page that opens.
+
+The default installer reads its files from `main` and uses the `latest` image. Its behavior can change. Use `--version X.Y.Z` to pin both to a release. A release-pinned script is available from a release tag that contains the installer.
+
+## Public URL
+
+For public access:
+
+Docker Compose publishes the WeblexAI app on host port `8787` by default.
+
+1. Point your domain's DNS record to the server running WeblexAI.
+2. Configure your reverse proxy to forward HTTPS traffic to `http://127.0.0.1:8787`.
+3. Enable HTTPS on the reverse proxy.
+4. Open `https://your-domain.example/install` and create the first administrator.
+
+## Update
 
 ```bash
-docker compose pull
-docker compose up -d
+curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.sh \
+  | bash -s -- update --version 1.0.1 --directory ./weblexai
 ```
 
-Open `http://localhost:8787/install`, or use the configured `APP_URL` from a remote browser, to create the first administrator.
+Update mode preserves `.env` and Docker volumes, downloads the selected Compose file, pulls the image, runs migrations, and restarts the stack.
 
-PostgreSQL, Redis, application storage, backups, and the persistent application environment use named Docker volumes. Do not publish PostgreSQL or Redis ports to the host.
+For Windows PowerShell:
 
-You can also run the application image directly with `docker run` without mounting an `.env`; it falls back to the bundled `.env.example` template. This requires PostgreSQL and Redis to be reachable from the container, with their connection settings passed as container environment variables. Compose provisions the complete stack automatically, so it is the recommended no-clone setup.
-
-## Custom domains
-
-Use an external reverse proxy or deployment platform for public access. Point DNS at that platform, terminate HTTPS there, and proxy requests to the WeblexAI app port.
-
-Set the public URL before completing the installer:
-
-```dotenv
-APP_URL=https://translations.example.com
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.ps1"))) -Mode Update -Version 1.0.1 -Directory (Join-Path $PWD "weblexai")
 ```
 
-The proxy must preserve `Host`, `Authorization`, `Content-Type`, `Origin`, and `X-Page-Url`. Disable response buffering for streaming translation responses.
-
-## Upgrades
-
-For a convenient rolling tag:
-
-```bash
-docker compose pull
-docker compose --profile tools run --rm migrate
-docker compose up -d
-```
-
-For a pinned release, set `APP_VERSION` in `.env` to a published semver tag before pulling. Apply pending database migrations and create and verify a backup before upgrading.
-
-## Logs and service status
+## Operations
 
 ```bash
 docker compose ps
@@ -72,4 +72,4 @@ docker compose exec worker php artisan horizon:status
 docker compose exec scheduler php artisan schedule:list
 ```
 
-See [backup and restore](backup-restore.md) and [operations](operations.md) for ongoing maintenance.
+PostgreSQL and Redis are private Compose services. Application storage and backups use Docker volumes. See [backup and restore](backup-restore.md) and [operations](operations.md) for maintenance.

@@ -12,6 +12,21 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
+it('uses provider endpoints from the AI configuration', function () {
+    expect(TranslationProvider::GOOGLE->endpoint())->toBe(config('ai.providers.google.url'))
+        ->and(TranslationProvider::OPENAI->endpoint())->toBe(config('ai.providers.openai.url'))
+        ->and(TranslationProvider::OPENROUTER->endpoint())->toBe(config('ai.providers.openrouter.url'))
+        ->and(TranslationProvider::GEMINI->endpoint())->toBe(config('ai.providers.gemini.url'))
+        ->and(TranslationProvider::QWEN->endpoint())->toBe(config('ai.providers.qwen.url'));
+});
+
+it('fails when a provider endpoint is not configured', function () {
+    config(['ai.providers.qwen.url' => null]);
+
+    expect(fn () => TranslationProvider::QWEN->endpoint())
+        ->toThrow(LogicException::class, 'The qwen translation provider endpoint is not configured.');
+});
+
 it('allows an administrator to create a provider credential', function () {
     $admin = User::factory()->create(['is_active' => ModelStatus::ACTIVE]);
     $admin->assignRole(UserRole::ADMIN->value);
@@ -34,8 +49,7 @@ it('allows an administrator to create a provider credential', function () {
     expect($credential->user_id)->toBe($admin->id)
         ->and($credential->provider)->toBe(TranslationProvider::OPENAI)
         ->and($credential->api_key)->toBe('secret-provider-key')
-        ->and($credential->model)->toBe(TranslationProvider::OPENAI->defaultModel())
-        ->and($credential->base_url)->toBe(TranslationProvider::OPENAI->defaultBaseUrl());
+        ->and($credential->model)->toBe(TranslationProvider::OPENAI->defaultModel());
 
     $this->assertDatabaseHas('activity_log', [
         'log_name' => 'admin',
@@ -53,7 +67,6 @@ it('allows an administrator to update a provider credential', function () {
         'provider' => TranslationProvider::OPENAI,
         'api_key' => 'original-key',
         'model' => TranslationProvider::OPENAI->defaultModel(),
-        'base_url' => TranslationProvider::OPENAI->defaultBaseUrl(),
         'is_active' => true,
     ]);
 

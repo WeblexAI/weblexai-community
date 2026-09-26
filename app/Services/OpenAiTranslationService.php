@@ -8,7 +8,7 @@ class OpenAiTranslationService extends AbstractOpenAiCompatibleTranslationServic
     {
         return [
             'api_key' => $this->credential->api_key,
-            'base_uri' => $this->credential->base_url ?: $this->credential->provider->defaultBaseUrl(),
+            'base_uri' => $this->credential->provider->endpoint(),
             'model' => $this->credential->model ?: $this->credential->provider->defaultModel(),
             'max_tokens' => 2048,
             'temperature' => 0,
