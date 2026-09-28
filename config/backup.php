@@ -1,20 +1,12 @@
 <?php
 
 use Spatie\Backup\Notifications\Notifiable;
-use Spatie\Backup\Notifications\Notifications\BackupHasFailedNotification;
-use Spatie\Backup\Notifications\Notifications\BackupWasSuccessfulNotification;
-use Spatie\Backup\Notifications\Notifications\CleanupHasFailedNotification;
-use Spatie\Backup\Notifications\Notifications\CleanupWasSuccessfulNotification;
-use Spatie\Backup\Notifications\Notifications\HealthyBackupWasFoundNotification;
-use Spatie\Backup\Notifications\Notifications\UnhealthyBackupWasFoundNotification;
 use Spatie\Backup\Tasks\Cleanup\Strategies\DefaultStrategy;
 use Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays;
-use Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes;
 
-$backupName = env('BACKUP_NAME', env('APP_NAME', 'weblexai-community'));
-$backupDisk = env('BACKUP_DISK', 'backups');
+$backupName = env('APP_NAME', 'weblexai-community');
+$backupDisk = 'backups';
 $backupPath = env('BACKUP_PATH') ?: storage_path('app/backups');
-$backupNotificationChannels = env('BACKUP_NOTIFICATIONS_ENABLED', false) ? ['mail'] : [];
 
 return [
     'backup' => [
@@ -60,56 +52,48 @@ return [
         ],
 
         'temporary_directory' => storage_path('app/backup-temp'),
-        'password' => env('BACKUP_ARCHIVE_PASSWORD'),
-        'encryption' => env('BACKUP_ARCHIVE_PASSWORD') ? 'default' : 'none',
+        'password' => null,
+        'encryption' => 'none',
         'verify_backup' => true,
         'tries' => 1,
         'retry_delay' => 0,
     ],
 
     'notifications' => [
-        'notifications' => [
-            BackupHasFailedNotification::class => $backupNotificationChannels,
-            UnhealthyBackupWasFoundNotification::class => $backupNotificationChannels,
-            CleanupHasFailedNotification::class => $backupNotificationChannels,
-            BackupWasSuccessfulNotification::class => $backupNotificationChannels,
-            HealthyBackupWasFoundNotification::class => $backupNotificationChannels,
-            CleanupWasSuccessfulNotification::class => $backupNotificationChannels,
-        ],
+        'notifications' => [],
 
         'notifiable' => Notifiable::class,
 
         'mail' => [
-            'to' => env('BACKUP_NOTIFICATION_EMAIL', 'noreply@example.com'),
+            'to' => 'noreply@example.com',
             'from' => [
-                'address' => env('MAIL_FROM_ADDRESS', 'noreply@example.com'),
-                'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'WeblexAI')),
+                'address' => 'noreply@example.com',
+                'name' => 'WeblexAI',
             ],
         ],
 
         'slack' => [
-            'webhook_url' => env('BACKUP_SLACK_WEBHOOK_URL', ''),
+            'webhook_url' => '',
             'channel' => null,
             'username' => null,
             'icon' => null,
         ],
 
         'discord' => [
-            'webhook_url' => env('BACKUP_DISCORD_WEBHOOK_URL', ''),
+            'webhook_url' => '',
             'username' => '',
             'avatar_url' => '',
         ],
 
         'webhook' => [
-            'url' => env('BACKUP_WEBHOOK_URL', ''),
+            'url' => '',
         ],
     ],
 
     'log_channel' => null,
 
     'monitor' => [
-        'maximum_age_in_days' => env('BACKUP_MAX_AGE_DAYS', 7),
-        'maximum_storage_in_megabytes' => env('BACKUP_MAX_STORAGE_MB', 5120),
+        'maximum_age_in_days' => 7,
     ],
 
     'monitor_backups' => [
@@ -117,8 +101,7 @@ return [
             'name' => $backupName,
             'disks' => [$backupDisk],
             'health_checks' => [
-                MaximumAgeInDays::class => env('BACKUP_MAX_AGE_DAYS', 7),
-                MaximumStorageInMegabytes::class => env('BACKUP_MAX_STORAGE_MB', 5120),
+                MaximumAgeInDays::class => 7,
             ],
         ],
     ],
@@ -132,7 +115,7 @@ return [
             'keep_weekly_backups_for_weeks' => 8,
             'keep_monthly_backups_for_months' => 4,
             'keep_yearly_backups_for_years' => 2,
-            'delete_oldest_backups_when_using_more_megabytes_than' => env('BACKUP_MAX_STORAGE_MB', 5120),
+            'delete_oldest_backups_when_using_more_megabytes_than' => null,
         ],
 
         'tries' => 1,

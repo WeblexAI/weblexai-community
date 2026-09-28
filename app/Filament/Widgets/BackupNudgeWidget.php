@@ -2,8 +2,8 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Backup\Backups;
 use Filament\Widgets\Widget;
-use ShuvroRoy\FilamentSpatieLaravelBackup\Pages\Backups;
 use Spatie\Backup\BackupDestination\Backup;
 use Spatie\Backup\BackupDestination\BackupDestination;
 

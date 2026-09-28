@@ -2,6 +2,7 @@
 
 namespace App\Support\ErrorReporting;
 
+use App\Settings\ErrorReportingSettings;
 use Illuminate\Http\Client\Factory;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -13,15 +14,13 @@ class RemoteExceptionReporter
 
     public function report(Throwable $exception): void
     {
-        if (! config('error-reporting.enabled')) {
+        if (! $this->isEnabled()) {
             return;
         }
 
-        $webhookUrl = trim((string) config('error-reporting.webhook_url'));
-        $telegramToken = trim((string) config('error-reporting.telegram_bot_token'));
-        $telegramChatId = trim((string) config('error-reporting.telegram_chat_id'));
+        $collectorUrl = trim((string) config('error-reporting.collector_url'));
 
-        if ($webhookUrl === '' && ($telegramToken === '' || $telegramChatId === '')) {
+        if ($collectorUrl === '') {
             return;
         }
 
@@ -38,14 +37,26 @@ class RemoteExceptionReporter
         $payload = $this->payload($exception, $fingerprint);
 
         try {
-            if ($webhookUrl !== '') {
-                $this->sendWebhook($webhookUrl, $payload);
-            }
-
-            if ($telegramToken !== '' && $telegramChatId !== '') {
-                $this->sendTelegram($telegramToken, $telegramChatId, $payload);
-            }
+            $this->http
+                ->acceptJson()
+                ->asJson()
+                ->withHeaders([
+                    'User-Agent' => 'WeblexAI-Error-Reporter/'.config('community.version'),
+                    'X-WeblexAI-Reporter' => 'community',
+                ])
+                ->connectTimeout(min(3, $this->timeout()))
+                ->timeout($this->timeout())
+                ->post($collectorUrl, $payload);
         } catch (Throwable) {
+        }
+    }
+
+    private function isEnabled(): bool
+    {
+        try {
+            return app(ErrorReportingSettings::class)->enabled;
+        } catch (Throwable) {
+            return false;
         }
     }
 
@@ -91,55 +102,6 @@ class RemoteExceptionReporter
                 'path' => '/'.ltrim($request->path(), '/'),
             ] : null,
         ];
-    }
-
-    private function sendWebhook(string $url, array $payload): void
-    {
-        $json = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
-        $secret = (string) config('error-reporting.webhook_secret');
-        $headers = [
-            'Content-Type' => 'application/json',
-            'User-Agent' => 'WeblexAI-Error-Reporter/'.config('community.version'),
-        ];
-
-        if ($secret !== '') {
-            $headers['X-WeblexAI-Signature'] = 'sha256='.hash_hmac('sha256', $json, $secret);
-        }
-
-        $this->http
-            ->withHeaders($headers)
-            ->connectTimeout(min(3, $this->timeout()))
-            ->timeout($this->timeout())
-            ->withBody($json, 'application/json')
-            ->post($url);
-    }
-
-    private function sendTelegram(string $token, string $chatId, array $payload): void
-    {
-        $exception = $payload['exception'];
-        $application = $payload['application'];
-        $request = $payload['request'];
-        $lines = [
-            'WeblexAI error',
-            "{$application['name']} {$application['version']} ({$application['environment']})",
-            "{$exception['class']}: {$exception['message']}",
-            "{$exception['file']}:{$exception['line']}",
-        ];
-
-        if ($request) {
-            $lines[] = "{$request['method']} {$request['path']}";
-        }
-
-        $lines[] = "Fingerprint: {$payload['fingerprint']}";
-
-        $this->http
-            ->connectTimeout(min(3, $this->timeout()))
-            ->timeout($this->timeout())
-            ->post("https://api.telegram.org/bot{$token}/sendMessage", [
-                'chat_id' => $chatId,
-                'text' => Str::limit(implode("\n", $lines), 3900),
-                'disable_notification' => true,
-            ]);
     }
 
     private function applicationTrace(Throwable $exception): array

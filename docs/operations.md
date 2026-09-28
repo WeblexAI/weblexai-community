@@ -16,36 +16,15 @@ The backup health check reports a failure until the first backup exists.
 
 ## Dashboard Backups
 
-Administrators can open **System > Backups** in `/admin` to create, download, and delete backup archives. Backups include PostgreSQL, local storage, and the live `.env` file.
+Administrators can open **System > Backups** in `/admin` to create, download, and delete backup archives. A full backup includes PostgreSQL, local storage, and the live `.env` file. The page also supports database-only and files-only backups.
 
-Useful environment values:
+Set and save the archive password on the Backups page before creating an archive. Every backup created from that page uses the saved password, and the backup table shows the password used for each archive. Changing the password does not change existing archives. Backups are created and deleted manually; the application does not create or remove them on a schedule. The Docker image includes the PostgreSQL client required by `pg_dump`.
 
-```dotenv
-BACKUP_NAME="${APP_NAME}"
-BACKUP_DISK=backups
-BACKUP_PATH=/backups
-BACKUP_ARCHIVE_PASSWORD=
-BACKUP_MAX_AGE_DAYS=7
-BACKUP_MAX_STORAGE_MB=5120
-```
+## Error reporting
 
-Set `BACKUP_ARCHIVE_PASSWORD` when backup archives may leave the server. For Docker installs, the application image includes the PostgreSQL client required by `pg_dump`.
+Administrators can enable diagnostic error reports in `/admin` under **Settings > Diagnostics**. When enabled, sanitized reports are sent to the WeblexAI collector. No external reporting credentials are configured in the application.
 
-## Optional error reporting
-
-Remote error reporting is disabled by default. Enable one or both destinations in `.env`:
-
-```dotenv
-ERROR_REPORTING_ENABLED=true
-ERROR_REPORTING_WEBHOOK_URL=
-ERROR_REPORTING_WEBHOOK_SECRET=
-ERROR_REPORTING_TELEGRAM_BOT_TOKEN=
-ERROR_REPORTING_TELEGRAM_CHAT_ID=
-```
-
-Webhook requests include an `X-WeblexAI-Signature` HMAC when a secret is configured. Telegram requires a bot token from BotFather and the destination chat ID.
-
-Reports contain application versions, exception type and message, application stack frames, and the request method and path. Request bodies, query strings, headers, cookies, user data, environment variables, and credentials are not included. Duplicate exception locations are throttled for 15 minutes.
+Reports contain application and exception details, application stack frames, and the request method and path. Request bodies, query strings, headers, cookies, user data, environment variables, and credentials are not included. Duplicate exception locations are throttled for 15 minutes. Disable the setting to keep reports local.
 
 Run one application replica until external shared storage is configured. PostgreSQL, Redis, and uploaded media must be shared before horizontal scaling.
 

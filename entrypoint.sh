@@ -66,10 +66,6 @@ if ! grep -q '^LOG_DAILY_DAYS=' /config/.env; then
     set_env_value LOG_DAILY_DAYS 30
 fi
 
-if ! grep -q '^BACKUP_DISK=' /config/.env || grep -q '^BACKUP_DISK=local$' /config/.env; then
-    set_env_value BACKUP_DISK backups
-fi
-
 if ! grep -Eq '^BACKUP_PATH=.+$' /config/.env; then
     set_env_value BACKUP_PATH /backups
 fi

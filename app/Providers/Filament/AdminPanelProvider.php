@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Backup\Backups;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Resources\Languages\LanguageResource;
 use App\Filament\Resources\Projects\ProjectResource;
@@ -87,6 +88,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentTourPlugin::make()
                     ->onlyVisibleOnce(),
                 FilamentSpatieLaravelBackupPlugin::make()
+                    ->usingPage(Backups::class)
                     ->authorize(fn (): bool => auth()->user()?->canAccessPanel($panel) === true)
                     ->navigationGroup('System')
                     ->navigationLabel('Backups')
