@@ -38,4 +38,4 @@ Self-hosting gives control and adds responsibility. The team operating WeblexAI 
 - Docker image upgrades and release compatibility
 - reverse proxy and HTTPS configuration
 
-WeblexAI supports self-hosted deployments only. Each installation is operator-managed.
+At present, WeblexAI supports self-hosted deployments only. Each installation is operator-managed. A hosted WeblexAI option is coming soon.

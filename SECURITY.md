@@ -15,7 +15,7 @@ Production operators should complete the [security hardening checklist](docs/sec
 
 ## Reporting a Vulnerability
 
-Report vulnerabilities privately through GitHub Security Advisories for this repository. If advisories are unavailable, email `security@weblexai.com` with the subject `WeblexAI Community Security Report`.
+Report vulnerabilities privately through GitHub Security Advisories for this repository. If advisories are unavailable, email `kofibusy@gmail.com` with the subject `WeblexAI Community Security Report`.
 
 Include affected versions, deployment context, reproduction steps, impact, and any suggested remediation. Do not open a public issue before a fix is available.
 

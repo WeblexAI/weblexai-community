@@ -63,8 +63,13 @@ class ApplicationResetter
             storage_path('framework/sessions'),
             storage_path('framework/views'),
         ];
+        $backupDirectory = config('filesystems.disks.backups.root');
 
-        foreach ($directories as $directory) {
+        if (is_string($backupDirectory) && $backupDirectory !== '') {
+            $directories[] = $backupDirectory;
+        }
+
+        foreach (array_unique($directories) as $directory) {
             File::ensureDirectoryExists($directory);
             File::cleanDirectory($directory);
         }

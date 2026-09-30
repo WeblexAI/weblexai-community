@@ -28,7 +28,7 @@ On Windows PowerShell:
 
 PowerShell uses `-Version` and `-Directory` for the same options.
 
-The installer creates `.env`, generates `DB_PASSWORD`, pulls the images, and starts the stack. The container generates `APP_KEY` on first start.
+The installer creates `.env`, generates `DB_PASSWORD`, pulls the images, and starts the stack.
 
 - Local installation: open `http://localhost:8787/install`.
 - Public installation: open `https://your-domain.example/install`.
@@ -68,7 +68,6 @@ For Windows PowerShell:
 ```bash
 docker compose ps
 docker compose logs -f app worker scheduler
-docker compose exec worker php artisan horizon:status
 docker compose exec scheduler php artisan schedule:list
 ```
 

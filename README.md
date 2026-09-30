@@ -72,7 +72,6 @@ Accepted origins must be exact origins such as `https://www.example.com`; paths 
 - [Backup and restore](docs/backup-restore.md)
 - [Provider credentials](docs/provider-credentials.md)
 - [Security hardening](docs/security-hardening-checklist.md)
-- [Release checklist](docs/release-checklist.md)
 
 ## Project Policies
 

@@ -77,6 +77,7 @@ it('runs fresh migrations, clears local data, and unlocks the installer', functi
         $directory.DIRECTORY_SEPARATOR.'sessions',
         $directory.DIRECTORY_SEPARATOR.'views',
     ];
+    $backupDirectory = $directory.DIRECTORY_SEPARATOR.'backups';
     $environmentPath = $directory.DIRECTORY_SEPARATOR.'.env';
 
     File::ensureDirectoryExists($stateDirectory);
@@ -84,7 +85,10 @@ it('runs fresh migrations, clears local data, and unlocks the installer', functi
         File::ensureDirectoryExists($dataDirectory);
         File::put($dataDirectory.DIRECTORY_SEPARATOR.'application-data', 'delete me');
     }
+    File::ensureDirectoryExists($backupDirectory);
+    File::put($backupDirectory.DIRECTORY_SEPARATOR.'backup.zip', 'delete me');
     File::put($environmentPath, "APP_KEY=\"base64:test\"\nAPP_INSTALLED=true\n");
+    config(['filesystems.disks.backups.root' => $backupDirectory]);
 
     $state = new InstallationState($stateDirectory, false, '1.0.0');
     $state->complete();
@@ -113,6 +117,7 @@ it('runs fresh migrations, clears local data, and unlocks the installer', functi
     foreach ($dataDirectories as $dataDirectory) {
         expect(File::files($dataDirectory))->toBeEmpty();
     }
+    expect(File::files($backupDirectory))->toBeEmpty();
 
     File::deleteDirectory($directory);
 });

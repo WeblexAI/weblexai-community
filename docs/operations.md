@@ -7,7 +7,6 @@
 - Administrators can open **System > Application logs** in a new tab from `/admin`.
 - Administrators can open **System > Health** to review database, cache, Redis, disk, environment, debug mode, and backup checks.
 - Docker logs: `docker compose logs -f app worker scheduler`.
-- Queue status: `docker compose exec worker php artisan horizon:status`.
 - Scheduler: `docker compose exec scheduler php artisan schedule:list`.
 
 The application log viewer is read-only; log deletion is disabled.
@@ -22,21 +21,19 @@ Set and save the archive password on the Backups page before creating an archive
 
 ## Error reporting
 
-Administrators can enable diagnostic error reports in `/admin` under **Settings > Diagnostics**. When enabled, sanitized reports are sent to the WeblexAI collector. No external reporting credentials are configured in the application.
+Administrators can enable diagnostic error reports in `/admin` under **Settings > Diagnostics**. When enabled, sanitized reports are sent to the WeblexAI collector.
 
 Reports contain application and exception details, application stack frames, and the request method and path. Request bodies, query strings, headers, cookies, user data, environment variables, and credentials are not included. Duplicate exception locations are throttled for 15 minutes. Disable the setting to keep reports local.
-
-Run one application replica until external shared storage is configured. PostgreSQL, Redis, and uploaded media must be shared before horizontal scaling.
 
 ## Providers
 
 Configure provider credentials in `/admin`. Credentials are encrypted with `APP_KEY`; losing that key makes them unrecoverable. A project must select a configured provider before automatic translation works.
 
-For provider failures, verify the endpoint, model name, API permissions, account balance, outbound HTTPS, and worker logs. OpenAI and OpenRouter are separate providers and require separate credentials.
+For provider failures, verify the provider credentials, model name, API permissions, account balance, outbound HTTPS, and worker logs.
 
 ## Accepted Origins and CORS
 
-Add exact origins such as `https://www.example.com` to each project. Do not add paths or wildcards. The browser SDK sends the project key as a bearer credential and the application verifies the browser `Origin` and page URL origin. Reverse proxies must not remove `Origin`.
+Add the exact origin of each website that will use the browser SDK, such as `https://www.example.com`. Do not add paths or wildcards. The browser SDK sends the project key as a bearer credential, and the application verifies both the browser `Origin` and the origin in `X-Page-Url`. Reverse proxies must preserve these headers.
 
 Preflight requests are allowed without credentials. Actual requests with a missing key, missing origin, mismatched page URL, inactive owner, or inactive project receive the same `401` response.
 
@@ -52,15 +49,7 @@ docker compose exec app php artisan weblex:user:reset-password user@example.com
 
 Administrators can open **System > Reset application** to return the instance to the installation wizard. The action requires the current administrator password and the exact confirmation phrase shown on screen.
 
-The reset runs fresh database migrations and deletes local public uploads, caches, compiled views, and sessions. It preserves infrastructure credentials, application logs, backups, and objects stored in external storage. Create and verify a backup before resetting an instance.
-
-## Cache and Queues
-
-Redis databases default to `0` for general data, `1` for cache, and `2` for queues. Do not run `FLUSHALL` on shared Redis infrastructure. Restart workers after deploying code:
-
-```bash
-docker compose exec worker php artisan horizon:terminate
-```
+The reset runs fresh database migrations, removing database records for the installation. It also deletes local public uploads, caches, compiled views, sessions, and backup files in the Docker backup volume. The `.env` file and application logs remain. Create and verify a backup before resetting an instance.
 
 ## Proxy Issues
 

@@ -5,8 +5,7 @@ This checklist is for self-hosted operators preparing a production WeblexAI Comm
 ## Required
 
 - Run behind HTTPS and set `APP_URL` to the public HTTPS origin.
-- Set a strong `APP_KEY` and keep it in offline backups.
-- Keep `APP_DEBUG=false` in production.
+- Keep the generated `APP_KEY` safe and include it in offline backups.
 - Restrict PostgreSQL and Redis to private networks.
 - Configure exact accepted origins for every project before using the browser SDK.
 - Use unique project API keys and rotate them after exposure.
@@ -18,8 +17,4 @@ This checklist is for self-hosted operators preparing a production WeblexAI Comm
 
 - Terminate TLS at the external reverse proxy or deployment platform; preserve `Host`, `Origin`, `Authorization`, and `X-Page-Url`.
 - Disable proxy buffering for `application/x-ndjson` translation responses.
-- Put Redis on dedicated databases for app data, cache, and queues.
-- Keep only one scheduler process active.
-- Limit outbound network access to configured providers and required infrastructure services.
 - Monitor authentication failures, origin mismatches, provider errors, worker failures, and queue depth.
-- Use least-privilege credentials for S3, Cloudinary, MaxMind, and provider APIs.

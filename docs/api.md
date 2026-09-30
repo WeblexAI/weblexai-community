@@ -14,7 +14,7 @@ Authentication failures always return:
 { "message": "Unauthenticated." }
 ```
 
-The translations endpoint accepts `source`, `target`, and up to 100 `translatables`. Each translatable has an ID and up to 10,000 characters of text. It returns `application/x-ndjson` containing `batch`, `complete`, or sanitized `error` events. The event schema is in [api-contract-v1.json](api-contract-v1.json).
+The translations endpoint accepts `source`, `target`, and up to 100 `translatables` per request. Each translatable has an ID and up to 10,000 characters of text. The server streams translation results in `application/x-ndjson` batches until every item in the request is complete, followed by a `complete` event or a sanitized `error` event. The translation stream event schema is in [api-contract-v1.json](api-contract-v1.json).
 
 The browser SDK is normally initialized with:
 
@@ -25,5 +25,3 @@ The browser SDK is normally initialized with:
 ```
 
 The project setup page generates the full snippet using the configured application URL.
-
-Breaking changes require a new contract version and parallel compatibility period.

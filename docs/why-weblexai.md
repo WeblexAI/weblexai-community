@@ -27,7 +27,7 @@ For SEO-heavy public marketing sites, validate the rendering strategy first. The
 | Translation quality controls | Glossary, exclusions, review state, LLM context, tone, and audience.    | Depends on vendor plan and workflow.                         |
 | SEO behavior                 | Browser SDK by default. SEO strategy depends on deployment.             | Often includes vendor-managed SEO routing.                   |
 | Operational responsibility   | Your team manages updates, backups, logs, and infrastructure.           | Vendor manages operations.                                   |
-| Managed option               | Self-hosted deployment only.                                            | Included by default.                                         |
+| Managed option               | Hosted WeblexAI option coming soon.                                     | Included by default.                                         |
 
 ## Positioning
 
@@ -37,7 +37,7 @@ Choose WeblexAI when the requirement is:
 Weglot-style website translation, but self-hosted and provider-key-owned.
 ```
 
-The tradeoff is operational responsibility. Self-hosting gives control, but it also means the team must manage backups, upgrades, monitoring, and provider credentials. Teams that do not want that responsibility should choose a managed translation service.
+The tradeoff is operational responsibility. Self-hosting gives control, but it also means the team must manage backups, upgrades, monitoring, and provider credentials. Teams that prefer WeblexAI to manage the infrastructure can use the upcoming hosted WeblexAI platform when it becomes available.
 
 ## Product Principles
 

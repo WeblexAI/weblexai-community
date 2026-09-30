@@ -31,7 +31,7 @@ class ResetApplication extends Page
                 ->icon('heroicon-o-trash')
                 ->color('danger')
                 ->modalHeading('Reset WeblexAI')
-                ->modalDescription('This permanently deletes all application data and local uploads. External storage objects and infrastructure credentials are not deleted.')
+                ->modalDescription('This permanently deletes all application data, local uploads, and backup archives. Infrastructure credentials and application logs are preserved.')
                 ->modalSubmitActionLabel('Reset application')
                 ->form([
                     TextInput::make('current_password')

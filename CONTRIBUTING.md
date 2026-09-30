@@ -34,7 +34,7 @@ For normal restarts while containers already exist, use:
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
-The development build runs Composer install, npm install, frontend build, SDK build, PHP extension setup, and PostgreSQL client setup. It is expected to take longer than a normal restart.
+The development build runs Composer install, `npm ci`, frontend build, SDK build, PHP extension setup, and PostgreSQL client setup. It is expected to take longer than a normal restart.
 
 ## Quality Checks
 

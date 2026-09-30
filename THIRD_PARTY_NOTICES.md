@@ -1,46 +1,18 @@
 # Third-Party Notices
 
-WeblexAI Community Edition is licensed under Apache-2.0. It also includes and depends on third-party software under their own licenses.
+WeblexAI Community Edition is licensed under Apache-2.0. It includes third-party software distributed under its own licenses.
 
-## PHP Dependencies
+## Dependencies
 
-PHP dependency names, versions, and licenses are locked in `composer.lock`. Generate the current machine-readable report with:
+The dependency lock files contain the versions and declared licenses for the PHP and JavaScript packages used by WeblexAI:
 
-```bash
-composer licenses --format=json > composer-licenses.json
-```
+- `composer.lock`
+- `package-lock.json`
 
-The current dependency set is primarily MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, and LGPL-2.1-or-later.
+## Brand Assets
 
-## JavaScript Dependencies
+The admin interface includes a GitHub icon from Simple Icons at `public/images/brand/github.svg`. The Simple Icons project is distributed under CC0-1.0. The GitHub name and logo remain trademarks of GitHub.
 
-JavaScript dependency names, versions, and licenses are locked in `package-lock.json`. Generate an inventory with:
+## Container Software
 
-```bash
-npm ls --all --json > npm-dependencies.json
-```
-
-The browser SDK and frontend assets are built from `resources/` and emitted into `public/wlai` and `public/build`.
-
-## Simple Icons
-
-The installer footer includes the GitHub icon from Simple Icons:
-
-- `public/images/brand/github.svg`
-
-Simple Icons is licensed under CC0-1.0. The GitHub logo remains a GitHub trademark.
-
-## Container Images
-
-The default deployment uses the images declared in `Dockerfile` and `docker-compose.yml`, including FrankenPHP, PostgreSQL, and Redis. The E2E Compose override adds Python for its mock provider. Review image licenses and security advisories during each release.
-
-## Release Gate
-
-Before publishing a release, run:
-
-```bash
-composer audit --locked
-npm audit --audit-level=high
-```
-
-Record any accepted vulnerability or license exception in the release notes.
+The Docker distribution uses software from FrankenPHP, PostgreSQL, and Redis. These projects remain subject to their own licenses and notices.

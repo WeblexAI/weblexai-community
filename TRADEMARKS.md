@@ -26,5 +26,4 @@ Edition" are permitted when they do not imply sponsorship or endorsement.
 Using the WeblexAI name to describe a contribution to this repository does
 not grant broader trademark rights.
 
-Questions about trademark use should be sent through the contact channel
-listed in the official repository.
+Questions about trademark use should be sent to `kofibusy@gmail.com`.
