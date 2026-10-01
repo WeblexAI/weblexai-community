@@ -10,6 +10,7 @@ use App\Imports\TranslationImport;
 use App\Models\Project;
 use App\Models\Translation;
 use App\Services\Cache\TranslationCacheInvalidationService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -35,12 +36,14 @@ class TranslationImportExportController extends Controller
         $targetLanguage = $project->languages()->findOrFail($request->validated('target_lang_id'));
 
         try {
-            Excel::import(
-                new TranslationImport(auth()->user(), $page, $project->originalLanguage, $targetLanguage),
-                $request->file('file'),
-            );
-            app(TranslationCacheInvalidationService::class)
-                ->forgetPageLang($project->id, $page->id, $targetLanguage->iso_2);
+            DB::transaction(function () use ($project, $page, $targetLanguage, $request): void {
+                Project::query()->whereKey($project->id)->lockForUpdate()->firstOrFail();
+                Excel::import(
+                    new TranslationImport(auth()->user(), $page, $project->originalLanguage, $targetLanguage),
+                    $request->file('file'),
+                );
+                app(TranslationCacheInvalidationService::class)->forgetPageLang($project->id, $page->id, $targetLanguage->iso_2);
+            });
 
             return response()->success('Import completed.');
         } catch (\Throwable $exception) {

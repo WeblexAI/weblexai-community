@@ -22,10 +22,11 @@ class GlossaryObserver
 
     public function updated(Glossary $glossary): void
     {
+        GlossaryService::markAffected($glossary, $glossary->getRawOriginal());
         GlossaryService::invalidateCacheForGlossary($glossary);
     }
 
-    public function deleted(Glossary $glossary): void
+    public function deleting(Glossary $glossary): void
     {
         GlossaryService::invalidateCacheForGlossary($glossary);
     }

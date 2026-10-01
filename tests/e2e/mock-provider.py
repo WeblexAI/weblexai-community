@@ -46,7 +46,10 @@ class Handler(BaseHTTPRequestHandler):
         REQUEST_COUNT += 1
         items = extract_items(payload.get("messages", []))
         translations = [
-            {"translated": f"Mock FR: {str(item.get('text', '')).strip()}"}
+            {
+                "id": str(item.get("id", "")),
+                "translated": f"Mock FR: {str(item.get('text', '')).strip()}",
+            }
             for item in items
         ]
 

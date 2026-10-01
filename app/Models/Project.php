@@ -62,6 +62,8 @@ class Project extends Model
         'api_key' => 'encrypted',
         'is_active' => ModelStatus::class,
         'should_display_automatics' => 'boolean',
+        'delivery_revision' => 'integer',
+        'generation_revision' => 'integer',
         'translation_tone' => TranslationTone::class,
         'translation_audience' => TranslationAudience::class,
     ];

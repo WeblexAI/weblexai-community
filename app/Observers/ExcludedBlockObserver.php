@@ -4,9 +4,8 @@ namespace App\Observers;
 
 use App\Models\ExcludedBlock;
 use App\Services\Cache\ProjectCacheInvalidationService;
-use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
-class ExcludedBlockObserver implements ShouldHandleEventsAfterCommit
+class ExcludedBlockObserver
 {
     public function created(ExcludedBlock $excludedBlock): void
     {

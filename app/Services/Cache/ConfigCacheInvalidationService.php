@@ -3,36 +3,20 @@
 namespace App\Services\Cache;
 
 use App\Models\Project;
-use Illuminate\Contracts\Cache\Repository;
-use Illuminate\Support\Facades\Cache;
+use App\Services\ProjectRevisionService;
 
 class ConfigCacheInvalidationService
 {
-    private function cache(): Repository
-    {
-        return Cache::store(config('cache.default'));
-    }
-
-    private function key(int $projectId, string $pageDomain): string
-    {
-        return "config:project_{$projectId}:page_".md5($pageDomain);
-    }
+    public function __construct(private readonly ProjectRevisionService $revisions) {}
 
     public function clearPage(int $projectId, string $pageDomain): void
     {
-        $this->cache()->forget($this->key($projectId, $pageDomain));
+        $this->revisions->bumpDelivery($projectId);
     }
 
     public function clearProject(int $projectId): int
     {
-        $cache = $this->cache();
-        $registryKey = "config:registry:project_{$projectId}";
-
-        foreach ($cache->get($registryKey, []) as $key) {
-            $cache->forget($key);
-        }
-
-        $cache->forget($registryKey);
+        $this->revisions->bumpDelivery($projectId);
 
         return 1;
     }
@@ -60,14 +44,6 @@ class ConfigCacheInvalidationService
 
     public function clearAll(): int
     {
-        $cache = $this->cache();
-
-        foreach ($cache->get('config:registry:all', []) as $projectId) {
-            $this->clearProject((int) $projectId);
-        }
-
-        $cache->forget('config:registry:all');
-
-        return 1;
+        return $this->clearProjects(Project::query()->pluck('id'));
     }
 }

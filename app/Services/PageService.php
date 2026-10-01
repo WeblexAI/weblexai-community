@@ -5,8 +5,7 @@ namespace App\Services;
 use App\Models\Language;
 use App\Models\Page;
 use App\Models\Project;
-use App\Services\Cache\ConfigCacheInvalidationService;
-use App\Services\Cache\TranslationCacheInvalidationService;
+use Illuminate\Support\Facades\DB;
 
 class PageService
 {
@@ -15,14 +14,10 @@ class PageService
         if (is_null($is_blacklisted)) {
             $is_blacklisted = ! $page->is_blacklisted;
         }
-        $page->notOriginalTranslations()->delete();
-
-        app(TranslationCacheInvalidationService::class)->forgetPage($page->project_id, $page->id);
-        app(ConfigCacheInvalidationService::class)->clearPage($page->project_id, $page->domain);
-
-        $page->update([
-            'is_blacklisted' => $is_blacklisted,
-        ]);
+        DB::transaction(function () use ($page, $is_blacklisted): void {
+            Project::query()->whereKey($page->project_id)->lockForUpdate()->firstOrFail();
+            $page->update(['is_blacklisted' => $is_blacklisted]);
+        });
 
         return $page;
     }

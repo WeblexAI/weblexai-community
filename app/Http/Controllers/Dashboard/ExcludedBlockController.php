@@ -99,8 +99,8 @@ class ExcludedBlockController extends Controller
             $project->excludedBlocks()
                 ->whereIn('id', $validated['block_ids'])
                 ->delete();
-            DB::commit();
             app(ProjectCacheInvalidationService::class)->clearProjectConfig($project->id);
+            DB::commit();
 
             return response()->success(count($validated['block_ids']).' blocks deleted.');
         } catch (Exception $exception) {

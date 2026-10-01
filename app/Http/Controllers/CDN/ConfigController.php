@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\CDN;
 
+use App\Enums\ModelStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Language;
 use App\Models\Project;
@@ -19,11 +20,11 @@ class ConfigController extends Controller
         [, $pageDomain] = app(UrlHelper::class)->getDomainAndOrigin(
             request()->attributes->get('pageUrl'),
         );
-        $config = $this->configCache->get($project->id, $pageDomain)
+        $config = $this->configCache->get($project->id, $pageDomain, $project->delivery_revision)
             ?? $this->buildConfig($project, $pageDomain);
 
         if ($config['is_active']) {
-            $this->configCache->set($project->id, $pageDomain, $config);
+            $this->configCache->set($project->id, $pageDomain, $config, $project->delivery_revision);
         }
 
         return $this->jsonSuccess($config);
@@ -33,6 +34,7 @@ class ConfigController extends Controller
     {
         $page = $project->pages()->where('domain', $pageDomain)->first();
         $publicLanguages = $project->languages()
+            ->where('languages.is_active', ModelStatus::ACTIVE)
             ->wherePivot('is_public', true)
             ->wherePivot('is_disabled', false)
             ->get();
@@ -68,6 +70,7 @@ class ConfigController extends Controller
                 'device_pixel_breakpoint' => $switcher?->device_pixel_breakpoint ?? 768,
             ],
             'is_active' => true,
+            'delivery_revision' => (int) $project->delivery_revision,
             'page' => $pageDomain,
             'excluded_blocks' => $project->excludedBlocks->pluck('selector')->all(),
             'hide_water_mark' => false,

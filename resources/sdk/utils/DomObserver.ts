@@ -46,7 +46,7 @@ export class DomObserver {
             subtree: true,
             characterData: true,
             attributes: true,
-            attributeFilter: ['hidden', 'aria-hidden', 'open'],
+            attributeFilter: ['hidden', 'aria-hidden', 'open', 'placeholder', 'alt', 'title', 'aria-label', 'aria-description', 'translate', 'contenteditable', 'type'],
         });
     }
 

@@ -34,7 +34,7 @@ class ApplyGlossariesToText
                 );
 
                 $appliedGlossariesMap[$item['id']] = $result['applied_glossaries'];
-                $item['text'] = $result['text'];
+                $item['provider_text'] = $result['text'];
 
                 return $item;
             }

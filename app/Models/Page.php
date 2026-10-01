@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Enums\ModelStatus;
+use App\Observers\PageObserver;
 use App\Traits\BaseModelTrait;
 use CyrildeWit\EloquentViewable\Contracts\Viewable;
 use CyrildeWit\EloquentViewable\InteractsWithViews;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
@@ -36,6 +38,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property array $blacklisted_languages
  * @property Collection<TranslationRequest> $translationRequests
  */
+#[ObservedBy(PageObserver::class)]
 class Page extends Model implements Viewable
 {
     use BaseModelTrait, HasFactory, InteractsWithViews, LogsActivity;
@@ -43,6 +46,8 @@ class Page extends Model implements Viewable
     protected $appends = ['path'];
 
     protected $casts = [
+        'is_blacklisted' => 'boolean',
+        'is_active' => 'boolean',
         'blacklisted_languages' => 'array',
     ];
 

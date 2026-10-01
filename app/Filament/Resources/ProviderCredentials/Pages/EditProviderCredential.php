@@ -14,6 +14,8 @@ class EditProviderCredential extends EditRecord
 
     protected static string $resource = ProviderCredentialResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $provider = $data['provider'] instanceof TranslationProvider

@@ -32,6 +32,8 @@ class TranslationExport implements FromQuery, WithHeadings, WithMapping
             $translation->text,
             $translation->translated,
             $translation->type?->value ?? '',
+            $translation->attr,
+            $translation->source_context,
             $translation->is_on ? 'active' : 'inactive',
             $translation->is_reviewed ? 'yes' : 'no',
             $translation->quality->value,
@@ -42,8 +44,7 @@ class TranslationExport implements FromQuery, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            ["Translations to {$this->targetLanguage->name} for {$this->page->origin}"],
-            ['text', 'translated', 'type', 'status', 'is_reviewed', 'quality', 'date'],
+            'text', 'translated', 'type', 'attr', 'context', 'status', 'is_reviewed', 'quality', 'date',
         ];
     }
 }

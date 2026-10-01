@@ -79,6 +79,7 @@ function toggleIsOn(value: boolean) {
                     <label :for="inputId" class="block text-sm leading-6 text-slate-900">{{ translation.text }}</label>
                 </div>
                 <div class="flex shrink-0 flex-wrap gap-2">
+                    <Badge variant="outline">{{ translation.type === 'attr' ? `Attribute: ${translation.attr}` : 'Text' }}</Badge>
                     <Badge :variant="translation.quality === TranslationQualityE.MANUAL ? 'default' : 'outline'">
                         {{ translation.quality === TranslationQualityE.MANUAL ? 'Manual edit' : 'Automatic' }}
                     </Badge>

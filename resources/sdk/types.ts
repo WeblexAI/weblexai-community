@@ -1,3 +1,5 @@
+export type TranslationType = 'text' | 'attr';
+
 export interface LanguageI {
     id: number;
     name: string;
@@ -12,6 +14,7 @@ export interface ProjectConfigI {
     excluded_blocks: string[];
     page: string;
     hide_water_mark: boolean;
+    delivery_revision?: number;
     switcher_config: {
         target_parent_selector: string | null;
         should_display_name: boolean;
@@ -30,43 +33,31 @@ export interface ProjectConfigResponseI {
     success: boolean;
     data: ProjectConfigI;
 }
-
 export interface TranslationRequestItemI {
     id: number;
     text: string;
+    type?: TranslationType;
+    attr?: string;
+    context?: string;
 }
-
-export interface TranslationResponseItemI {
-    id: number;
+export interface TranslationResponseItemI extends TranslationRequestItemI {
     translated: string;
 }
-
 export interface TranslationAPIResponseI {
-    data: {
-        translations: TranslationResponseItemI[];
-    };
+    data: { translations: TranslationResponseItemI[] };
 }
-
 export interface StateI {
     loading: boolean;
     languages: LanguageI[];
     selectedLang: LanguageI | null;
 }
-
 export interface TranslationDebugSnapshotI {
     currentLanguageIso2: string | null;
     originalLanguageIso2: string | null;
     trackedNodeCount: number;
     pendingIncrementalNodeCount: number;
-    cache: {
-        totalPages: number;
-        currentPageEntries: number;
-        totalEntries: number;
-        oldestEntry: number | null;
-        newestEntry: number | null;
-    };
+    cache: { totalPages: number; currentPageEntries: number; totalEntries: number; oldestEntry: number | null; newestEntry: number | null };
 }
-
 export interface WeblexAIEnginePublicI {
     projectConfig: ProjectConfigI | null;
     state: StateI;

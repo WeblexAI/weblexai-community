@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->trimStrings(except: [fn (Request $request): bool => $request->is('api/project/translations')]);
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
         $middleware->trustProxies(at: '*');
 

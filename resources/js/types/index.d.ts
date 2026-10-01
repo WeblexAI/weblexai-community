@@ -170,8 +170,11 @@ export interface TranslationI extends ModelI {
     project_id: number;
     text: string;
     translated: string;
-    type: string;
+    type: 'text' | 'attr';
     attr: string;
+    source_context: string;
+    context_hash: string;
+    needs_regeneration: boolean;
     source_lang_id: string;
     target_lang_id: string;
     total_words: string;

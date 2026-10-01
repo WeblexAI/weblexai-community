@@ -55,6 +55,7 @@ class Translation extends Model
         'quality' => TranslationQuality::class,
         'is_on' => 'boolean',
         'is_reviewed' => 'boolean',
+        'needs_regeneration' => 'boolean',
         'last_used_at' => 'datetime',
     ];
 

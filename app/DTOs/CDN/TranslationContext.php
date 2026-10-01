@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Pivots\ProjectLanguagePivot;
 use App\Support\TextHasher;
 use Closure;
+use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -39,6 +40,8 @@ class TranslationContext
 
     public Collection $translationIdsToTouch;
 
+    public Collection $withheldIds;
+
     public string $source;
 
     public string $target;
@@ -57,9 +60,18 @@ class TranslationContext
 
     public ?Closure $streamCallback = null;
 
+    /** @var array<int, Lock> */
+    public array $translationLeases = [];
+
+    public ?Lock $credentialLease = null;
+
     private array $hashCache = [];
 
     public ?string $stoppageClass = null;
+
+    public int $generationRevision = 0;
+
+    public Carbon $deadlineAt;
 
     public const LAST_USED_REFRESH_AFTER_DAYS = 5;
 
@@ -82,6 +94,7 @@ class TranslationContext
         $this->nmtTranslated = collect();
         $this->needsCaching = collect();
         $this->translationIdsToTouch = collect();
+        $this->withheldIds = collect();
 
         $this->source = $validated['source'];
         $this->target = $validated['target'];
@@ -89,6 +102,8 @@ class TranslationContext
         $this->targetLanguage = null;
         $this->page = null;
         $this->targetLanguagePivot = null;
+        $this->generationRevision = (int) $project->generation_revision;
+        $this->deadlineAt = now()->addSeconds(config('translation.deadline', 90));
 
         $this->hashCache = [];
     }
@@ -103,6 +118,11 @@ class TranslationContext
     public function getTextHash(string $text): string
     {
         return $this->hashCache[$text] ??= TextHasher::hash($text);
+    }
+
+    public function getContextHash(string $context): string
+    {
+        return $context === '' ? '' : $this->getTextHash($context);
     }
 
     public function setStreamCallback(Closure $callback): void

@@ -16,7 +16,7 @@ class UpdateVisibilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'translation_id' => ['required', Rule::exists('translations', 'id')],
+            'translation_id' => ['required', 'integer', Rule::exists('translations', 'id')->where('project_id', $this->route('project')->id)],
             'is_on' => ['required', 'boolean'],
         ];
     }

@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Project;
 use App\Services\Cache\ProjectCacheInvalidationService;
+use App\Services\ProjectRevisionService;
 use Illuminate\Support\Facades\DB;
 
 class ProjectObserver
@@ -23,11 +24,12 @@ class ProjectObserver
 
     public function updated(Project $project): void
     {
-        $clear = function () use ($project): void {
-            app(ProjectCacheInvalidationService::class)->clearProjectConfig($project->id);
-        };
-
-        DB::transactionLevel() > 0 ? DB::afterCommit($clear) : $clear();
+        $revisions = app(ProjectRevisionService::class);
+        if ($project->wasChanged(['provider_credential_id', 'original_language_id', 'website_description', 'translation_tone', 'translation_audience'])) {
+            $revisions->bumpGeneration($project->id);
+        } else {
+            $revisions->bumpDelivery($project->id);
+        }
     }
 
     public function deleted(Project $project): void

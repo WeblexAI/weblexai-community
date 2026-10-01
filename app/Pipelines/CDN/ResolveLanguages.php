@@ -3,6 +3,7 @@
 namespace App\Pipelines\CDN;
 
 use App\DTOs\CDN\TranslationContext;
+use App\Enums\ModelStatus;
 use App\Pivots\ProjectLanguagePivot;
 use Closure;
 
@@ -24,6 +25,7 @@ class ResolveLanguages
             ->withPivot(['is_public', 'should_display_automatics', 'is_disabled'])
             ->select(['languages.id', 'languages.name', 'languages.iso_2'])
             ->where('iso_2', $context->target)
+            ->where('languages.is_active', ModelStatus::ACTIVE)
             ->where('languages.id', '!=', $project->original_language_id)
             ->first();
 

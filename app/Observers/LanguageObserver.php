@@ -4,9 +4,8 @@ namespace App\Observers;
 
 use App\Models\Language;
 use App\Services\Cache\ConfigCacheInvalidationService;
-use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
-class LanguageObserver implements ShouldHandleEventsAfterCommit
+class LanguageObserver
 {
     public function updated(Language $language): void
     {

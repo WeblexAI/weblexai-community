@@ -12,7 +12,7 @@ class OpenRouterTranslationService extends AbstractOpenAiCompatibleTranslationSe
             'model' => $this->credential->model ?: $this->credential->provider->defaultModel(),
             'max_tokens' => 2048,
             'temperature' => 0,
-            'timeout' => 120,
+            'timeout' => config('translation.provider_timeout', 30),
             'max_chars' => 12000,
             'headers' => [
                 'HTTP-Referer' => config('app.url'),

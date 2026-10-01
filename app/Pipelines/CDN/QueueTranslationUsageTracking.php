@@ -13,10 +13,14 @@ class QueueTranslationUsageTracking
         $result = $next($context);
 
         if ($context->translationIdsToTouch->isNotEmpty()) {
-            UpdateTranslationsLastUsedAtJob::dispatch(
-                $context->translationIdsToTouch->unique()->values()->all(),
-                $context->usageTrackedAtIsoString(),
-            );
+            try {
+                UpdateTranslationsLastUsedAtJob::dispatch(
+                    $context->translationIdsToTouch->unique()->values()->all(),
+                    $context->usageTrackedAtIsoString(),
+                );
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
         }
 
         return $result;

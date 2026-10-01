@@ -61,7 +61,7 @@ class GlossaryController extends Controller
             $glossary = GlossaryService::store($project, $request->validated());
             DB::commit();
 
-            return response()->success('Glossary added successfully, translations matching this glossary will be deleted and regenerated on your next visit.');
+            return response()->success('Glossary added. Matching translations will regenerate on the next visit.');
         } catch (\Exception $exception) {
             DB::rollBack();
             Log::error($exception);

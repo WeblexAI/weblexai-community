@@ -53,7 +53,7 @@ function updateProject() {
                     <div class="flex items-center justify-between gap-6 rounded-lg border p-4">
                         <div>
                             <Label>Display automatic translations</Label>
-                            <p class="mt-1 text-sm text-muted-foreground">Disable this when translations must be reviewed before they appear.</p>
+                            <p class="mt-1 text-sm text-muted-foreground">When disabled, only reviewed translations appear. Editing a translation requires a new review.</p>
                         </div>
                         <Switch v-model="form.should_display_automatics" />
                     </div>

@@ -6,6 +6,9 @@ use App\Contracts\TranslationServiceInterface;
 use App\Models\Language;
 use App\Models\ProviderCredential;
 use App\Traits\HasTranslationBatching;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class GeminiTranslationService implements TranslationServiceInterface
@@ -14,9 +17,9 @@ class GeminiTranslationService implements TranslationServiceInterface
 
     public function __construct(private ProviderCredential $credential) {}
 
-    public function translateNmt(array $translatables, Language $source, Language $target): array
+    public function translateNmt(array $translatables, Language $source, Language $target, array $options = []): array
     {
-        return $this->translateLlm($translatables, $source, $target);
+        return $this->translateLlm($translatables, $source, $target, $options);
     }
 
     public function translateLlm(
@@ -33,13 +36,30 @@ class GeminiTranslationService implements TranslationServiceInterface
             throw new \RuntimeException('Gemini is not configured.');
         }
 
-        $results = [];
+        $batcher = app(ProviderBatchService::class);
+        $parts = $batcher->split($translatables);
+        $translatedParts = [];
+        $emitted = [];
 
-        foreach ($this->packIntoCharBatches($translatables, 12000) as $batch) {
-            $content = Http::acceptJson()
+        $maxOutputTokens = 4096;
+        foreach ($batcher->batches($parts, 2000, 100, $maxOutputTokens) as $batch) {
+            $this->assertDeadline($options);
+            $timeout = $this->remainingTimeout($options);
+            $response = Http::acceptJson()
                 ->asJson()
-                ->timeout(120)
-                ->retry(2, 500)
+                ->connectTimeout(min(5, $timeout))
+                ->timeout($timeout)
+                ->retry(config('translation.attempts', 2), 500, function (\Throwable $exception, PendingRequest $pendingRequest) use ($options): bool {
+                    try {
+                        $pendingRequest->timeout($this->remainingTimeout($options));
+                    } catch (\RuntimeException) {
+                        return false;
+                    }
+
+                    return $exception instanceof ConnectionException
+                        || ($exception instanceof RequestException
+                            && ($exception->response->status() === 429 || $exception->response->serverError()));
+                })
                 ->post(
                     sprintf(
                         rtrim($endpoint, '/').'/models/%s:generateContent?key=%s',
@@ -52,6 +72,7 @@ class GeminiTranslationService implements TranslationServiceInterface
                         ]],
                         'generationConfig' => [
                             'temperature' => 0,
+                            'maxOutputTokens' => $maxOutputTokens,
                             'responseMimeType' => 'application/json',
                             'responseSchema' => [
                                 'type' => 'OBJECT',
@@ -61,9 +82,10 @@ class GeminiTranslationService implements TranslationServiceInterface
                                         'items' => [
                                             'type' => 'OBJECT',
                                             'properties' => [
+                                                'id' => ['type' => 'STRING'],
                                                 'translated' => ['type' => 'STRING'],
                                             ],
-                                            'required' => ['translated'],
+                                            'required' => ['id', 'translated'],
                                         ],
                                     ],
                                 ],
@@ -72,8 +94,13 @@ class GeminiTranslationService implements TranslationServiceInterface
                         ],
                     ],
                 )
-                ->throw()
-                ->json('candidates.0.content.parts.0.text');
+                ->throw();
+
+            if (data_get($response->json(), 'candidates.0.finishReason', 'STOP') === 'MAX_TOKENS') {
+                throw new \RuntimeException('Gemini truncated its response.');
+            }
+
+            $content = data_get($response->json(), 'candidates.0.content.parts.0.text');
 
             $translations = json_decode((string) $content, true)['translations'] ?? null;
 
@@ -81,14 +108,24 @@ class GeminiTranslationService implements TranslationServiceInterface
                 throw new \RuntimeException('Gemini returned an invalid response.');
             }
 
-            foreach ($batch as $index => $item) {
-                $results[] = [
+            $translations = $this->validateTranslations($translations, $batch);
+            foreach ($batch as $item) {
+                $translation = $translations[(string) $item['id']];
+                $translatedParts[] = [
                     'id' => $item['id'],
-                    'text' => $item['text'],
-                    'translated' => $translations[$index]['translated'] ?? $item['text'],
+                    'translated' => $translation['translated'],
                 ];
             }
+            $completed = $batcher->completed($parts, $translatedParts, $emitted);
+            if ($completed !== [] && isset($options['on_batch']) && is_callable($options['on_batch'])) {
+                ($options['on_batch'])($completed);
+                foreach ($completed as $item) {
+                    $emitted[$item['id']] = true;
+                }
+            }
         }
+
+        $results = $batcher->reassemble($parts, $translatedParts);
 
         return $results;
     }
@@ -96,14 +133,66 @@ class GeminiTranslationService implements TranslationServiceInterface
     private function prompt(array $batch, Language $source, Language $target, array $options): string
     {
         return sprintf(
-            'Translate each item from %s to %s. Preserve HTML, placeholders, whitespace intent, and order. Context: %s. Items: %s',
+            'Translate each item from %s to %s. Preserve placeholders and whitespace. Return each supplied id exactly once. Context: %s. Items: %s',
             $source->name,
             $target->name,
-            json_encode(array_filter($options), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            json_encode(array_filter([
+                'website context' => $options['context'] ?? null,
+                'tone' => $options['tone'] ?? null,
+                'audience' => $options['audience'] ?? null,
+            ]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             json_encode(array_map(
-                fn (array $item): array => ['text' => $item['text']],
+                fn (array $item): array => ['id' => (string) $item['id'], 'text' => $item['provider_text'] ?? $item['text'], 'context' => $item['context'] ?? ''],
                 $batch,
             ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         );
+    }
+
+    /** @return array<string, array{id: string, translated: string}> */
+    private function validateTranslations(array $translations, array $batch): array
+    {
+        if (count($translations) !== count($batch)) {
+            throw new \RuntimeException('Gemini returned an incomplete response.');
+        }
+
+        $expected = collect($batch)->mapWithKeys(fn (array $item): array => [(string) $item['id'] => $item]);
+        $validated = [];
+        foreach ($translations as $translation) {
+            $id = (string) ($translation['id'] ?? '');
+            $translated = $translation['translated'] ?? null;
+            if (! isset($expected[$id]) || isset($validated[$id]) || ! is_string($translated) || $translated === '') {
+                throw new \RuntimeException('Gemini returned an invalid response.');
+            }
+            preg_match_all('/GLS[0-9A-HJKMNP-TV-Z]{26}/', $expected[$id]['provider_text'] ?? $expected[$id]['text'], $matches);
+            foreach ($matches[0] as $placeholder) {
+                if (! str_contains($translated, $placeholder)) {
+                    throw new \RuntimeException('Gemini lost a glossary placeholder.');
+                }
+            }
+            $validated[$id] = ['id' => $id, 'translated' => $translated];
+        }
+
+        return $validated;
+    }
+
+    private function assertDeadline(array $options): void
+    {
+        if (isset($options['deadline_at']) && microtime(true) >= (float) $options['deadline_at']) {
+            throw new \RuntimeException('The translation deadline was exceeded.');
+        }
+    }
+
+    private function remainingTimeout(array $options): float
+    {
+        $this->assertDeadline($options);
+
+        $remaining = isset($options['deadline_at']) ? (float) $options['deadline_at'] - microtime(true) : null;
+        if ($remaining !== null && $remaining < 1) {
+            throw new \RuntimeException('The translation deadline was exceeded.');
+        }
+
+        return $remaining !== null
+            ? min((float) config('translation.provider_timeout', 30), $remaining)
+            : config('translation.provider_timeout', 30);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\UpdateTranslationModelRequest;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,7 +23,7 @@ class TranslationModelController extends Controller
     public function update(Project $project, UpdateTranslationModelRequest $request): RedirectResponse
     {
         $modelType = $project->providerCredential?->provider->type();
-        $project->update([
+        DB::transaction(fn () => $project->update([
             'website_description' => $modelType === TranslationModelType::LLM
                 ? $request->validated('website_description')
                 : null,
@@ -32,7 +33,7 @@ class TranslationModelController extends Controller
             'translation_audience' => $modelType === TranslationModelType::LLM
                 ? $request->validated('translation_audience')
                 : null,
-        ]);
+        ]));
 
         return response()->success('Translation model updated.');
     }

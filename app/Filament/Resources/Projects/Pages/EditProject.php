@@ -18,6 +18,8 @@ class EditProject extends EditRecord
 
     protected static string $resource = ProjectResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected function getHeaderActions(): array
     {
         return [

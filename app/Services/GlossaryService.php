@@ -7,240 +7,169 @@ use App\Enums\ModelStatus;
 use App\Models\Glossary;
 use App\Models\Language;
 use App\Models\Project;
-use App\Services\Cache\ProjectCacheInvalidationService;
 use App\Settings\CacheSettings;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class GlossaryService
 {
-    public static function getRegistryKey(int $projectId): string
-    {
-        return "glossary:project:{$projectId}:keys";
-    }
-
     public static function store(Project $project, array $data): Glossary
     {
-        $languages = $data['languages'] ?? [];
-        $is_all_languages = count($languages) < 1;
-        $rule = GlossaryRule::from($data['rule']);
-        $is_case_sensitive = $data['is_case_sensitive'];
+        return DB::transaction(function () use ($project, $data): Glossary {
+            Project::query()->whereKey($project->id)->lockForUpdate()->firstOrFail();
+            $languages = $data['languages'] ?? [];
+            $rule = GlossaryRule::from($data['rule']);
+            $glossary = Glossary::withoutEvents(fn () => $project->glossaries()->create([
+                'text' => $data['text'],
+                'translated' => $rule === GlossaryRule::ALWAYS_TRANSLATE ? $data['translated'] : $data['text'],
+                'is_case_sensitive' => $data['is_case_sensitive'],
+                'is_all_languages' => $languages === [],
+                'rule' => $rule,
+                'placeholder' => 'GLS'.Str::ulid(),
+                'uuid' => Str::uuid()->toString(),
+                'created_by_id' => auth()->id(),
+            ]));
+            $glossary->languages()->sync($languages);
+            self::invalidateCacheForGlossary($glossary);
 
-        $glossary = Glossary::query()->create([
-            'project_id' => $project->id,
-            'text' => $data['text'],
-            'translated' => $rule === GlossaryRule::ALWAYS_TRANSLATE ? $data['translated'] : $data['text'],
-            'is_case_sensitive' => $is_case_sensitive,
-            'is_all_languages' => $is_all_languages,
-            'rule' => $rule,
-        ]);
-
-        if (! $is_all_languages) {
-            $glossary->languages()->attach($languages);
-        }
-
-        defer(function () use ($project, $data, $is_all_languages, $languages, $is_case_sensitive) {
-            $project->translations()
-                ->whereTextContains($data['text'], $is_case_sensitive)
-                ->when(! $is_all_languages, function (Builder $query) use ($languages) {
-                    $query->whereIn('target_lang_id', $languages);
-                })->delete();
-
-            app(ProjectCacheInvalidationService::class)->clearProject(
-                $project->id,
-                config: false,
-                translations: true,
-            );
+            return $glossary;
         });
-
-        return $glossary;
     }
 
     public static function update(Project $project, Glossary $glossary, array $data): Glossary
     {
-        if (! $glossary->project->is($project)) {
+        abort_unless($glossary->project_id === $project->id, 404);
+
+        return DB::transaction(function () use ($glossary, $data): Glossary {
+            Project::query()->whereKey($glossary->project_id)->lockForUpdate()->firstOrFail();
+            self::markAffected($glossary);
+            $languages = $data['languages'] ?? [];
+            $rule = GlossaryRule::from($data['rule']);
+            Glossary::withoutEvents(fn () => $glossary->update([
+                'translated' => $rule === GlossaryRule::ALWAYS_TRANSLATE ? $data['translated'] : $glossary->text,
+                'is_case_sensitive' => $data['is_case_sensitive'],
+                'is_all_languages' => $languages === [],
+                'rule' => $rule,
+            ]));
+            $glossary->languages()->sync($languages);
+            $glossary->unsetRelation('languages');
+            self::invalidateCacheForGlossary($glossary);
+
             return $glossary;
-        }
-
-        $languages = $data['languages'] ?? [];
-        $is_all_languages = count($languages) < 1;
-        $rule = GlossaryRule::from($data['rule']);
-
-        $glossary->update([
-            'translated' => $rule === GlossaryRule::ALWAYS_TRANSLATE ? $data['translated'] : null,
-            'is_case_sensitive' => $data['is_case_sensitive'],
-            'is_all_languages' => $is_all_languages,
-            'rule' => $rule,
-        ]);
-
-        if (! $is_all_languages) {
-            $glossary->languages()->syncWithoutDetaching($languages);
-        }
-
-        return $glossary;
+        });
     }
 
     public static function delete(Project $project, Glossary $glossary): void
     {
-        if (! $glossary->project->is($project)) {
-            return;
-        }
-
-        defer(function () use ($project, $glossary) {
-            $languages = $project->languages()->pluck('languages.id')->toArray();
-
-            $project
-                ->translations()
-                ->whereTranslatedContains($glossary->translated, $glossary->is_case_sensitive)
-                ->when(! $glossary->is_all_languages, function (Builder $query) use ($languages) {
-                    $query->whereIn('target_lang_id', $languages);
-                })
-                ->delete();
-
-            app(ProjectCacheInvalidationService::class)->clearProject(
-                $project->id,
-                config: false,
-                translations: true,
-            );
+        abort_unless($glossary->project_id === $project->id, 404);
+        DB::transaction(function () use ($glossary): void {
+            Project::query()->whereKey($glossary->project_id)->lockForUpdate()->firstOrFail();
+            self::invalidateCacheForGlossary($glossary);
+            $glossary->languages()->detach();
+            Glossary::withoutEvents(fn () => $glossary->delete());
         });
-
-        $glossary->languages()->detach();
-        $glossary->delete();
     }
 
     public static function deleteBulk(Project $project, array $ids): void
     {
-        $glossaries = $project->glossaries()->whereIn('id', $ids)->get();
-        foreach ($glossaries as $glossary) {
-            self::delete($project, $glossary);
-        }
+        DB::transaction(function () use ($project, $ids): void {
+            foreach ($project->glossaries()->whereIn('id', $ids)->get() as $glossary) {
+                self::delete($project, $glossary);
+            }
+        });
+    }
+
+    public static function markAffected(Glossary $glossary, ?array $previous = null): void
+    {
+        $text = $previous['text'] ?? $glossary->text;
+        $caseSensitive = $previous['is_case_sensitive'] ?? $glossary->is_case_sensitive;
+        $allLanguages = $previous['is_all_languages'] ?? $glossary->is_all_languages;
+        $languageIds = $glossary->languages()->pluck('languages.id')->all();
+        $pattern = '/(?<![\pL\pN_])'.preg_quote($text, '/').'(?![\pL\pN_])/u'.($caseSensitive ? '' : 'i');
+        $glossary->project->translations()
+            ->when(! $allLanguages, fn ($query) => $query->whereIn('target_lang_id', $languageIds))
+            ->select(['id', 'text'])->chunkById(500, function ($translations) use ($pattern): void {
+                $ids = $translations->filter(fn ($translation): bool => preg_match($pattern, $translation->text) === 1)->pluck('id');
+                DB::table('translations')->whereIn('id', $ids)->update(['needs_regeneration' => true]);
+            });
     }
 
     public static function getCacheKey(int $projectId, string $langCode): string
     {
-        return "glossary:project:{$projectId}:lang:{$langCode}";
+        $revision = DB::table('projects')->where('id', $projectId)->value('generation_revision') ?? 0;
+
+        return "glossary:{$projectId}:{$revision}:{$langCode}";
     }
 
     public function getProjectGlossaries(Project $project, Language $language): Collection
     {
-        $cacheKey = self::getCacheKey($project->id, $language->iso_2);
-        self::registerCacheKey($project->id, $language->iso_2);
+        $load = fn () => $project->glossaries()
+            ->where('is_active', ModelStatus::ACTIVE)
+            ->where(fn ($query) => $query->where('is_all_languages', true)
+                ->orWhereHas('languages', fn ($languages) => $languages->where('languages.id', $language->id)))
+            ->orderByRaw('LENGTH("text") DESC')->get();
+        try {
+            return Cache::remember(self::getCacheKey($project->id, $language->iso_2), app(CacheSettings::class)->getGlossaryTtlInSeconds(), $load);
+        } catch (\Throwable $exception) {
+            report($exception);
 
-        return Cache::remember(
-            $cacheKey,
-            app(CacheSettings::class)->getGlossaryTtlInSeconds(),
-            fn () => $project->glossaries()
-                ->where('is_active', ModelStatus::ACTIVE)
-                ->where(function (Builder $query) use ($language) {
-                    $query->where('is_all_languages', true)
-                        ->orWhereHas('languages', fn (Builder $languageQuery) => $languageQuery
-                            ->where('languages.id', $language->id));
-                })
-                ->orderByRaw('LENGTH("text") DESC')
-                ->get()
-        );
+            return $load();
+        }
     }
 
     public function applyToText(string $text, Collection $glossaries): array
     {
-        $appliedGlossaries = [];
-
+        $applied = [];
         foreach ($glossaries as $glossary) {
-            $pattern = '/(?<![\pL\pN_])'.preg_quote($glossary->text, '/').'(?![\pL\pN_])/u';
-            if (! $glossary->is_case_sensitive) {
-                $pattern .= 'i';
-            }
-
-            $replacement = $glossary->rule === GlossaryRule::NEVER_TRANSLATE
-                ? $glossary->text
-                : (string) $glossary->translated;
-
-            $replaced = preg_replace_callback($pattern, function () use ($glossary, $replacement, &$appliedGlossaries) {
-                $appliedGlossaries[$glossary->placeholder] = $replacement;
+            $pattern = '/(?<![\pL\pN_])'.preg_quote($glossary->text, '/').'(?![\pL\pN_])/u'.($glossary->is_case_sensitive ? '' : 'i');
+            $replacement = $glossary->rule === GlossaryRule::NEVER_TRANSLATE ? $glossary->text : (string) $glossary->translated;
+            $text = preg_replace_callback($pattern, function () use ($glossary, $replacement, &$applied): string {
+                $applied[$glossary->placeholder] = $replacement;
 
                 return $glossary->placeholder;
-            }, $text);
-
-            if ($replaced !== null) {
-                $text = $replaced;
-            }
+            }, $text) ?? $text;
         }
 
-        return [
-            'text' => $text,
-            'applied_glossaries' => $appliedGlossaries,
-        ];
+        return ['text' => $text, 'applied_glossaries' => $applied];
     }
 
     public function replacePlaceholders(string $text, array $appliedGlossaries): string
     {
         foreach ($appliedGlossaries as $placeholder => $replacement) {
+            if (! str_contains($text, $placeholder)) {
+                throw new \RuntimeException('The translation provider lost a glossary placeholder.');
+            }
             $text = str_replace($placeholder, $replacement, $text);
         }
 
         return $text;
     }
 
-    public static function registerCacheKey(int $projectId, string $langCode): void
-    {
-        $registryKey = self::getRegistryKey($projectId);
-        $cacheKey = self::getCacheKey($projectId, $langCode);
-
-        $keys = collect(Cache::get($registryKey, []))
-            ->push($cacheKey)
-            ->unique()
-            ->values()
-            ->all();
-
-        Cache::forever($registryKey, $keys);
-    }
-
     public static function invalidateCache(Project $project): void
     {
-        self::clearCacheByProjectId($project->id, $project->languages()
-            ->pluck('languages.iso_2')
-            ->push($project->originalLanguage?->iso_2)
-            ->filter()
-            ->all());
+        app(ProjectRevisionService::class)->bumpGeneration($project->id);
     }
 
     public static function clearCacheByProjectId(int $projectId, array $currentLanguageCodes = []): void
     {
-        $registryKey = self::getRegistryKey($projectId);
-
-        $knownKeys = collect(Cache::get($registryKey, []));
-        $currentLanguageKeys = collect($currentLanguageCodes)
-            ->filter()
-            ->map(fn ($langCode) => self::getCacheKey($projectId, $langCode));
-
-        $keysToForget = $knownKeys
-            ->merge($currentLanguageKeys)
-            ->unique()
-            ->values();
-
-        foreach ($keysToForget as $cacheKey) {
-            Cache::forget($cacheKey);
-        }
-
-        Cache::forget($registryKey);
+        app(ProjectRevisionService::class)->bumpGeneration($projectId);
     }
 
     public static function invalidateCacheForGlossary(Glossary $glossary): void
     {
+        self::markAffected($glossary);
         self::invalidateCache($glossary->project);
     }
 
     public static function clearAllGlossaryCache(): int
     {
-        $count = 0;
-        $projects = Project::all();
-
-        foreach ($projects as $project) {
-            self::invalidateCache($project);
-            $count++;
+        $ids = Project::query()->pluck('id');
+        foreach ($ids as $id) {
+            app(ProjectRevisionService::class)->bumpGeneration($id);
         }
 
-        return $count;
+        return $ids->count();
     }
 }

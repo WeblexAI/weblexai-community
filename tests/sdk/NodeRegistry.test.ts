@@ -1,48 +1,58 @@
-import { describe, expect, it } from "vitest";
-import { NodeRegistry } from "../../resources/sdk/utils/NodeRegistry";
+import { describe, expect, it } from 'vitest';
+import { NodeRegistry } from '../../resources/sdk/utils/NodeRegistry';
 
 const languages = [
-    { id: 1, name: "English", iso_2: "en", flag: "" },
-    { id: 2, name: "French", iso_2: "fr", flag: "" },
+    { id: 1, name: 'English', iso_2: 'en', flag: '' },
+    { id: 2, name: 'French', iso_2: 'fr', flag: '' },
 ];
 
-describe("NodeRegistry", () => {
-    it("reuses the same translation id for the same semantic node", () => {
+describe('NodeRegistry', () => {
+    it('clears a remembered translation when the surrounding sentence changes', () => {
+        document.body.innerHTML = '<p>Hello <strong>world</strong></p>';
+        const node = document.querySelector('p')!.firstChild as Text;
+        const registry = new NodeRegistry();
+        registry.registerTarget(node, 'Hello ', languages, 'en', 'text', '', 'Hello world');
+        registry.updateTargetTranslation(node, 'text', '', 'fr', 'Bonjour ');
+        registry.registerTarget(node, 'Hello ', languages, 'en', 'text', '', 'Hello everyone');
+        expect(registry.getTarget(node, 'text')?.language_translations.find((row) => row.language === 'fr')?.translated).toBeNull();
+        expect(registry.getTarget(node, 'text')?.translation_original).toBe('Hello ');
+    });
+    it('reuses the same translation id for the same semantic node', () => {
         document.body.innerHTML = `<div id="app"><span id="label">Hello</span></div>`;
         const registry = new NodeRegistry();
-        const span = document.getElementById("label") as HTMLSpanElement;
+        const span = document.getElementById('label') as HTMLSpanElement;
         const firstTextNode = span.firstChild as Text;
 
-        expect(registry.register(firstTextNode, "Hello", languages, "en")).toBe(true);
+        expect(registry.register(firstTextNode, 'Hello', languages, 'en')).toBe(true);
 
         const originalMetadata = registry.get(firstTextNode);
         expect(originalMetadata).toBeDefined();
-        registry.updateTranslation(firstTextNode, "fr", "Bonjour");
+        registry.updateTranslation(firstTextNode, 'fr', 'Bonjour');
 
-        span.textContent = "Hello again";
+        span.textContent = 'Hello again';
         const replacementTextNode = span.firstChild as Text;
 
-        expect(registry.register(replacementTextNode, "Hello again", languages, "en")).toBe(true);
+        expect(registry.register(replacementTextNode, 'Hello again', languages, 'en')).toBe(true);
 
         const replacementMetadata = registry.get(replacementTextNode);
         expect(replacementMetadata?.translation_id).toBe(originalMetadata?.translation_id);
-        expect(replacementMetadata?.translation_original).toBe("Hello again");
-        expect(replacementMetadata?.language_translations.find((translation) => translation.language === "fr")?.translated).toBeNull();
+        expect(replacementMetadata?.translation_original).toBe('Hello again');
+        expect(replacementMetadata?.language_translations.find((translation) => translation.language === 'fr')?.translated).toBeNull();
     });
 
-    it("does not reset metadata when the current text matches a known translation", () => {
+    it('does not reset metadata when the current text matches a known translation', () => {
         document.body.innerHTML = `<div><span id="label">Hello</span></div>`;
         const registry = new NodeRegistry();
-        const span = document.getElementById("label") as HTMLSpanElement;
+        const span = document.getElementById('label') as HTMLSpanElement;
         const firstTextNode = span.firstChild as Text;
 
-        registry.register(firstTextNode, "Hello", languages, "en");
-        registry.updateTranslation(firstTextNode, "fr", "Bonjour");
+        registry.register(firstTextNode, 'Hello', languages, 'en');
+        registry.updateTranslation(firstTextNode, 'fr', 'Bonjour');
 
-        span.textContent = "Bonjour";
+        span.textContent = 'Bonjour';
         const translatedTextNode = span.firstChild as Text;
 
-        expect(registry.register(translatedTextNode, "Bonjour", languages, "en")).toBe(false);
-        expect(registry.get(translatedTextNode)?.translation_original).toBe("Hello");
+        expect(registry.register(translatedTextNode, 'Bonjour', languages, 'en')).toBe(false);
+        expect(registry.get(translatedTextNode)?.translation_original).toBe('Hello');
     });
 });

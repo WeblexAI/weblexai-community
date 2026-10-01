@@ -2,6 +2,7 @@
 
 namespace App\Services\Cache;
 
+use App\Models\Project;
 use App\Settings\CacheSettings;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
@@ -13,31 +14,42 @@ class TranslationCacheStore
         return Cache::store(config('cache.default'));
     }
 
-    private function key(int $projectId, int $pageId, string $langCode, string $textHash): string
+    private function key(int $projectId, int $pageId, string $langCode, string $textHash, string $type = 'text', string $attr = '', string $contextHash = '', ?int $revision = null): string
     {
-        return "translations:{$projectId}:{$pageId}:{$langCode}:{$textHash}";
+        $revision ??= (int) Project::query()->whereKey($projectId)->value('delivery_revision');
+
+        return "translations:v{$revision}:{$projectId}:{$pageId}:{$langCode}:{$type}:".md5($attr).":{$contextHash}:{$textHash}";
     }
 
-    private function registryKey(int $projectId): string
+    public function get(int $projectId, int $pageId, string $langCode, string $textHash, string $type = 'text', string $attr = '', string $contextHash = '', ?int $revision = null): ?array
     {
-        return "translations:registry:project:{$projectId}";
+        try {
+            return $this->cache()->get($this->key($projectId, $pageId, $langCode, $textHash, $type, $attr, $contextHash, $revision));
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return null;
+        }
     }
 
-    public function get(int $projectId, int $pageId, string $langCode, string $textHash): ?array
+    public function getMany(int $projectId, int $pageId, string $langCode, array $identities, ?int $revision = null): array
     {
-        return $this->cache()->get($this->key($projectId, $pageId, $langCode, $textHash));
-    }
-
-    public function getMany(int $projectId, int $pageId, string $langCode, array $textHashes): array
-    {
-        if ($textHashes === []) {
+        if ($identities === []) {
             return [];
         }
 
-        $keys = collect($textHashes)->mapWithKeys(
-            fn (string $hash): array => [$hash => $this->key($projectId, $pageId, $langCode, $hash)],
-        );
-        $values = $this->cache()->many($keys->values()->all());
+        $keys = collect($identities)->mapWithKeys(function (mixed $identity, mixed $key) use ($projectId, $pageId, $langCode, $revision): array {
+            $identity = is_array($identity) ? $identity : ['text_hash' => $identity];
+            $cacheIdentity = implode('|', [$identity['type'] ?? 'text', $identity['attr'] ?? '', $identity['context_hash'] ?? '', $identity['text_hash']]);
+
+            return [$cacheIdentity => $this->key($projectId, $pageId, $langCode, $identity['text_hash'], $identity['type'] ?? 'text', $identity['attr'] ?? '', $identity['context_hash'] ?? '', $revision)];
+        });
+        try {
+            $values = $this->cache()->many($keys->values()->all());
+        } catch (\Throwable $exception) {
+            report($exception);
+            $values = [];
+        }
 
         return $keys->mapWithKeys(
             fn (string $key, string $hash): array => [$hash => $values[$key] ?? null],
@@ -50,11 +62,21 @@ class TranslationCacheStore
         string $langCode,
         string $textHash,
         string|array $translated,
+        string $type = 'text',
+        string $attr = '',
+        string $contextHash = '',
+        ?int $revision = null,
     ): void {
-        $this->setMany($projectId, $pageId, $langCode, [$textHash => $translated]);
+        $this->setMany($projectId, $pageId, $langCode, [[
+            'text_hash' => $textHash,
+            'type' => $type,
+            'attr' => $attr,
+            'context_hash' => $contextHash,
+            'payload' => $translated,
+        ]], $revision);
     }
 
-    public function setMany(int $projectId, int $pageId, string $langCode, array $translations): void
+    public function setMany(int $projectId, int $pageId, string $langCode, array $translations, ?int $revision = null): void
     {
         if ($translations === []) {
             return;
@@ -65,16 +87,20 @@ class TranslationCacheStore
         $items = [];
 
         foreach ($translations as $hash => $payload) {
-            $items[$this->key($projectId, $pageId, $langCode, $hash)] = is_string($payload)
-                ? ['translated' => $payload, 'translation_id' => null, 'last_used_at' => null]
-                : $payload;
+            $entry = is_array($payload) && array_key_exists('payload', $payload) ? $payload : [
+                'text_hash' => $hash,
+                'payload' => $payload,
+            ];
+            $value = $entry['payload'];
+            $items[$this->key($projectId, $pageId, $langCode, $entry['text_hash'], $entry['type'] ?? 'text', $entry['attr'] ?? '', $entry['context_hash'] ?? '', $revision)] = is_string($value)
+                ? ['translated' => $value, 'translation_id' => null, 'last_used_at' => null]
+                : $value;
         }
 
-        $cache->putMany($items, $ttl);
-        $registryKey = $this->registryKey($projectId);
-        $cache->put($registryKey, array_values(array_unique([
-            ...$cache->get($registryKey, []),
-            ...array_keys($items),
-        ])), $ttl);
+        try {
+            $cache->putMany($items, $ttl);
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
     }
 }

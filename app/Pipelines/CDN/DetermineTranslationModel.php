@@ -10,6 +10,10 @@ class DetermineTranslationModel
 {
     public function handle(TranslationContext $context, Closure $next)
     {
+        if ($context->needsNmtTranslation->isEmpty()) {
+            return $next($context);
+        }
+
         $project = $context->project;
         $credential = $project->providerCredential;
 

@@ -7,7 +7,7 @@ use App\Http\Requests\Dashboard\Translation\UpdateReviewRequest;
 use App\Http\Requests\Dashboard\Translation\UpdateTranslatedRequest;
 use App\Http\Requests\Dashboard\Translation\UpdateVisibilityRequest;
 use App\Models\Project;
-use App\Models\Translation;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TranslationController extends Controller
@@ -16,11 +16,11 @@ class TranslationController extends Controller
     {
         try {
             $validated = $request->validated();
-            $translation = Translation::query()
-                ->find($validated['translation_id']);
-            $translation->update([
-                'translated' => $validated['translated'],
-            ]);
+            $translation = $project->translations()->findOrFail($validated['translation_id']);
+            DB::transaction(function () use ($project, $translation, $validated): void {
+                Project::query()->whereKey($project->id)->lockForUpdate()->firstOrFail();
+                $translation->update(['translated' => $validated['translated']]);
+            });
 
             return response()->success('Translation saved');
         } catch (\Exception $exception) {
@@ -34,11 +34,11 @@ class TranslationController extends Controller
     {
         try {
             $validated = $request->validated();
-            $translation = Translation::query()
-                ->find($validated['translation_id']);
-            $translation->update([
-                'is_reviewed' => $validated['is_reviewed'],
-            ]);
+            $translation = $project->translations()->findOrFail($validated['translation_id']);
+            DB::transaction(function () use ($project, $translation, $validated): void {
+                Project::query()->whereKey($project->id)->lockForUpdate()->firstOrFail();
+                $translation->update(['is_reviewed' => $validated['is_reviewed']]);
+            });
             $message = $translation->is_reviewed ? 'Translation marked as reviewed' : 'Translation marked as pending review';
 
             return response()->success($message);
@@ -53,11 +53,11 @@ class TranslationController extends Controller
     {
         try {
             $validated = $request->validated();
-            $translation = Translation::query()
-                ->find($validated['translation_id']);
-            $translation->update([
-                'is_on' => $validated['is_on'],
-            ]);
+            $translation = $project->translations()->findOrFail($validated['translation_id']);
+            DB::transaction(function () use ($project, $translation, $validated): void {
+                Project::query()->whereKey($project->id)->lockForUpdate()->firstOrFail();
+                $translation->update(['is_on' => $validated['is_on']]);
+            });
 
             $message = $validated['is_on'] ? 'Translation turned on' : 'Translation turned off';
 

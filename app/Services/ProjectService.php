@@ -5,17 +5,16 @@ namespace App\Services;
 use App\Models\Language;
 use App\Models\Project;
 use App\Services\Cache\ProjectCacheInvalidationService;
+use Illuminate\Support\Facades\DB;
 
 class ProjectService
 {
     public static function update(Project $project, array $data): Project
     {
-        $project->update([
+        DB::transaction(fn () => $project->update([
             'name' => $data['name'],
             'should_display_automatics' => $data['should_display_automatics'],
-        ]);
-
-        app(ProjectCacheInvalidationService::class)->clearProjectConfig($project->id);
+        ]));
 
         return $project;
     }
@@ -27,14 +26,17 @@ class ProjectService
             return $project;
         }
 
-        $project->languages()->syncWithoutDetaching([
-            $language->id => [
-                'is_public' => $data['is_public'],
-                'should_display_automatics' => $data['should_display_automatics'],
-            ],
-        ]);
+        DB::transaction(function () use ($project, $language, $data): void {
+            Project::query()->whereKey($project->id)->lockForUpdate()->firstOrFail();
+            $project->languages()->syncWithoutDetaching([
+                $language->id => [
+                    'is_public' => $data['is_public'],
+                    'should_display_automatics' => $data['should_display_automatics'],
+                ],
+            ]);
 
-        app(ProjectCacheInvalidationService::class)->clearProjectConfig($project->id);
+            app(ProjectCacheInvalidationService::class)->clearProjectConfig($project->id);
+        });
 
         activity()
             ->event('created')
@@ -45,15 +47,18 @@ class ProjectService
 
     public static function detachLanguage(Project $project, Language $language): Project
     {
-        $project->languages()->detach($language->id);
-        $project->translations()->where('target_lang_id', $language->id)->delete();
-        $project->translationRequests()->where('target_lang_id', $language->id)->delete();
+        DB::transaction(function () use ($project, $language): void {
+            Project::query()->whereKey($project->id)->lockForUpdate()->firstOrFail();
+            $project->languages()->detach($language->id);
+            $project->translations()->where('target_lang_id', $language->id)->delete();
+            $project->translationRequests()->where('target_lang_id', $language->id)->delete();
 
-        app(ProjectCacheInvalidationService::class)->clearProject(
-            $project->id,
-            config: true,
-            translations: true,
-        );
+            app(ProjectCacheInvalidationService::class)->clearProject(
+                $project->id,
+                config: true,
+                translations: true,
+            );
+        });
 
         activity()
             ->event('deleted')
@@ -65,7 +70,7 @@ class ProjectService
     public static function updateLanguageSwitcher(Project $project, array $data): void
     {
         $switcher = $project->languageSwitcherConfig;
-        $switcher->update([
+        DB::transaction(fn () => $switcher->update([
             'target_parent_selector' => $data['target_parent_selector'],
             'should_display_name' => $data['should_display_name'],
             'should_display_full_name' => $data['should_display_full_name'],
@@ -82,22 +87,28 @@ class ProjectService
             'device_pixel_breakpoint' => $data['should_show_by_device']
                 ? $data['device_pixel_breakpoint']
                 : $switcher->device_pixel_breakpoint,
-        ]);
+        ]));
     }
 
     public static function updateLanguagePivot(Project $project, Language $language, array $attributes): void
     {
-        $project->languages()->updateExistingPivot($language->id, $attributes);
-        app(ProjectCacheInvalidationService::class)->clearProjectConfig($project->id);
+        DB::transaction(function () use ($project, $language, $attributes): void {
+            Project::query()->whereKey($project->id)->lockForUpdate()->firstOrFail();
+            $project->languages()->updateExistingPivot($language->id, $attributes);
+            app(ProjectRevisionService::class)->bumpDelivery($project->id);
+        });
     }
 
     public static function rotateApiKey(Project $project): string
     {
         $plainTextApiKey = bin2hex(random_bytes(32));
-        $project->updateQuietly([
-            'api_key' => $plainTextApiKey,
-            'api_key_hash' => hash('sha256', $plainTextApiKey),
-        ]);
+        DB::transaction(function () use ($project, $plainTextApiKey): void {
+            $project->updateQuietly([
+                'api_key' => $plainTextApiKey,
+                'api_key_hash' => hash('sha256', $plainTextApiKey),
+            ]);
+            app(ProjectRevisionService::class)->bumpDelivery($project->id);
+        });
 
         return $plainTextApiKey;
     }

@@ -19,10 +19,10 @@ class ResolvePage
 
         $page = Page::query()->firstOrCreate(
             ['project_id' => $project->id, 'domain' => $domain],
-            ['title' => $pageTitle, 'origin' => $pageOrigin],
+            ['title' => $pageTitle, 'origin' => $pageOrigin, 'is_active' => true, 'is_blacklisted' => false],
         );
 
-        if ($page->is_blacklisted) {
+        if ($page->is_blacklisted || ! $page->is_active) {
             $context->reset();
             $context->stoppageClass = self::class;
 
@@ -30,7 +30,7 @@ class ResolvePage
         }
 
         if (! $page->wasRecentlyCreated) {
-            $page->update(['title' => $pageTitle]);
+            $page->fill(['title' => $pageTitle])->saveQuietly();
         }
 
         $context->page = $page;

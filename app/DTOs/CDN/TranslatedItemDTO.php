@@ -12,6 +12,9 @@ class TranslatedItemDTO
         public readonly string $translated,
         public readonly string $source,
         public readonly ?int $translationId = null,
+        public readonly string $type = 'text',
+        public readonly string $attr = '',
+        public readonly string $context = '',
     ) {}
 
     public function asArray(): array
@@ -20,6 +23,9 @@ class TranslatedItemDTO
             'id' => $this->id,
             'text' => $this->text,
             'translated' => $this->translated,
+            'type' => $this->type,
+            'attr' => $this->attr,
+            'context' => $this->context,
         ];
     }
 

@@ -1,122 +1,100 @@
-import type { LanguageI } from '../types';
+import type { LanguageI, TranslationType } from '../types';
 
 export interface NodeMetadata {
     translation_id: number;
     translation_key: string;
     translation_original: string;
+    type: TranslationType;
+    attr: string;
+    context: string;
     language_translations: { language: string; translated: string | null }[];
 }
 
 export class NodeRegistry {
-    private registry = new WeakMap<Text, NodeMetadata>();
+    private registry = new WeakMap<Node, Map<string, NodeMetadata>>();
     private metadataByKey = new Map<string, NodeMetadata>();
     private idCounter = 1;
 
-    get(node: Text): NodeMetadata | undefined {
-        return this.registry.get(node);
+    get(node: Node): NodeMetadata | undefined {
+        return this.registry.get(node)?.values().next().value;
+    }
+    getTarget(node: Node, type: TranslationType, attr = ''): NodeMetadata | undefined {
+        return this.registry.get(node)?.get(`${type}:${attr}`);
     }
 
-    register(node: Text, newText: string, languages: LanguageI[], currentLangIso: string): boolean {
-        if (!node?.isConnected) {
-            return false;
-        }
+    register(node: Text, text: string, languages: LanguageI[], currentLangIso: string): boolean {
+        return this.registerTarget(node, text, languages, currentLangIso, 'text');
+    }
 
-        const key = this.getNodeKey(node);
-        const existing = this.registry.get(node) ?? this.metadataByKey.get(key);
-
+    registerTarget(node: Node, text: string, languages: LanguageI[], currentLangIso: string, type: TranslationType, attr = '', context = ''): boolean {
+        if (!node.isConnected) return false;
+        const key = this.getNodeKey(node, type, attr, context);
+        const targets = this.registry.get(node) ?? new Map<string, NodeMetadata>();
+        const targetKey = `${type}:${attr}`;
+        const existing = targets.get(targetKey) ?? this.metadataByKey.get(key);
         if (!existing) {
-            const metadata = this.createMetadata(key, newText, languages, currentLangIso);
-            this.registry.set(node, metadata);
+            const metadata: NodeMetadata = {
+                translation_id: this.idCounter++,
+                translation_key: key,
+                translation_original: text,
+                type,
+                attr,
+                context,
+                language_translations: languages.map((language) => ({ language: language.iso_2, translated: language.iso_2 === currentLangIso ? text : null })),
+            };
+            targets.set(targetKey, metadata);
+            this.registry.set(node, targets);
             this.metadataByKey.set(key, metadata);
             return true;
         }
-
         existing.translation_key = key;
-        this.registry.set(node, existing);
+        existing.type = type;
+        existing.attr = attr;
+        const contextChanged = existing.context !== context;
+        existing.context = context;
+        targets.set(targetKey, existing);
+        this.registry.set(node, targets);
         this.metadataByKey.set(key, existing);
-
-        if (existing.translation_original === newText) {
-            return false;
-        }
-
-        const knownTranslation = existing.language_translations.find((translation) => translation.translated === newText);
-        if (knownTranslation) {
-            return false;
-        }
-
-        existing.translation_original = newText;
-        existing.language_translations = languages.map((language) => ({
-            language: language.iso_2,
-            translated: language.iso_2 === currentLangIso ? newText : null,
-        }));
-
+        if (!contextChanged && (existing.translation_original === text || existing.language_translations.some((translation) => translation.translated === text))) return false;
+        if (existing.language_translations.some((translation) => translation.translated === text)) text = existing.translation_original;
+        existing.translation_original = text;
+        existing.language_translations = languages.map((language) => ({ language: language.iso_2, translated: language.iso_2 === currentLangIso ? text : null }));
         return true;
     }
 
-    updateTranslation(node: Text, targetLang: string, translatedText: string): boolean {
+    updateTranslation(node: Node, targetLang: string, translatedText: string): boolean {
         const metadata = this.get(node);
-        if (!metadata) {
-            return false;
-        }
-
+        if (!metadata) return false;
         const existing = metadata.language_translations.find((translation) => translation.language === targetLang);
-        if (existing) {
-            existing.translated = translatedText;
-            return true;
-        }
-
-        metadata.language_translations.push({
-            language: targetLang,
-            translated: translatedText,
-        });
-
+        if (existing) existing.translated = translatedText;
+        else metadata.language_translations.push({ language: targetLang, translated: translatedText });
         return true;
     }
 
-    private createMetadata(key: string, originalText: string, languages: LanguageI[], currentLangIso: string): NodeMetadata {
-        return {
-            translation_id: this.idCounter++,
-            translation_key: key,
-            translation_original: originalText,
-            language_translations: languages.map((language) => ({
-                language: language.iso_2,
-                translated: language.iso_2 === currentLangIso ? originalText : null,
-            })),
-        };
+    updateTargetTranslation(node: Node, type: TranslationType, attr: string, targetLang: string, translatedText: string): boolean {
+        const metadata = this.getTarget(node, type, attr);
+        if (!metadata) return false;
+        const existing = metadata.language_translations.find((translation) => translation.language === targetLang);
+        if (existing) existing.translated = translatedText;
+        else metadata.language_translations.push({ language: targetLang, translated: translatedText });
+        return true;
     }
 
-    private getNodeKey(node: Text): string {
+    private getNodeKey(node: Node, type: TranslationType, attr: string, context: string): string {
+        const element = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element);
         const segments: string[] = [];
-        let element: Element | null = node.parentElement;
-
-        while (element && element !== document.body) {
-            const tag = element.tagName.toLowerCase();
-            const id = element.id ? `#${element.id}` : '';
-            const classes = element.classList.length > 0 ? `.${Array.from(element.classList).slice(0, 2).join('.')}` : '';
-            const position = this.getElementIndex(element);
-            segments.unshift(`${tag}${id}${classes}[${position}]`);
-            element = element.parentElement;
+        let current: Element | null = element;
+        while (current && current !== document.body) {
+            const position = current.parentElement ? Array.from(current.parentElement.children).indexOf(current) : 0;
+            segments.unshift(`${current.tagName.toLowerCase()}#${current.id || ''}[${position}]`);
+            current = current.parentElement;
         }
-
-        const textIndex = this.getTextNodeIndex(node);
-        return `${segments.join('>') || 'body'}::text[${textIndex}]`;
-    }
-
-    private getElementIndex(element: Element): number {
-        if (!element.parentElement) {
-            return 0;
-        }
-
-        return Array.from(element.parentElement.children).indexOf(element);
-    }
-
-    private getTextNodeIndex(node: Text): number {
-        if (!node.parentNode) {
-            return 0;
-        }
-
-        return Array.from(node.parentNode.childNodes)
-            .filter((child) => child.nodeType === Node.TEXT_NODE)
-            .indexOf(node);
+        const textIndex =
+            node.nodeType === Node.TEXT_NODE && node.parentNode
+                ? Array.from(node.parentNode.childNodes)
+                      .filter((child) => child.nodeType === Node.TEXT_NODE)
+                      .indexOf(node as ChildNode)
+                : 0;
+        return `${segments.join('>') || 'body'}:${type}:${attr}:${textIndex}:${context}`;
     }
 }

@@ -24,6 +24,7 @@ export class PageTranslationCache {
     private store = new LocalStore();
     private cache: CacheStore = {};
     private namespace = 'default';
+    private revision = 0;
     private ttl: number;
 
     constructor(ttl: number = PageTranslationCache.DEFAULT_TTL) {
@@ -33,6 +34,14 @@ export class PageTranslationCache {
 
     setNamespace(namespace: string): void {
         this.namespace = namespace || 'default';
+    }
+
+    setRevision(revision?: number): void {
+        const nextRevision = Number.isFinite(revision) ? Number(revision) : 0;
+        if (nextRevision !== this.revision) {
+            this.revision = nextRevision;
+            this.clearPage();
+        }
     }
 
     get(text: string, targetLang: string): string | null {
@@ -180,7 +189,7 @@ export class PageTranslationCache {
     }
 
     private getPageScope(): string {
-        return `${PageTranslationCache.CACHE_VERSION}:${this.namespace}:${this.normalizeUrl(window.location.href)}`;
+        return `${PageTranslationCache.CACHE_VERSION}:${this.namespace}:r${this.revision}:${this.normalizeUrl(window.location.href)}`;
     }
 
     private normalizeUrl(url: string): string {

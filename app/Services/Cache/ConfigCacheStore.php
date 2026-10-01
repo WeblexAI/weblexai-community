@@ -2,6 +2,7 @@
 
 namespace App\Services\Cache;
 
+use App\Models\Project;
 use App\Settings\CacheSettings;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
@@ -13,32 +14,35 @@ class ConfigCacheStore
         return Cache::store(config('cache.default'));
     }
 
-    private function key(int $projectId, string $pageDomain): string
+    private function key(int $projectId, string $pageDomain, ?int $revision = null): string
     {
-        return "config:project_{$projectId}:page_".md5($pageDomain);
+        $revision ??= (int) Project::query()->whereKey($projectId)->value('delivery_revision');
+
+        return "config:v{$revision}:project_{$projectId}:page_".md5($pageDomain);
     }
 
-    public function get(int $projectId, string $pageDomain): ?array
+    public function get(int $projectId, string $pageDomain, ?int $revision = null): ?array
     {
-        return $this->cache()->get($this->key($projectId, $pageDomain));
+        try {
+            return $this->cache()->get($this->key($projectId, $pageDomain, $revision));
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return null;
+        }
     }
 
-    public function set(int $projectId, string $pageDomain, array $config): void
+    public function set(int $projectId, string $pageDomain, array $config, ?int $revision = null): void
     {
-        $cache = $this->cache();
-        $ttl = app(CacheSettings::class)->getProjectConfigTtlInSeconds();
-        $key = $this->key($projectId, $pageDomain);
-        $registryKey = "config:registry:project_{$projectId}";
-
-        $cache->put($key, $config, $ttl);
-        $cache->put($registryKey, array_values(array_unique([
-            ...$cache->get($registryKey, []),
-            $key,
-        ])), $ttl);
-        $cache->put('config:registry:all', array_values(array_unique([
-            ...$cache->get('config:registry:all', []),
-            $projectId,
-        ])), $ttl);
+        try {
+            $this->cache()->put(
+                $this->key($projectId, $pageDomain, $revision),
+                $config,
+                app(CacheSettings::class)->getProjectConfigTtlInSeconds(),
+            );
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
     }
 
     public function has(int $projectId, string $pageDomain): bool
