@@ -69,7 +69,17 @@ function submit() {
                             Your switcher is currently located in the default position. You may instead modify the CSS selectors to directly control where your switcher is positioned.
                             <div class="mt-1 italic opacity-80">The switcher will be placed inside the element matching this selector.</div>
                         </div>
-                        <InputText v-model="form.target_parent_selector" label="Target Parent Selector" placeholder="e.g. #header-menu or .navbar-right" container-class="max-w-md" />
+                        <InputText
+                            v-model="form.target_parent_selector"
+                            label="Target Parent Selector"
+                            placeholder="e.g. #header-menu or .navbar-right"
+                            container-class="max-w-md"
+                            aria-describedby="target-parent-description"
+                        >
+                            <p id="target-parent-description" class="text-sm text-muted-foreground">
+                                The switcher replaces all content inside this element. If no element matches, it appears in the bottom-right corner.
+                            </p>
+                        </InputText>
                     </CardContent>
                 </Card>
 

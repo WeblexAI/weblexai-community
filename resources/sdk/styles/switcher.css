@@ -47,6 +47,15 @@
     white-space: nowrap;
 }
 
+.wlai-language-switcher--compact {
+    min-width: 0;
+}
+
+.wlai-language-switcher--flags-only .wlai-selected,
+.wlai-language-switcher--flags-only .wlai-dropdown li {
+    justify-content: center;
+}
+
 .wlai-dropdown {
     list-style: none;
     margin: 6px 0 0;
@@ -75,10 +84,4 @@
 .wlai-flag {
     object-fit: cover;
     flex-shrink: 0;
-}
-
-.wlai-watermark {
-    font-size: 10px;
-    font-style: italic;
-    color: #6b7280;
 }

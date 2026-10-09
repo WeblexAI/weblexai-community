@@ -8,6 +8,7 @@ import Loader from './loader.vue';
 interface Props {
     state: StateI;
     engine: WeblexAIEnginePublicI;
+    isEmbedded: boolean;
 }
 
 const props = defineProps<Props>();
@@ -29,6 +30,6 @@ const shouldRender = computed(() => {
 <template>
     <div v-if="shouldRender" class="wlai-switcher-root">
         <Loader v-if="state.loading" />
-        <LanguageSwitcher v-if="state.languages.length" :languages="state.languages" :engine="engine" />
+        <LanguageSwitcher v-if="state.languages.length" :languages="state.languages" :engine="engine" :is-embedded="isEmbedded" />
     </div>
 </template>

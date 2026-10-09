@@ -35,6 +35,28 @@ function apiMock(currentConfig = config) {
 }
 
 describe('WeblexAIEngine coverage', () => {
+    it.each(['#missing', '[', null])('uses bottom-right positioning when the selector %s has no usable target', async (selector) => {
+        document.body.innerHTML = '<main><p>Hello world</p></main>';
+        vi.stubGlobal('fetch', apiMock({ ...config, switcher_config: { ...config.switcher_config, target_parent_selector: selector } } as typeof config));
+        const engine = new WeblexAIEngine('https://example.test/api/project');
+        await engine.init('key');
+        const switcher = document.querySelector<HTMLElement>('#weblexai-root .wlai-language-switcher')!;
+        expect(switcher.style.position).toBe('fixed');
+        expect(switcher.style.bottom).toBe('0px');
+        expect(switcher.style.right).toBe('20px');
+    });
+
+    it('replaces target content and uses relative positioning inside the target', async () => {
+        document.body.innerHTML = '<header><div id="switcher"><span>Existing content</span></div></header>';
+        vi.stubGlobal('fetch', apiMock());
+        const engine = new WeblexAIEngine('https://example.test/api/project');
+        await engine.init('key');
+        const target = document.getElementById('switcher')!;
+        expect(target.textContent).not.toContain('Existing content');
+        expect(target.querySelector<HTMLElement>('.wlai-language-switcher')!.style.position).toBe('relative');
+        expect(document.getElementById('weblexai-root')).toBeNull();
+    });
+
     it('ignores switcher mutations and translates new content without refreshing configuration', async () => {
         document.body.innerHTML = '<main><p>Hello world</p><div id="mount"></div><div id="switcher"></div></main>';
         const fetchMock = apiMock();

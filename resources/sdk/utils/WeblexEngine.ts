@@ -341,7 +341,16 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
         }
     }
     private mountVueUI(): void {
-        let container = this.projectConfig?.switcher_config.target_parent_selector ? (document.querySelector(this.projectConfig.switcher_config.target_parent_selector) as HTMLElement | null) : null;
+        let container: Element | null = null;
+        const selector = this.projectConfig?.switcher_config.target_parent_selector;
+        if (selector) {
+            try {
+                container = document.querySelector(selector);
+            } catch {
+                container = null;
+            }
+        }
+        const isEmbedded = Boolean(container);
         if (!container) {
             container = document.getElementById('weblexai-root');
         }
@@ -351,6 +360,6 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
             document.body.appendChild(container);
         }
         container.setAttribute('data-weblex-exclude', '');
-        createApp({ render: () => h(SwitcherIndex, { state: this.state, engine: this }) }).mount(container);
+        createApp({ render: () => h(SwitcherIndex, { state: this.state, engine: this, isEmbedded }) }).mount(container);
     }
 }

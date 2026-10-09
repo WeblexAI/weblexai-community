@@ -8,6 +8,7 @@ import type { LanguageI, ProjectConfigI, WeblexAIEnginePublicI } from '../types'
 const props = defineProps<{
     languages: LanguageI[];
     engine: WeblexAIEnginePublicI;
+    isEmbedded: boolean;
 }>();
 
 const open = ref(false);
@@ -32,7 +33,7 @@ const flagStyles = computed(() => ({
 }));
 
 const switcherStyles = computed(() => {
-    if (switcherConfig.value.target_parent_selector) {
+    if (props.isEmbedded) {
         return {
             fontSize: `${langNameFontSize.value}px`,
             position: 'relative' as const,
@@ -104,10 +105,17 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="wlai-language-switcher" :style="switcherStyles" v-on-click-outside="handleOutsideClick" v-element-hover="handleHover">
+    <div
+        class="wlai-language-switcher"
+        :class="{
+            'wlai-language-switcher--compact': !switcherConfig.should_display_name || !switcherConfig.should_display_full_name,
+            'wlai-language-switcher--flags-only': !switcherConfig.should_display_name,
+        }"
+        :style="switcherStyles"
+        v-on-click-outside="handleOutsideClick"
+        v-element-hover="handleHover"
+    >
         <div ref="triggerRef" class="wlai-selected-container" :class="{ 'wlai-selected-container--top': dropdownDirection === 'top' }" @click="toggleDropdown">
-            <div v-if="!projectConfig?.hide_water_mark" class="wlai-watermark">weblexai</div>
-
             <div class="wlai-selected">
                 <img v-if="selectedLanguage?.flag && switcherConfig.should_display_flag" :src="selectedLanguage.flag" class="wlai-flag" :alt="selectedLanguage.name" :style="flagStyles" />
                 <span v-if="switcherConfig.should_display_name">
