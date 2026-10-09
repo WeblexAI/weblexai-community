@@ -36,18 +36,27 @@ class ProviderCredentialResource extends Resource
     {
         return $schema->components([
             Section::make('Provider')
+                ->columnSpanFull()
+                ->columns(['default' => 1, 'md' => 2])
                 ->description('Store the provider keys WeblexAI uses for automatic translations. Secrets are encrypted and are never exposed through the browser SDK.')
                 ->schema([
                     TextInput::make('name')
+                        ->label('Credential name')
+                        ->autocomplete('off')
+                        ->extraInputAttributes(['data-1p-ignore' => 'true', 'data-lpignore' => 'true', 'spellcheck' => 'false'])
                         ->helperText('Use a name administrators can recognize when assigning this credential to projects.')
                         ->required()
                         ->maxLength(255),
                     Select::make('provider')
-                        ->options(TranslationProvider::class)
-                        ->helperText('Google Cloud Translation and Qwen are NMT providers. OpenAI, OpenRouter, and Gemini are LLM providers and can use project context.')
+                        ->options(collect(TranslationProvider::cases())->mapWithKeys(fn (TranslationProvider $provider): array => [
+                            $provider->value => $provider->getLabel().' ('.$provider->type()->value.')',
+                        ])->all())
                         ->required()
                         ->live(),
                     TextInput::make('api_key')
+                        ->label('API key')
+                        ->autocomplete('new-password')
+                        ->extraInputAttributes(['data-1p-ignore' => 'true', 'data-lpignore' => 'true', 'spellcheck' => 'false'])
                         ->password()
                         ->revealable()
                         ->helperText('Leave this blank when editing to keep the existing key.')

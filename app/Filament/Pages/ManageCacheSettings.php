@@ -35,6 +35,7 @@ class ManageCacheSettings extends SettingsPage
         return $schema
             ->components([
                 Section::make('Time To Live (Days)')
+                    ->columnSpanFull()
                     ->components([
                         TextInput::make('translation_ttl')
                             ->label('Translation Cache TTL')
@@ -54,7 +55,7 @@ class ManageCacheSettings extends SettingsPage
                             ->default(3600)
                             ->helperText('Duration in days for project glossary caching.'),
                     ])
-                    ->columns(1),
+                    ->columns(['default' => 1, 'md' => 2]),
             ]);
     }
 

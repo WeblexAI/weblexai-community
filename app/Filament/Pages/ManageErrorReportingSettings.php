@@ -29,6 +29,7 @@ class ManageErrorReportingSettings extends SettingsPage
     {
         return $schema->components([
             Section::make('Error reporting')
+                ->columnSpanFull()
                 ->components([
                     Toggle::make('enabled')
                         ->label('Send diagnostic error reports')

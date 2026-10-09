@@ -7,6 +7,7 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class LanguageForm
@@ -15,45 +16,51 @@ class LanguageForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('country_name')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('iso_2')
-                    ->required()
-                    ->maxLength(2),
-                TextInput::make('iso_3')
-                    ->required()
-                    ->maxLength(3),
-                ColorPicker::make('color')
-                    ->required(),
-                Select::make('is_active')
-                    ->options(ModelStatus::class)
-                    ->required()
-                    ->default(ModelStatus::ACTIVE),
-                SpatieMediaLibraryFileUpload::make('flag')
-                    ->collection('flag')
-                    ->image()
-                    ->imageEditor()
-                    ->loadStateFromRelationshipsUsing(function ($component, $record) {
-                        try {
-                            if (! $record) {
-                                $component->state([]);
+                Section::make('Language')
+                    ->columnSpanFull()
+                    ->columns(['default' => 1, 'md' => 2])
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('country_name')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('iso_2')
+                            ->required()
+                            ->maxLength(2),
+                        TextInput::make('iso_3')
+                            ->required()
+                            ->maxLength(3),
+                        ColorPicker::make('color')
+                            ->required(),
+                        Select::make('is_active')
+                            ->options(ModelStatus::class)
+                            ->required()
+                            ->default(ModelStatus::ACTIVE),
+                        SpatieMediaLibraryFileUpload::make('flag')
+                            ->collection('flag')
+                            ->image()
+                            ->imageEditor()
+                            ->loadStateFromRelationshipsUsing(function ($component, $record) {
+                                try {
+                                    if (! $record) {
+                                        $component->state([]);
 
-                                return;
-                            }
+                                        return;
+                                    }
 
-                            $files = $record->getMedia('flag')
-                                ->mapWithKeys(fn ($media) => [$media->uuid => $media->uuid])
-                                ->toArray();
+                                    $files = $record->getMedia('flag')
+                                        ->mapWithKeys(fn ($media) => [$media->uuid => $media->uuid])
+                                        ->toArray();
 
-                            $component->state($files);
-                        } catch (\Throwable $e) {
-                            $component->state([]);
-                        }
-                    }),
+                                    $component->state($files);
+                                } catch (\Throwable $e) {
+                                    $component->state([]);
+                                }
+                            }),
+
+                    ]),
             ]);
     }
 }

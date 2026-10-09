@@ -29,16 +29,21 @@ class ManageMaxmindSettings extends SettingsPage
     {
         return $schema->components([
             Section::make('Configuration')
+                ->columnSpanFull()
                 ->components([
                     TextInput::make('license_key')
                         ->label('License Key')
+                        ->autocomplete('new-password')
+                        ->extraInputAttributes(['data-1p-ignore' => 'true', 'data-lpignore' => 'true', 'spellcheck' => 'false'])
                         ->password()
                         ->revealable()
                         ->required(),
                     TextInput::make('user_id')
                         ->label('User ID')
+                        ->autocomplete('off')
+                        ->extraInputAttributes(['data-1p-ignore' => 'true', 'data-lpignore' => 'true', 'spellcheck' => 'false'])
                         ->required(),
-                ])->columns(1),
+                ])->columns(['default' => 1, 'md' => 2]),
         ]);
     }
 
