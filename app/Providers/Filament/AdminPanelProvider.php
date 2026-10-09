@@ -40,6 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->sidebarFullyCollapsibleOnDesktop()
             ->brandName('WeblexAI Community Edition')
             ->brandLogo(fn (): HtmlString => new HtmlString(
                 '<span class="weblex-admin-brand"><img src="'.asset('images/logo.png').'" alt="" aria-hidden="true"><span>WeblexAI Community Edition</span></span>',
