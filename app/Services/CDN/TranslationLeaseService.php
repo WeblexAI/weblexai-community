@@ -9,7 +9,7 @@ class TranslationLeaseService
 {
     public function acquire(string $key): ?Lock
     {
-        $lock = Cache::store(config('cache.default'))->lock(
+        $lock = Cache::lock(
             'translation:lease:'.$key,
             config('translation.lease', 120),
         );
@@ -61,9 +61,8 @@ class TranslationLeaseService
 
     public function acquireCredentialSlot(int $credentialId): ?Lock
     {
-        $store = Cache::store(config('cache.default'));
         for ($slot = 0; $slot < config('translation.credential_concurrency', 4); $slot++) {
-            $lock = $store->lock("translation:credential:{$credentialId}:{$slot}", config('translation.lease', 120));
+            $lock = Cache::lock("translation:credential:{$credentialId}:{$slot}", config('translation.lease', 120));
             if ($lock->get()) {
                 return $lock;
             }

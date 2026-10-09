@@ -19,9 +19,9 @@ abstract class AbstractOpenAiCompatibleTranslationService implements Translation
 
     abstract protected function providerConfig(): array;
 
-    public function translateNmt(array $translatables, Language $source, Language $target): array
+    public function translateNmt(array $translatables, Language $source, Language $target, array $options = []): array
     {
-        return $this->translateLlm($translatables, $source, $target);
+        return $this->translateLlm($translatables, $source, $target, $options);
     }
 
     public function translateLlm(

@@ -101,7 +101,7 @@ it('rejects truncated OpenAI-compatible responses', function () {
     ))->toThrow(RuntimeException::class, 'truncated');
 });
 
-it('does not start an OpenAI-compatible request after its deadline', function () {
+it('does not start an OpenAI-compatible request after its deadline', function (string $method) {
     Http::swap(new Factory);
     $service = new class extends AbstractOpenAiCompatibleTranslationService
     {
@@ -113,7 +113,7 @@ it('does not start an OpenAI-compatible request after its deadline', function ()
         }
     };
 
-    expect(fn () => $service->translateLlm(
+    expect(fn () => $service->{$method}(
         [['id' => 'a', 'text' => 'One']],
         new Language(['name' => 'English']),
         new Language(['name' => 'French']),
@@ -121,7 +121,7 @@ it('does not start an OpenAI-compatible request after its deadline', function ()
     ))->toThrow(RuntimeException::class, 'deadline');
 
     Http::assertNothingSent();
-});
+})->with(['translateLlm', 'translateNmt']);
 
 it('rejects incomplete, duplicate, unexpected, and empty provider items', function (array $translations) {
     $service = new class extends AbstractOpenAiCompatibleTranslationService

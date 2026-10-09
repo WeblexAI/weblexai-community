@@ -140,6 +140,7 @@ class Project extends Model
         return $this->hasMany(Translation::class);
     }
 
+    /** @return HasMany<Glossary, $this> */
     public function glossaries(): HasMany
     {
         return $this->hasMany(Glossary::class);
