@@ -10,16 +10,17 @@
 <body>
 @php
     $steps = [
-        ['id' => 'public', 'title' => 'Public access', 'description' => 'Set the browser-facing URL'],
-        ['id' => 'admin', 'title' => 'Administrator', 'description' => 'Create the owner account'],
+        ['id' => 'public', 'title' => 'Public access', 'description' => 'Application address'],
+        ['id' => 'admin', 'title' => 'Administrator', 'description' => 'Name and sign-in details'],
     ];
     $docsUrl = config('community.docs_url');
     $githubUrl = config('community.github_url');
+    $hasAdminErrors = $errors->hasAny(['admin_name', 'admin_email', 'admin_password', 'admin_password_confirmation']);
 @endphp
 
 <div class="min-h-screen bg-slate-50">
-    <main class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 lg:px-8">
-        <header class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+    <main class="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 py-6 lg:px-8">
+        <header class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex items-center gap-3">
                     <div class="grid size-11 place-items-center rounded-2xl bg-brand-600 text-white">
@@ -30,7 +31,7 @@
                     </div>
                     <div>
                         <p class="text-base font-semibold tracking-tight text-slate-950">WeblexAI</p>
-                        <p class="text-sm text-slate-500">Docker setup</p>
+                        <p class="text-sm text-slate-500">Account setup</p>
                     </div>
                 </div>
 
@@ -55,7 +56,7 @@
             </div>
         </header>
 
-        <section class="flex flex-1 items-center py-8">
+        <section class="py-6">
             <div class="w-full">
                 @if ($errors->any())
                     <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800" role="alert">
@@ -75,9 +76,8 @@
                     <div data-step="public">
                         <div class="install-panel">
                             <section class="install-copy">
-                                <p class="eyebrow">Public access</p>
-                                <h1>Set the address browsers will use.</h1>
-                                <p>Use the final URL exposed by your reverse proxy, tunnel, or local Docker port.</p>
+                                <h1>Application settings</h1>
+                                <p>Enter the address where you will access WeblexAI.</p>
 
                                 <div class="form-card">
                                     <label>Application name
@@ -91,7 +91,7 @@
                                                 <button type="button" data-use-current-url>Use current</button>
                                             @endif
                                         </span>
-                                        <small>For a custom domain, configure DNS and HTTPS in your external proxy, then use that final HTTPS URL here.</small>
+                                        <small>Use the full address, including https:// or http://.</small>
                                     </label>
 
                                     <label>Timezone
@@ -104,28 +104,14 @@
                                 </div>
                             </section>
 
-                            <aside class="install-visual">
-                                <div class="install-visual-graphic is-public" aria-hidden="true">
-                                    <span class="visual-browser"></span>
-                                    <span class="visual-server"></span>
-                                    <span class="visual-link"></span>
-                                    <span class="visual-dot one"></span>
-                                    <span class="visual-dot two"></span>
-                                </div>
-                                <div class="visual-note">
-                                    <p class="font-semibold text-slate-950">Docker services are ready</p>
-                                    <p>PostgreSQL, Redis, the application, workers, and scheduler run in the Compose stack.</p>
-                                </div>
-                            </aside>
                         </div>
                     </div>
 
                     <div data-step="admin" hidden>
                         <div class="install-panel">
                             <section class="install-copy">
-                                <p class="eyebrow">Administrator</p>
-                                <h1>Create the first administrator.</h1>
-                                <p>This account manages projects, provider credentials, users, backups, and application settings.</p>
+                                <h1>Create your account</h1>
+                                <p>This account will have administrator access.</p>
 
                                 <div class="form-card">
                                     <label>Name
@@ -137,27 +123,34 @@
                                     </label>
 
                                     <label>Password
-                                        <input type="password" name="admin_password" required autocomplete="new-password">
-                                        <small>Use at least 12 characters with letters, mixed case, numbers, and symbols.</small>
+                                        <span class="password-field">
+                                            <input id="admin_password" type="password" name="admin_password" required minlength="6" autocomplete="new-password">
+                                            <button type="button" data-password-toggle aria-controls="admin_password" aria-label="Show password" aria-pressed="false">
+                                                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                    <path data-eye-slash d="m3 3 18 18" hidden/>
+                                                </svg>
+                                            </button>
+                                        </span>
+                                        <small>At least 6 characters, including uppercase and lowercase letters, a number, and a symbol.</small>
                                     </label>
 
                                     <label>Confirm password
-                                        <input type="password" name="admin_password_confirmation" required autocomplete="new-password">
+                                        <span class="password-field">
+                                            <input id="admin_password_confirmation" type="password" name="admin_password_confirmation" required minlength="6" autocomplete="new-password">
+                                            <button type="button" data-password-toggle aria-controls="admin_password_confirmation" aria-label="Show confirm password" aria-pressed="false">
+                                                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                    <path data-eye-slash d="m3 3 18 18" hidden/>
+                                                </svg>
+                                            </button>
+                                        </span>
                                     </label>
                                 </div>
                             </section>
 
-                            <aside class="install-visual">
-                                <div class="install-visual-graphic" aria-hidden="true">
-                                    <span class="visual-user"></span>
-                                    <span class="visual-shield"></span>
-                                    <span class="visual-panel"></span>
-                                </div>
-                                <div class="visual-note">
-                                    <p class="font-semibold text-slate-950">Keep your application key safe</p>
-                                    <p>It protects encrypted provider credentials and is retained in the persistent Docker configuration volume.</p>
-                                </div>
-                            </aside>
                         </div>
                     </div>
 
@@ -173,7 +166,7 @@
                 </form>
 
                 <footer class="install-footer">
-                    <span>Docker-only Community Edition</span>
+                    <span>WeblexAI Community Edition</span>
                     @if ($docsUrl && $docsUrl !== '#')
                         <a href="{{ $docsUrl }}" target="_blank" rel="noopener noreferrer">Documentation</a>
                     @endif
@@ -243,7 +236,20 @@
         input.focus();
     });
 
-    showStep(0);
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const input = document.getElementById(button.getAttribute('aria-controls'));
+            const visible = input.type === 'password';
+            input.type = visible ? 'text' : 'password';
+            button.setAttribute('aria-pressed', String(visible));
+            const label = input.name === 'admin_password' ? 'password' : 'confirm password';
+            button.setAttribute('aria-label', `${visible ? 'Hide' : 'Show'} ${label}`);
+            button.querySelector('[data-eye-slash]').toggleAttribute('hidden', !visible);
+        });
+    });
+
+    const hasAdminErrors = @json($hasAdminErrors);
+    showStep(hasAdminErrors ? 1 : 0);
 </script>
 </body>
 </html>

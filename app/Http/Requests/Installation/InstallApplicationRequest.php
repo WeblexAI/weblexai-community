@@ -21,7 +21,7 @@ class InstallApplicationRequest extends FormRequest
             'app_timezone' => ['required', 'timezone'],
             'admin_name' => ['required', 'string', 'max:100'],
             'admin_email' => ['required', 'email', 'max:255'],
-            'admin_password' => ['required', 'confirmed', Password::min(12)->letters()->mixedCase()->numbers()->symbols()],
+            'admin_password' => ['required', 'confirmed', Password::min(6)->letters()->mixedCase()->numbers()->symbols()],
         ];
     }
 }
