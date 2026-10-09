@@ -135,7 +135,7 @@ class RunModelTranslations
 
         return match ($credential->provider) {
             TranslationProvider::GOOGLE => new GoogleTranslatorService($credential),
-            TranslationProvider::OPENAI => new OpenAiTranslationService($credential),
+            TranslationProvider::OPENAI, TranslationProvider::OPENAI_COMPATIBLE => new OpenAiTranslationService($credential),
             TranslationProvider::OPENROUTER => new OpenRouterTranslationService($credential),
             TranslationProvider::GEMINI => new GeminiTranslationService($credential),
             TranslationProvider::QWEN => new QwenTranslationService($credential),

@@ -22,6 +22,7 @@ class EditProviderCredential extends EditRecord
             ? $data['provider']
             : TranslationProvider::from($data['provider']);
         $data['model'] = ($data['model'] ?? null) ?: $provider->defaultModel();
+        $data['base_url'] = $provider === TranslationProvider::OPENAI_COMPATIBLE ? $data['base_url'] : null;
 
         if ($provider === TranslationProvider::GOOGLE) {
             $data['api_key'] = null;

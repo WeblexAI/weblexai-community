@@ -12,12 +12,77 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
+it('creates and edits an OpenAI-compatible credential while retaining its key', function () {
+    $admin = User::factory()->create(['is_active' => ModelStatus::ACTIVE]);
+    $admin->assignRole(UserRole::ADMIN->value);
+    $this->actingAs($admin);
+
+    Livewire::test(CreateProviderCredential::class)
+        ->fillForm([
+            'name' => 'Custom provider',
+            'provider' => TranslationProvider::OPENAI_COMPATIBLE->value,
+            'api_key' => 'custom-secret',
+            'model' => 'custom-model',
+            'base_url' => 'https://provider.example.com/v1',
+            'is_active' => true,
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $credential = ProviderCredential::query()->sole();
+    expect($credential->base_url)->toBe('https://provider.example.com/v1')
+        ->and($credential->provider_type)->toBe('LLM');
+
+    Livewire::test(EditProviderCredential::class, ['record' => $credential->getRouteKey()])
+        ->fillForm(['base_url' => 'https://other.example.com/v1', 'model' => 'other-model'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($credential->fresh())->base_url->toBe('https://other.example.com/v1')
+        ->model->toBe('other-model')->api_key->toBe('custom-secret');
+});
+
+it('requires a valid URL and explicit model for compatible credentials', function (array $fields, array $errors) {
+    $admin = User::factory()->create(['is_active' => ModelStatus::ACTIVE]);
+    $admin->assignRole(UserRole::ADMIN->value);
+    $this->actingAs($admin);
+
+    Livewire::test(CreateProviderCredential::class)
+        ->fillForm(array_merge([
+            'name' => 'Custom provider',
+            'provider' => TranslationProvider::OPENAI_COMPATIBLE->value,
+            'api_key' => 'custom-secret',
+            'model' => 'custom-model',
+            'base_url' => 'https://provider.example.com/v1',
+            'is_active' => true,
+        ], $fields))
+        ->call('create')
+        ->assertHasFormErrors($errors);
+
+    expect(ProviderCredential::query()->count())->toBe(0);
+})->with([
+    'missing URL' => [['base_url' => ''], ['base_url' => 'required']],
+    'invalid URL' => [['base_url' => 'not-a-url'], ['base_url' => 'url']],
+    'missing model' => [['model' => ''], ['model' => 'required']],
+]);
+
 it('uses provider endpoints from the AI configuration', function () {
     expect(TranslationProvider::GOOGLE->endpoint())->toBe(config('ai.providers.google.url'))
         ->and(TranslationProvider::OPENAI->endpoint())->toBe(config('ai.providers.openai.url'))
         ->and(TranslationProvider::OPENROUTER->endpoint())->toBe(config('ai.providers.openrouter.url'))
         ->and(TranslationProvider::GEMINI->endpoint())->toBe(config('ai.providers.gemini.url'))
         ->and(TranslationProvider::QWEN->endpoint())->toBe(config('ai.providers.qwen.url'));
+});
+
+it('uses configured model defaults while requiring an explicit compatible model', function () {
+    config(['ai.providers.openai.default_model' => 'configured-model']);
+
+    expect(TranslationProvider::OPENAI->defaultModel())->toBe('configured-model')
+        ->and(TranslationProvider::OPENROUTER->defaultModel())->toBe(config('ai.providers.openrouter.default_model'))
+        ->and(TranslationProvider::GEMINI->defaultModel())->toBe(config('ai.providers.gemini.default_model'))
+        ->and(TranslationProvider::QWEN->defaultModel())->toBe(config('ai.providers.qwen.default_model'))
+        ->and(TranslationProvider::GOOGLE->defaultModel())->toBeNull()
+        ->and(TranslationProvider::OPENAI_COMPATIBLE->defaultModel())->toBeNull();
 });
 
 it('fails when a provider endpoint is not configured', function () {

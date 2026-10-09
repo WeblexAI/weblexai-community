@@ -8,6 +8,7 @@ enum TranslationProvider: string implements HasLabel
 {
     case GOOGLE = 'google';
     case OPENAI = 'openai';
+    case OPENAI_COMPATIBLE = 'openai_compatible';
     case OPENROUTER = 'openrouter';
     case GEMINI = 'gemini';
     case QWEN = 'qwen';
@@ -17,6 +18,7 @@ enum TranslationProvider: string implements HasLabel
         return match ($this) {
             self::GOOGLE => 'Google Cloud Translation',
             self::OPENAI => 'OpenAI',
+            self::OPENAI_COMPATIBLE => 'OpenAI-compatible',
             self::OPENROUTER => 'OpenRouter',
             self::GEMINI => 'Gemini',
             self::QWEN => 'Qwen',
@@ -32,13 +34,7 @@ enum TranslationProvider: string implements HasLabel
 
     public function defaultModel(): ?string
     {
-        return match ($this) {
-            self::GOOGLE => null,
-            self::OPENAI => 'gpt-4.1-mini',
-            self::OPENROUTER => 'openai/gpt-4.1-mini',
-            self::GEMINI => 'gemini-2.0-flash-lite',
-            self::QWEN => 'qwen-mt-flash',
-        };
+        return config("ai.providers.{$this->value}.default_model");
     }
 
     public function endpoint(): string

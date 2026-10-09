@@ -89,6 +89,7 @@ return [
             'driver' => 'gemini',
             'key' => env('GEMINI_API_KEY'),
             'url' => 'https://generativelanguage.googleapis.com/v1beta',
+            'default_model' => 'gemini-2.0-flash-lite',
         ],
 
         'groq' => [
@@ -117,17 +118,20 @@ return [
             'driver' => 'openai',
             'key' => env('OPENAI_API_KEY'),
             'url' => 'https://api.openai.com/v1',
+            'default_model' => 'gpt-6-luna',
         ],
 
         'openrouter' => [
             'driver' => 'openrouter',
             'key' => env('OPENROUTER_API_KEY'),
             'url' => 'https://openrouter.ai/api/v1',
+            'default_model' => 'openai/gpt-6-luna',
         ],
 
         'qwen' => [
             'driver' => 'openai',
             'url' => 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1',
+            'default_model' => 'qwen-mt-flash',
         ],
 
         'voyageai' => [

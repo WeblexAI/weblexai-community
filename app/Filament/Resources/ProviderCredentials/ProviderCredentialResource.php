@@ -64,8 +64,19 @@ class ProviderCredentialResource extends Resource
                         ->dehydrated(fn (?string $state): bool => filled($state))
                         ->required(fn (Get $get, ?ProviderCredential $record): bool => $get('provider') !== TranslationProvider::GOOGLE->value && blank($record?->api_key)),
                     TextInput::make('model')
-                        ->helperText('Leave blank to use WeblexAI recommended model for this provider.')
+                        ->required(fn (Get $get): bool => $get('provider') === TranslationProvider::OPENAI_COMPATIBLE->value)
+                        ->helperText(fn (Get $get): string => $get('provider') === TranslationProvider::OPENAI_COMPATIBLE->value
+                            ? 'Enter the model ID supplied by your provider.'
+                            : 'Leave blank to use WeblexAI recommended model for this provider.')
                         ->visible(fn (Get $get): bool => $get('provider') !== TranslationProvider::GOOGLE->value),
+                    TextInput::make('base_url')
+                        ->label('Base URL')
+                        ->placeholder('https://provider.example.com/v1')
+                        ->rules(['url:http,https'])
+                        ->maxLength(2048)
+                        ->helperText('The API base URL, including /v1 if required. WeblexAI appends /chat/completions.')
+                        ->required(fn (Get $get): bool => $get('provider') === TranslationProvider::OPENAI_COMPATIBLE->value)
+                        ->visible(fn (Get $get): bool => $get('provider') === TranslationProvider::OPENAI_COMPATIBLE->value),
                     TextInput::make('google_project_id')
                         ->helperText('The Google Cloud project that owns the Translation API credential.')
                         ->required(fn (Get $get): bool => $get('provider') === TranslationProvider::GOOGLE->value)

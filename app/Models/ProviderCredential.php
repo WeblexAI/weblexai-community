@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $project_id
  * @property TranslationProvider $provider
  * @property string $api_key
+ * @property string|null $base_url
  * @property string $service_account
  * @property bool $is_active
  * @property Carbon $created_at

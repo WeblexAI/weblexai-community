@@ -6,6 +6,7 @@ use App\Models\ProviderCredential;
 use App\Services\AbstractOpenAiCompatibleTranslationService;
 use App\Services\GeminiTranslationService;
 use App\Services\GoogleTranslatorService;
+use App\Services\OpenAiTranslationService;
 use App\Services\ProviderBatchService;
 use Google\Cloud\Translate\V3\Client\TranslationServiceClient;
 use Google\Cloud\Translate\V3\TranslateTextRequest;
@@ -13,6 +14,33 @@ use Google\Cloud\Translate\V3\TranslateTextResponse;
 use Google\Cloud\Translate\V3\Translation;
 use Illuminate\Http\Client\Factory;
 use Illuminate\Support\Facades\Http;
+
+it('uses credential endpoints only for the separate compatible provider', function (TranslationProvider $provider, string $expectedUrl) {
+    Http::fake(['*' => Http::response(['choices' => [[
+        'finish_reason' => 'stop',
+        'message' => ['content' => json_encode(['translations' => [['id' => 'a', 'translated' => 'Bonjour']]])],
+    ]]])]);
+    $credential = new ProviderCredential([
+        'provider' => $provider,
+        'api_key' => 'custom-secret',
+        'model' => 'custom-model',
+        'base_url' => 'https://provider.example.com/v1/',
+    ]);
+
+    $result = (new OpenAiTranslationService($credential))->translateLlm(
+        [['id' => 'a', 'text' => 'Hello']],
+        new Language(['name' => 'English']),
+        new Language(['name' => 'French']),
+    );
+
+    expect($result[0]['translated'])->toBe('Bonjour');
+    Http::assertSent(fn ($request): bool => $request->url() === $expectedUrl
+        && $request['model'] === 'custom-model'
+        && $request->hasHeader('Authorization', 'Bearer custom-secret'));
+})->with([
+    'compatible' => [TranslationProvider::OPENAI_COMPATIBLE, 'https://provider.example.com/v1/chat/completions'],
+    'official OpenAI' => [TranslationProvider::OPENAI, 'https://api.openai.com/v1/chat/completions'],
+]);
 
 it('rejects incomplete and duplicate stable ids from compatible providers', function () {
     $service = new class extends AbstractOpenAiCompatibleTranslationService
