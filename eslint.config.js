@@ -1,11 +1,20 @@
 import prettier from 'eslint-config-prettier';
 import vue from 'eslint-plugin-vue';
 
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
+import tseslint from 'typescript-eslint';
 
-export default defineConfigWithVueTs(
+export default tseslint.config(
+    tseslint.configs.recommended,
     vue.configs['flat/essential'],
-    vueTsConfigs.recommended,
+    {
+        files: ['**/*.vue'],
+        languageOptions: {
+            parserOptions: {
+                parser: tseslint.parser,
+                extraFileExtensions: ['.vue'],
+            },
+        },
+    },
     {
         ignores: ['vendor', 'node_modules', 'public', 'bootstrap/ssr', 'tailwind.config.js', 'resources/js/components/ui/*'],
     },
