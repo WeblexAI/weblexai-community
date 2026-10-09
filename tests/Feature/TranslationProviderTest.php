@@ -24,7 +24,9 @@ it('uses credential endpoints only for the separate compatible provider', functi
         'provider' => $provider,
         'api_key' => 'custom-secret',
         'model' => 'custom-model',
-        'base_url' => 'https://provider.example.com/v1/',
+        'base_url' => $provider === TranslationProvider::OPENAI_COMPATIBLE
+            ? str_replace('/chat/completions', '/', $expectedUrl)
+            : 'https://provider.example.com/v1/',
     ]);
 
     $result = (new OpenAiTranslationService($credential))->translateLlm(
@@ -36,9 +38,11 @@ it('uses credential endpoints only for the separate compatible provider', functi
     expect($result[0]['translated'])->toBe('Bonjour');
     Http::assertSent(fn ($request): bool => $request->url() === $expectedUrl
         && $request['model'] === 'custom-model'
-        && $request->hasHeader('Authorization', 'Bearer custom-secret'));
+        && $request->hasHeader('Authorization', 'Bearer custom-secret')
+        && ($request['thinking'] ?? null) === (str_contains($expectedUrl, 'api.deepseek.com') ? ['type' => 'disabled'] : null));
 })->with([
     'compatible' => [TranslationProvider::OPENAI_COMPATIBLE, 'https://provider.example.com/v1/chat/completions'],
+    'DeepSeek' => [TranslationProvider::OPENAI_COMPATIBLE, 'https://api.deepseek.com/chat/completions'],
     'official OpenAI' => [TranslationProvider::OPENAI, 'https://api.openai.com/v1/chat/completions'],
 ]);
 

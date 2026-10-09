@@ -56,6 +56,13 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
         if (!this.apiKey || !targetLangIso2) return;
         const run = ++this.activeRun;
         this.manager.cancelActiveRequest();
+        if (targetLangIso2 === this.originalLanguageIso2) {
+            this.restoreOriginals();
+            this.currentLanguageIso2 = targetLangIso2;
+            this.state.selectedLang = this.state.languages.find((language) => language.iso_2 === targetLangIso2) ?? null;
+            this.state.loading = false;
+            await this.store.set('CURRENT_LANGUAGE_ISO2', targetLangIso2);
+        }
         const fresh = await this.getProjectConfig();
         if (run !== this.activeRun) return;
         if (!fresh.is_active) {
@@ -287,13 +294,25 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
     }
     private handleMutations(nodes: Node[]): void {
         if (this.observerPaused) return;
-        nodes.forEach((node) => this.pendingRoots.add(node));
+        nodes.forEach((node) => {
+            const element = node instanceof Element ? node : node.parentElement;
+            if (element?.closest('[data-weblex-exclude]')) return;
+            this.pendingRoots.add(node);
+        });
+        if (!this.pendingRoots.size) return;
         if (this.mutationTimer) clearTimeout(this.mutationTimer);
         this.mutationTimer = window.setTimeout(() => {
+            this.mutationTimer = null;
             const roots = [...this.pendingRoots];
             this.pendingRoots.clear();
             this.discover(roots);
-            if (this.currentLanguageIso2 && this.currentLanguageIso2 !== this.originalLanguageIso2) void this.translateTo(this.currentLanguageIso2, true);
+            if (this.currentLanguageIso2 && this.currentLanguageIso2 !== this.originalLanguageIso2) {
+                const run = ++this.activeRun;
+                this.manager.cancelActiveRequest();
+                void this.translate(this.currentLanguageIso2, run).catch((error: unknown) => {
+                    if (!(error instanceof Error && error.name === 'AbortError')) console.error('Translation run failed:', error);
+                });
+            }
         }, 150);
     }
     private withObserverPaused(callback: () => void): void {

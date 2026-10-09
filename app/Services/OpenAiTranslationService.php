@@ -8,11 +8,16 @@ class OpenAiTranslationService extends AbstractOpenAiCompatibleTranslationServic
 {
     protected function providerConfig(): array
     {
+        $baseUrl = $this->credential->provider === TranslationProvider::OPENAI_COMPATIBLE
+            ? $this->credential->base_url
+            : $this->credential->provider->endpoint();
+
         return [
             'api_key' => $this->credential->api_key,
-            'base_uri' => $this->credential->provider === TranslationProvider::OPENAI_COMPATIBLE
-                ? $this->credential->base_url
-                : $this->credential->provider->endpoint(),
+            'base_uri' => $baseUrl,
+            'body' => strtolower((string) parse_url((string) $baseUrl, PHP_URL_HOST)) === 'api.deepseek.com'
+                ? ['thinking' => ['type' => 'disabled']]
+                : [],
             'model' => $this->credential->model ?: $this->credential->provider->defaultModel(),
             'max_tokens' => 2048,
             'temperature' => 0,

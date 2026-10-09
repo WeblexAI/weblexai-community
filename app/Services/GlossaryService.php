@@ -100,7 +100,7 @@ class GlossaryService
     {
         $revision = DB::table('projects')->where('id', $projectId)->value('generation_revision') ?? 0;
 
-        return "glossary:{$projectId}:{$revision}:{$langCode}";
+        return "glossary:v2:{$projectId}:{$revision}:{$langCode}";
     }
 
     public function getProjectGlossaries(Project $project, Language $language): Collection
@@ -111,7 +111,13 @@ class GlossaryService
                 ->orWhereHas('languages', fn ($languages) => $languages->where('languages.id', $language->id)))
             ->orderByRaw('LENGTH("text") DESC')->get();
         try {
-            return Cache::remember(self::getCacheKey($project->id, $language->iso_2), app(CacheSettings::class)->getGlossaryTtlInSeconds(), $load);
+            $attributes = Cache::remember(
+                self::getCacheKey($project->id, $language->iso_2),
+                app(CacheSettings::class)->getGlossaryTtlInSeconds(),
+                fn (): array => $load()->map(fn (Glossary $glossary): array => $glossary->getAttributes())->all(),
+            );
+
+            return Glossary::hydrate($attributes);
         } catch (\Throwable $exception) {
             report($exception);
 

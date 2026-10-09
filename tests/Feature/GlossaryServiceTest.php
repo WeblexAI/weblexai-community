@@ -7,6 +7,7 @@ use App\Models\Language;
 use App\Models\Project;
 use App\Models\User;
 use App\Services\GlossaryService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -50,6 +51,31 @@ function glossaryServiceFixture(): array
 
     return compact('project', 'source', 'french', 'spanish');
 }
+
+it('caches glossary attributes without serialized PHP objects', function () {
+    $fixture = glossaryServiceFixture();
+    $glossary = Glossary::query()->create([
+        'project_id' => $fixture['project']->id,
+        'text' => 'Weblex',
+        'translated' => 'Weblex',
+        'placeholder' => 'GLS_ALL',
+        'is_all_languages' => true,
+        'rule' => GlossaryRule::NEVER_TRANSLATE,
+        'is_active' => ModelStatus::ACTIVE,
+    ]);
+    $service = app(GlossaryService::class);
+    $first = $service->getProjectGlossaries($fixture['project'], $fixture['french']);
+    $key = GlossaryService::getCacheKey($fixture['project']->id, $fixture['french']->iso_2);
+    $cached = Cache::get($key);
+    $decoded = unserialize(serialize($cached), ['allowed_classes' => false]);
+    Cache::put($key, $decoded, 60);
+
+    $second = $service->getProjectGlossaries($fixture['project'], $fixture['french']);
+    expect($cached)->toBeArray()
+        ->and($second->sole()->id)->toBe($glossary->id)
+        ->and($second->sole()->rule)->toBe(GlossaryRule::NEVER_TRANSLATE)
+        ->and($service->applyToText('Weblex', $second))->toBe($service->applyToText('Weblex', $first));
+});
 
 it('loads active glossaries that apply to the requested language', function () {
     $fixture = glossaryServiceFixture();

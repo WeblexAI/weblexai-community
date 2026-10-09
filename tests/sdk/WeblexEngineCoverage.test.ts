@@ -35,6 +35,51 @@ function apiMock(currentConfig = config) {
 }
 
 describe('WeblexAIEngine coverage', () => {
+    it('ignores switcher mutations and translates new content without refreshing configuration', async () => {
+        document.body.innerHTML = '<main><p>Hello world</p><div id="mount"></div><div id="switcher"></div></main>';
+        const fetchMock = apiMock();
+        vi.stubGlobal('fetch', fetchMock);
+        const engine = new WeblexAIEngine('https://example.test/api/project');
+        await engine.init('key');
+        await engine.translateTo('fr');
+        const configRequests = fetchMock.mock.calls.filter(([url]) => String(url).endsWith('/config')).length;
+        const label = document.createElement('span');
+        label.textContent = 'French';
+        document.getElementById('switcher')!.appendChild(label);
+        const paragraph = document.createElement('p');
+        paragraph.textContent = 'New content';
+        document.getElementById('mount')!.appendChild(paragraph);
+        await vi.waitFor(() => expect(paragraph.textContent).toBe('FR:New content'));
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        expect(label.textContent).toBe('French');
+        expect(fetchMock.mock.calls.filter(([url]) => String(url).endsWith('/config'))).toHaveLength(configRequests);
+        await engine.translateTo('en');
+        expect(paragraph.textContent).toBe('New content');
+    });
+
+    it('restores English before a delayed configuration request finishes', async () => {
+        document.body.innerHTML = '<main><p>Hello world</p><div id="switcher"></div></main>';
+        const fetchMock = apiMock();
+        vi.stubGlobal('fetch', fetchMock);
+        const engine = new WeblexAIEngine('https://example.test/api/project');
+        await engine.init('key');
+        await engine.translateTo('fr');
+        let finish: ((value: any) => void) | undefined;
+        fetchMock.mockImplementationOnce(
+            () =>
+                new Promise((resolve) => {
+                    finish = resolve;
+                }),
+        );
+        const english = engine.translateTo('en');
+        expect(document.querySelector('p')!.textContent).toBe('Hello world');
+        expect(engine.state.selectedLang?.iso_2).toBe('en');
+        await vi.waitFor(() => expect(finish).toBeDefined());
+        finish!({ ok: false, status: 429 });
+        await english;
+        expect(engine.getDebugSnapshot().currentLanguageIso2).toBe('en');
+    });
+
     it('translates allowed attributes, preserves text node identity, and restores originals', async () => {
         document.body.innerHTML =
             '<main><button id="button" title="Open settings"> Hello <strong>world</strong> today </button><input id="search" placeholder="Search docs"><input id="secret" type="password" placeholder="Never translate"><div id="switcher"></div></main>';

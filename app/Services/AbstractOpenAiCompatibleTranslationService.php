@@ -49,6 +49,7 @@ abstract class AbstractOpenAiCompatibleTranslationService implements Translation
                         'role' => 'user',
                         'content' => $this->prompt($batch, $source, $target, $options),
                     ]],
+                    ...($config['body'] ?? []),
                 ])
                 ->throw();
 
