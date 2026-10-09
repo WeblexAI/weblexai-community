@@ -309,7 +309,7 @@ function googleServiceWithResponses(array $responses, array &$requests): GoogleT
 
         protected function createClient(array $credentials): TranslationServiceClient
         {
-            return new TranslationServiceClient(['credentials' => null]);
+            return new TranslationServiceClient(['apiKey' => 'test-api-key', 'transport' => 'rest']);
         }
 
         protected function translateText(TranslationServiceClient $client, TranslateTextRequest $request, array $options): TranslateTextResponse
