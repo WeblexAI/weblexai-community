@@ -1,5 +1,9 @@
 # WeblexAI Community Edition
 
+[![Version](https://img.shields.io/github/v/tag/WeblexAI/weblexai-community?sort=semver&filter=v*&label=version)](https://github.com/WeblexAI/weblexai-community/tags)
+[![Docker pulls](https://img.shields.io/docker/pulls/kofibusy/weblexai?logo=docker)](https://hub.docker.com/r/kofibusy/weblexai)
+[![License](https://img.shields.io/github/license/WeblexAI/weblexai-community)](LICENSE)
+
 WeblexAI is a self-hosted website translation platform distributed as a Docker Compose stack.
 
 The stack includes the WeblexAI app, background workers, PostgreSQL, Redis, and the browser SDK. You provide credentials for your translation providers.
