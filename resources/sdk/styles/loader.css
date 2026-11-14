@@ -1,5 +1,7 @@
 .wlai-loader-bar {
     position: fixed;
+    z-index: 2147483647;
+    pointer-events: none;
     top: 0;
     left: 0;
     height: 3px;

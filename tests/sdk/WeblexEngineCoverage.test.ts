@@ -35,6 +35,28 @@ function apiMock(currentConfig = config) {
 }
 
 describe('WeblexAIEngine coverage', () => {
+    it('shows the loader while refreshing configuration and removes it after translation', async () => {
+        document.body.innerHTML = '<main><p>Hello world</p><div id="switcher"></div></main>';
+        const fetchMock = apiMock();
+        vi.stubGlobal('fetch', fetchMock);
+        const engine = new WeblexAIEngine('https://example.test/api/project');
+        await engine.init('key');
+        let finish: ((value: any) => void) | undefined;
+        fetchMock.mockImplementationOnce(
+            () =>
+                new Promise((resolve) => {
+                    finish = resolve;
+                }),
+        );
+        const translation = engine.translateTo('fr');
+        await vi.waitFor(() => expect(document.querySelector('.wlai-loader-bar')).not.toBeNull());
+        finish!({ ok: true, json: async () => ({ data: config }) });
+        await translation;
+        await vi.waitFor(() => expect(document.querySelector('.wlai-loader-bar')).toBeNull());
+        expect(engine.state.loading).toBe(false);
+        (engine as any).observer.stop();
+    });
+
     it.each(['#missing', '[', null])('uses bottom-right positioning when the selector %s has no usable target', async (selector) => {
         document.body.innerHTML = '<main><p>Hello world</p></main>';
         vi.stubGlobal('fetch', apiMock({ ...config, switcher_config: { ...config.switcher_config, target_parent_selector: selector } } as typeof config));

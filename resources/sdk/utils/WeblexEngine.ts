@@ -48,14 +48,16 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
         this.observer.start();
         this.state.languages = this.projectConfig.languages;
         this.state.selectedLang = this.state.languages.find((language) => language.iso_2 === this.currentLanguageIso2) ?? this.state.languages[0] ?? null;
-        if (this.currentLanguageIso2) await this.translateTo(this.currentLanguageIso2, true);
         if (this.state.languages.length) this.mountVueUI();
+        if (this.currentLanguageIso2) await this.translateTo(this.currentLanguageIso2, true);
     }
 
     async translateTo(targetLangIso2: string, isInitialLoad = false): Promise<void> {
         if (!this.apiKey || !targetLangIso2) return;
+        const wasLoading = this.state.loading;
         const run = ++this.activeRun;
         this.manager.cancelActiveRequest();
+        this.state.loading = targetLangIso2 !== this.originalLanguageIso2;
         if (targetLangIso2 === this.originalLanguageIso2) {
             this.restoreOriginals();
             this.currentLanguageIso2 = targetLangIso2;
@@ -92,9 +94,13 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
         if (!fresh.languages.some((language) => language.iso_2 === targetLangIso2)) {
             this.restoreOriginals();
             this.currentLanguageIso2 = this.originalLanguageIso2;
+            this.state.loading = false;
             return;
         }
-        if (!isInitialLoad && !revisionChanged && targetLangIso2 !== this.originalLanguageIso2 && targetLangIso2 === this.currentLanguageIso2 && !this.state.loading) return;
+        if (!isInitialLoad && !revisionChanged && targetLangIso2 !== this.originalLanguageIso2 && targetLangIso2 === this.currentLanguageIso2 && !wasLoading) {
+            this.state.loading = false;
+            return;
+        }
         this.state.loading = true;
         try {
             if (targetLangIso2 === this.originalLanguageIso2) this.restoreOriginals();
@@ -295,6 +301,8 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
     private handleMutations(nodes: Node[]): void {
         if (this.observerPaused) return;
         nodes.forEach((node) => {
+            if (node.nodeType !== Node.ELEMENT_NODE && node.nodeType !== Node.TEXT_NODE) return;
+            if (node.nodeType === Node.TEXT_NODE && !node.textContent?.trim() && !this.registry.getTarget(node, 'text')) return;
             const element = node instanceof Element ? node : node.parentElement;
             if (element?.closest('[data-weblex-exclude]')) return;
             this.pendingRoots.add(node);
@@ -309,9 +317,14 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
             if (this.currentLanguageIso2 && this.currentLanguageIso2 !== this.originalLanguageIso2) {
                 const run = ++this.activeRun;
                 this.manager.cancelActiveRequest();
-                void this.translate(this.currentLanguageIso2, run).catch((error: unknown) => {
-                    if (!(error instanceof Error && error.name === 'AbortError')) console.error('Translation run failed:', error);
-                });
+                this.state.loading = true;
+                void this.translate(this.currentLanguageIso2, run)
+                    .catch((error: unknown) => {
+                        if (!(error instanceof Error && error.name === 'AbortError')) console.error('Translation run failed:', error);
+                    })
+                    .finally(() => {
+                        if (run === this.activeRun) this.state.loading = false;
+                    });
             }
         }, 150);
     }
