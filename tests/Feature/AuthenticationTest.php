@@ -30,3 +30,15 @@ it('allows administrators to sign in through the normal login screen', function 
 
     $this->assertAuthenticatedAs($admin);
 });
+
+it('uses a full page navigation when an administrator signs in through Inertia', function () {
+    $admin = User::factory()->create(['password' => 'AdminPassword123!', 'is_active' => ModelStatus::ACTIVE]);
+    $admin->assignRole(UserRole::ADMIN->value);
+
+    $this->withHeader('X-Inertia', 'true')->post(route('login'), [
+        'email' => $admin->email,
+        'password' => 'AdminPassword123!',
+    ])->assertStatus(409)->assertHeader('X-Inertia-Location', url('/admin'));
+
+    $this->assertAuthenticatedAs($admin);
+});

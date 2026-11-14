@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -19,13 +20,13 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request): HttpResponse
     {
         $request->authenticate();
         $request->session()->regenerate();
 
         if ($request->user()->hasRole(UserRole::ADMIN->value)) {
-            return redirect()->intended('/admin');
+            return Inertia::location(redirect()->intended('/admin'));
         }
 
         return redirect()->intended(route('overview', absolute: false));
