@@ -52,7 +52,7 @@ Docker Compose publishes the WeblexAI app on host port `8787` by default.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.sh \
-  | bash -s -- update --version 1.0.1 --directory ./weblexai
+  | bash -s -- update --version 1.0.5 --directory ./weblexai
 ```
 
 Update mode preserves `.env` and Docker volumes, downloads the selected Compose file, pulls the image, runs migrations, and restarts the stack.
@@ -60,8 +60,12 @@ Update mode preserves `.env` and Docker volumes, downloads the selected Compose 
 For Windows PowerShell:
 
 ```powershell
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.ps1"))) -Mode Update -Version 1.0.1 -Directory (Join-Path $PWD "weblexai")
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.ps1"))) -Mode Update -Version 1.0.5 -Directory (Join-Path $HOME "weblexai")
 ```
+
+Set `-Directory` to the existing installation folder containing `.env` and `docker-compose.yml`. Create and verify a backup before updating.
+
+An HTTPS website must load the SDK and flag images from an HTTPS WeblexAI address. For local testing, use HTTP for both sites, or give WeblexAI an HTTPS address through a local reverse proxy or tunnel. Changing an HTTP image URL to HTTPS will not work unless that address actually supports HTTPS.
 
 ## Operations
 

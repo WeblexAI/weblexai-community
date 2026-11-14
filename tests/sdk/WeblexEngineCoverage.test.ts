@@ -35,6 +35,42 @@ function apiMock(currentConfig = config) {
 }
 
 describe('WeblexAIEngine coverage', () => {
+    it('does not cancel a new language while page content changes during provider work', async () => {
+        document.body.innerHTML = '<main><p>Hello world</p><div id="mount"></div><div id="switcher"></div></main>';
+        const german = { id: 3, name: 'German', iso_2: 'de', flag: '' };
+        const fetchMock = apiMock({ ...config, languages: [...config.languages, german] });
+        vi.stubGlobal('fetch', fetchMock);
+        const engine = new WeblexAIEngine('https://example.test/api/project');
+        await engine.init('key');
+        await engine.translateTo('fr');
+        const regularRequest = fetchMock.getMockImplementation()!;
+        let finish: (() => void) | undefined;
+        let signal: AbortSignal | undefined;
+        fetchMock.mockImplementation(async (url, request) => {
+            if (!url.endsWith('/config') && !finish) {
+                signal = request?.signal as AbortSignal;
+                await new Promise<void>((resolve) => {
+                    finish = resolve;
+                });
+            }
+            return regularRequest(url, request);
+        });
+        const translation = engine.translateTo('de');
+        await vi.waitFor(() => expect(finish).toBeDefined());
+        const paragraph = document.createElement('p');
+        paragraph.textContent = 'New content';
+        document.getElementById('mount')!.appendChild(paragraph);
+        await new Promise((resolve) => setTimeout(resolve, 220));
+        expect(signal?.aborted).toBe(false);
+        finish!();
+        await translation;
+        await vi.waitFor(() => expect(paragraph.textContent).toBe('FR:New content'));
+        expect(engine.getDebugSnapshot().currentLanguageIso2).toBe('de');
+        expect(engine.state.selectedLang?.iso_2).toBe('de');
+        await engine.translateTo('en');
+        (engine as any).observer.stop();
+    });
+
     it('shows the loader while refreshing configuration and removes it after translation', async () => {
         document.body.innerHTML = '<main><p>Hello world</p><div id="switcher"></div></main>';
         const fetchMock = apiMock();

@@ -112,7 +112,10 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
         } catch (error) {
             if (!(error instanceof Error && error.name === 'AbortError')) console.error('Translation run failed:', error);
         } finally {
-            if (run === this.activeRun) this.state.loading = false;
+            if (run === this.activeRun) {
+                this.state.loading = false;
+                if (this.pendingRoots.size) this.handleMutations([]);
+            }
         }
     }
 
@@ -311,6 +314,7 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
         if (this.mutationTimer) clearTimeout(this.mutationTimer);
         this.mutationTimer = window.setTimeout(() => {
             this.mutationTimer = null;
+            if (this.state.loading) return;
             const roots = [...this.pendingRoots];
             this.pendingRoots.clear();
             this.discover(roots);
@@ -323,7 +327,10 @@ export default class WeblexAIEngine implements WeblexAIEnginePublicI {
                         if (!(error instanceof Error && error.name === 'AbortError')) console.error('Translation run failed:', error);
                     })
                     .finally(() => {
-                        if (run === this.activeRun) this.state.loading = false;
+                        if (run === this.activeRun) {
+                            this.state.loading = false;
+                            if (this.pendingRoots.size) this.handleMutations([]);
+                        }
                     });
             }
         }, 150);

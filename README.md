@@ -44,8 +44,16 @@ Update an existing installation without replacing its `.env` or Docker volumes:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.sh \
-  | bash -s -- update --version 1.0.1 --directory ./weblexai
+  | bash -s -- update --version 1.0.5 --directory ./weblexai
 ```
+
+On Windows PowerShell:
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/WeblexAI/weblexai-community/main/scripts/install-docker.ps1"))) -Mode Update -Version 1.0.5 -Directory (Join-Path $HOME "weblexai")
+```
+
+Set the directory to your existing installation folder containing `.env` and `docker-compose.yml`. Create and verify a backup before updating.
 
 The update pulls the selected image, runs database migrations, and restarts the stack.
 
