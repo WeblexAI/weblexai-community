@@ -37,12 +37,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.4"
+          php-version: "8.4.27"
           extensions: bcmath, curl, exif, gd, intl, mbstring, pcntl, pdo_pgsql, redis, sodium, zip
           coverage: none
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: "22.23.5"
           cache: npm
       - uses: ramsey/composer-install@v3
         with:
@@ -146,6 +146,7 @@ jobs:
       - uses: docker/build-push-action@v7
         with:
           context: .
+          pull: true
           push: ${{ startsWith(github.ref, 'refs/tags/v') }}
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
@@ -159,3 +160,4 @@ jobs:
           docker logout
           docker pull "kofibusy/weblexai:${version}"
           docker pull "kofibusy/weblexai:latest"
+          docker run --rm --entrypoint php "kofibusy/weblexai:${version}" -r 'if (version_compare(PHP_VERSION, "8.4.27", "<") || version_compare(PHP_VERSION, "8.5.0", ">=")) { fwrite(STDERR, "Published image has an unsupported PHP version: ".PHP_VERSION.PHP_EOL); exit(1); } echo "Verified published PHP ".PHP_VERSION.PHP_EOL;'

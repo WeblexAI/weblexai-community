@@ -1,4 +1,21 @@
-FROM composer:2.8.9 AS php-dependencies
+FROM dunglas/frankenphp:1.13.5-php8.4.27-bookworm AS php-base
+
+RUN php -r 'if (version_compare(PHP_VERSION, "8.4.27", "<") || version_compare(PHP_VERSION, "8.5.0", ">=")) { fwrite(STDERR, "Build requires patched PHP 8.4.27 or newer within 8.4.x; found ".PHP_VERSION.PHP_EOL); exit(1); } echo "Verified PHP ".PHP_VERSION.PHP_EOL;'
+
+RUN install-php-extensions \
+    bcmath \
+    exif \
+    gd \
+    intl \
+    opcache \
+    pcntl \
+    pdo_pgsql \
+    redis \
+    zip
+
+FROM php-base AS php-dependencies
+
+COPY --from=composer:2.8.9 /usr/bin/composer /usr/local/bin/composer
 
 WORKDIR /app
 ARG WEBLEX_E2E_QWEN_ENDPOINT=
@@ -9,11 +26,7 @@ RUN --mount=type=cache,target=/tmp/cache \
     --no-interaction \
     --prefer-dist \
     --no-scripts \
-    --no-autoloader \
-    --ignore-platform-req=ext-exif \
-    --ignore-platform-req=ext-gd \
-    --ignore-platform-req=ext-intl \
-    --ignore-platform-req=ext-pcntl
+    --no-autoloader
 COPY . .
 RUN if [ -n "$WEBLEX_E2E_QWEN_ENDPOINT" ]; then \
     sed -i "/'qwen' => \[/,/^[[:space:]]*],/ s#'url' => '[^']*'#'url' => '$WEBLEX_E2E_QWEN_ENDPOINT'#" config/ai.php; \
@@ -27,7 +40,9 @@ RUN rm -f bootstrap/cache/*.php \
     DB_CONNECTION=sqlite \
     php artisan package:discover --ansi
 
-FROM node:22.16.0-alpine3.22 AS assets
+FROM node:22.23.5-alpine3.23 AS assets
+
+RUN node -e 'const [major, minor, patch] = process.versions.node.split(".").map(Number); if (major !== 22 || minor < 23 || (minor === 23 && patch < 5)) { console.error("Build requires patched Node 22.23.5 or newer within 22.x; found " + process.versions.node); process.exit(1); } console.log("Verified Node " + process.versions.node);'
 
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -36,21 +51,10 @@ COPY . .
 COPY --from=php-dependencies /app/vendor /app/vendor
 RUN npm run build
 
-FROM dunglas/frankenphp:1.12.4-php8.4-bookworm
+FROM php-base
 
 ENV XDG_CONFIG_HOME=/tmp/caddy/config \
     XDG_DATA_HOME=/tmp/caddy/data
-
-RUN install-php-extensions \
-    bcmath \
-    exif \
-    gd \
-    intl \
-    opcache \
-    pcntl \
-    pdo_pgsql \
-    redis \
-    zip
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl gnupg gosu \
