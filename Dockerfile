@@ -1,6 +1,6 @@
-FROM dunglas/frankenphp:1.13.5-php8.4.27-bookworm AS php-base
+FROM dunglas/frankenphp:1.13.6-php8.4.28-bookworm AS php-base
 
-RUN php -r 'if (version_compare(PHP_VERSION, "8.4.27", "<") || version_compare(PHP_VERSION, "8.5.0", ">=")) { fwrite(STDERR, "Build requires patched PHP 8.4.27 or newer within 8.4.x; found ".PHP_VERSION.PHP_EOL); exit(1); } echo "Verified PHP ".PHP_VERSION.PHP_EOL;'
+RUN php -r 'if (version_compare(PHP_VERSION, "8.4.28", "<") || version_compare(PHP_VERSION, "8.5.0", ">=")) { fwrite(STDERR, "Build requires patched PHP 8.4.28 or newer within 8.4.x; found ".PHP_VERSION.PHP_EOL); exit(1); } echo "Verified PHP ".PHP_VERSION.PHP_EOL;'
 
 RUN install-php-extensions \
     bcmath \
